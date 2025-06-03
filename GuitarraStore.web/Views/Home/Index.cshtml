@@ -3,6 +3,49 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    
+    <h2>Listado Guitarras</h2>
+
+    <ul id="listado"></ul>
+
 </div>
+
+<script>
+
+    var listado = document.getElementById("listado");
+
+    async function MostrarGuitarras()
+    {
+
+        try{
+
+            const respuesta = await fetch("api/Guitarras/Get");
+            if(!respuesta.ok) {
+                throw new Error("Error en la respuesta de la API");
+            }
+
+            listado.innerHTML="";
+
+            const guitarras = await respuesta.json();
+
+            guitarras.forEach(guitarras =>{
+
+                var li = document.createElement("li");
+
+                li.innerHTML = `<strong>${guitarras.marca}</strong> - ${guitarras.modelo} - ${guitarras.precio} €`;
+
+                listado.appendChild(li);
+
+            })
+
+        }catch(error){
+
+            alert("Error al cargar las guitarras: " + error.message);
+
+        }
+
+    }
+
+    
+
+</script>
