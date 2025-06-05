@@ -19,9 +19,10 @@
 
         try{
 
-            const respuesta = await fetch("api/Guitarras/Get");
+            const respuesta = await fetch("/api/guitarra/Get");
             if(!respuesta.ok) {
-                throw new Error("Error en la respuesta de la API");
+                const errorText = await respuesta.text();
+                 throw new Error("Error al crear la guitarra. Respuesta: " + respuesta.status + " - " + errorText);
             }
 
             listado.innerHTML="";
@@ -46,6 +47,6 @@
 
     }
 
-    
+    MostrarGuitarras();
 
 </script>
