@@ -1,0 +1,76 @@
+﻿
+@{
+    ViewData["Title"] = "GuitarrasCrud";
+}
+
+<h1>GuitarrasCrud</h1>
+
+<body>
+
+    <button id="botonagregar">Agregar</button>
+    <ul id="listado"></ul>
+
+    <script>
+
+        let listado = document.getElementById("listado");
+
+        document.getElementById("botonagregar").addEventListener("click",() =>{
+        
+            window.location.href = "/Home/Privacy";
+        
+        });
+
+        async function MostrarGuitarras()
+        {
+        
+            try
+            {
+
+                const respuesta = await fetch("/api/guitarra/Get");
+
+                if(!respuesta.ok){
+
+                    const errorText = await respuesta.text();
+                    throw new Error("Error al cargar las guitarras. Respuesta: " + respuesta.status + " - " + errorText);
+
+                }
+
+                listado.innerHTML="";
+
+                const guitarras = await respuesta.json();
+
+                guitarras.forEach(guitarra =>{
+                
+                    const li = document.createElement("li");
+                    li.innerHTML = `<strong>${guitarra.marca}</strong> - ${guitarra.modelo} - ${guitarra.precio} €`;
+
+                    const botonelim = document.createElement("button");
+                    botonelim.innerText = "Eliminar";
+
+                    const botonedit = document.createElement("button");
+                    botonedit.innerText = "Editar";
+
+                    const botondetalles = document.createElement("button");
+                    botondetalles.innerText = "Detalles";
+
+                    li.appendChild(botondetalles);
+                    li.appendChild(botonedit);
+                    li.appendChild(botonelim);  
+
+                    listado.appendChild(li);
+
+                });
+
+            }
+            catch(error){
+                alert("Error al cargar las guitarras: " + error.message);
+            }
+        }
+
+        MostrarGuitarras();
+
+
+    </script>
+
+</body>
+

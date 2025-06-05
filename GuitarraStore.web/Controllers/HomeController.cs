@@ -22,6 +22,25 @@ namespace GuitarraStore.web.Controllers
             return View();
         }
 
+        public IActionResult GuitarrasCrud()
+        {
+            return View();
+        }
+
+        public IActionResult Detalles(int id)
+        {
+
+            var guitarra = _context.Guitarras.FirstOrDefault(g => g.Id == id);
+            
+            if (guitarra == null)
+            {
+                return NotFound();
+            }
+
+            return View(guitarra);
+
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
