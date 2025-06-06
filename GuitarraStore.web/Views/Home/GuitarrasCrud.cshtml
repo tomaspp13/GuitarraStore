@@ -14,12 +14,6 @@
 
         let listado = document.getElementById("listado");
 
-        document.getElementById("botonagregar").addEventListener("click",() =>{
-        
-            window.location.href = "/Home/Privacy";
-        
-        });
-
         async function MostrarGuitarras()
         {
         
@@ -53,6 +47,40 @@
                     const botondetalles = document.createElement("button");
                     botondetalles.innerText = "Detalles";
 
+                    botondetalles.addEventListener("click", function(){
+                    
+                        window.location.href = `/Home/Detalles/${guitarra.id}`;
+                    
+                    })
+                    botonedit.addEventListener("click", function(){
+
+                        window.location.href = `/Home/Editar/${guitarra.id}`;
+
+                    })
+                    botonelim.addEventListener("click",async function(){
+                    
+                        try
+                        {
+
+                            const respuesta = await fetch(`/api/guitarra/Delete/${guitarra.id}`,{method:"DELETE"});
+
+                            if(!respuesta.ok){
+                                const errorText = await respuesta.text();
+                                throw new Error("Error al eliminar la guitarra. Respuesta: " + respuesta.status + " - " + errorText);
+                            }
+
+                            alert("Guitarra eliminada correctamente.");
+                            MostrarGuitarras();
+
+                        }
+                        catch(error)
+                        {
+                            alert("Error al eliminar la guitarra: " + error.message)
+                        }  
+                    
+                    })
+
+
                     li.appendChild(botondetalles);
                     li.appendChild(botonedit);
                     li.appendChild(botonelim);  
@@ -69,6 +97,11 @@
 
         MostrarGuitarras();
 
+        document.getElementById("botonagregar").addEventListener("click",() =>{
+
+            window.location.href = "/Home/Privacy";
+
+        });
 
     </script>
 

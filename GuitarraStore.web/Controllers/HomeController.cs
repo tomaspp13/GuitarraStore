@@ -29,16 +29,12 @@ namespace GuitarraStore.web.Controllers
 
         public IActionResult Detalles(int id)
         {
+            return View();
+        }
 
-            var guitarra = _context.Guitarras.FirstOrDefault(g => g.Id == id);
-            
-            if (guitarra == null)
-            {
-                return NotFound();
-            }
-
-            return View(guitarra);
-
+        public IActionResult Editar(int id)
+        {
+            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

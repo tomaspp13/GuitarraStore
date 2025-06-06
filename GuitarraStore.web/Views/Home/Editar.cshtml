@@ -8,6 +8,93 @@
 <body>
 
     <h2>Editar</h2>
-
     
+        <label for="marca">Marca :</label>
+        <input id="marca" />
+        <label>Modelo</label>
+        <input id="modelo" />
+        <label>Precio</label>
+        <input id="precio" />
+
+        <button id="botoneditar">Guardar</button>
+
+    <script>
+
+        const marca = document.getElementById("marca");
+        const modelo = document.getElementById("modelo");
+        const precio = document.getElementById("precio");
+
+        const url = window.location.pathname;
+        const partes = url.split("/");
+        const id = partes[partes.length -1];
+
+        async function MostrarGuitarra(){
+
+            try
+            {
+
+                const respuesta = await fetch(`/api/guitarra/Get/${id}`);
+                if(!respuesta.ok){ alert("Error en obtener la guitarra. Error : "+respuesta.status);
+                    return;
+                }
+
+                const guitarra = await respuesta.json();
+
+                marca.value = guitarra.marca;
+                modelo.value = guitarra.modelo;
+                precio.value = guitarra.precio;
+
+            }
+            catch(error)
+            {
+                alert("Error al cargar los detalles de la guitarra: " + error.message);
+            }
+
+        }
+            async function CambiarGuitarra()
+            {
+
+                try
+                {
+
+                const guitarraCambio = {
+
+                    id: parseInt(id),
+                    marca : marca.value,
+                    modelo : modelo.value,
+                    precio : parseFloat(precio.value)
+
+                }
+
+                const respuesta = await fetch(`/api/guitarra/Put/${id}`,{ method: "PUT",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify(guitarraCambio)
+                });
+
+                if(!respuesta.ok) {
+                   const errorText = await respuesta.text();
+                   throw new Error("Error al editar la guitarra. Respuesta: " + respuesta.status + " - " + errorText);
+                   return;
+                }
+
+                alert("Guitarra actualizada correctamente.");
+                window.location.href = "/Home/GuitarrasCrud";
+
+            }
+            catch(error)
+            {
+               alert("Error al editar la guitarra: " + error.message);
+            }
+
+        }
+
+        MostrarGuitarra();
+        document.getElementById("botoneditar").addEventListener("click", CambiarGuitarra);
+       
+    </script>
+
 </body>
