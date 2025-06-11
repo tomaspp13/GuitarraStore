@@ -71,6 +71,26 @@ export async function editarGuitarras(id,guitarraCambio)
 
 }
 
+export async function obtenerValorDolar() {
+
+    try {
+
+        const valor = await fetch("https://dolarapi.com/v1/dolares/oficial");
+        if (!valor.ok) {
+            throw new Error("Error al obtener el valor del Dolar. Respuesta: " + valor.status);
+        }
+
+        const dolar = await valor.json();
+
+        return parseFloat(dolar.venta);
+
+    }
+    catch (error) {
+
+        alert("Error al obtener valor del Dolar: " + error.message);
+    }
+}
+
 export async function eliminarGuitarras(id)
 {
 

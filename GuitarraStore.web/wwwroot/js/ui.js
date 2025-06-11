@@ -1,5 +1,6 @@
-﻿import { obtenerGuitarras,eliminarGuitarras,editarGuitarras } from "./GuitarraServicios.js";
-export function MostrarGuitarras(guitarras, contenedor) {
+﻿import { obtenerGuitarras, eliminarGuitarras } from "./GuitarraServicios.js";
+
+export async function MostrarGuitarras(guitarras, contenedor,dolar) {
 
     if (!contenedor) {
         console.warn("Contenedor no encontrado");
@@ -12,17 +13,27 @@ export function MostrarGuitarras(guitarras, contenedor) {
     console.log("Ejecutando UI");
 
     contenedor.innerHTML = "";
-
+   
     guitarras.forEach(guitarra => {
 
         var div = document.createElement("div");
 
+        div.classList.add("card", "m-2");
+        div.style.width = "18rem";
+
         const imagen = guitarra.urlImagen || "/images/placeholder.png";
 
+        let precioDolar = (guitarra.precio / dolar).toFixed(2);
+
+        console.log(dolar);
+        console.log(precioDolar);
+
         div.innerHTML = `
-                <h3>${guitarra.marca} - ${guitarra.modelo}</h3>
+                <img src="${imagen}" alt="Imagen de guitarra" width="250" height="250">
+                <h4>${guitarra.marca} ${guitarra.modelo}</h3>
                 <p>Precio: $${guitarra.precio}</p>
-                <img src="${imagen}" alt="Imagen de guitarra" width="200" height="150">
+                <p>U$ ${precioDolar}</p>
+                <p>6 x $ ${(guitarra.precio / 6).toFixed(2)}</p>
                 `;
 
         contenedor.appendChild(div);

@@ -1,5 +1,5 @@
 ﻿
-import { obtenerGuitarras, obtenerGuitarrasPorId } from "./GuitarraServicios.js";
+import { obtenerGuitarras, obtenerGuitarrasPorId, obtenerValorDolar } from "./GuitarraServicios.js";
 import { MostrarGuitarras, MostrarGuitarrasCrud, mostrarGuitarraDetalles } from "./ui.js";
 import { validarFormulario } from "./Form.js"; 
 
@@ -18,6 +18,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
+    let dolar = 1;
+
+    try {
+        dolar = await obtenerValorDolar();
+    } catch (error) {
+        console.error("No se pudo obtener cotización:", error);  
+    }
+
     if (listado_del_crud) { MostrarGuitarrasCrud(listado_del_crud); }
 
     if (botonCrear) { botonCrear.addEventListener("click", function () { window.location.href = "/Home/Privacy" }); }
@@ -28,7 +36,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const guitarras = await obtenerGuitarras();
 
-            MostrarGuitarras(guitarras, contenedor);
+            MostrarGuitarras(guitarras, contenedor,dolar);
 
         } catch (error) {
             console.error("Error al cargar las guitarras:", error);
