@@ -2,51 +2,15 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    
-    <h2>Listado Guitarras</h2>
-
-    <ul id="listado"></ul>
-
-</div>
-
-<script>
-
-    var listado = document.getElementById("listado");
-
-    async function MostrarGuitarras()
-    {
-
-        try{
-
-            const respuesta = await fetch("/api/guitarra/Get");
-            if(!respuesta.ok) {
-                const errorText = await respuesta.text();
-                 throw new Error("Error al crear la guitarra. Respuesta: " + respuesta.status + " - " + errorText);
-            }
-
-            listado.innerHTML="";
-
-            const guitarras = await respuesta.json();
-
-            guitarras.forEach(guitarras =>{
-
-                var li = document.createElement("li");
-
-                li.innerHTML = `<strong>${guitarras.marca}</strong> - ${guitarras.modelo} - ${guitarras.precio} €`;
-
-                listado.appendChild(li);
-
-            })
-
-        }catch(error){
-
-            alert("Error al cargar las guitarras: " + error.message);
-
-        }
-
-    }
-
-    MostrarGuitarras();
-
-</script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Guitarras</title>
+</head>
+<body>
+    <h3>Listado GUitarras</h3>
+    <div id="contenedorGuitarras"></div>
+    <script type="module" src="./js/main.js"></script>
+</body>
+</html>

@@ -14,9 +14,9 @@ namespace GuitarraStore.web.Controllers
         private readonly AppDbContext _context = context;
 
         [HttpGet("Get")]
-        public IActionResult GetGuitarras()
+        public async Task<IActionResult> GetGuitarras()
         {
-            var guitarras = _context.Guitarras.ToList();
+            var guitarras = await _context.Guitarras.ToListAsync();
             return Ok(guitarras);
         }
 
@@ -58,14 +58,15 @@ namespace GuitarraStore.web.Controllers
 
             _context.SaveChanges();
 
-            return Ok(guitarra);
+            return Ok();
         }
 
         [HttpPost("Create")]
 
         public async Task<IActionResult> CreateGuitarras([FromBody] Guitarras guitarra)
         {
-            Console.WriteLine($"Guitarra recibida: {guitarra.Marca} - {guitarra.Modelo} - {guitarra.Precio}");
+
+            Console.WriteLine("Entre al create guitarras");
 
             if (!ModelState.IsValid)
             {
@@ -73,7 +74,9 @@ namespace GuitarraStore.web.Controllers
             }
 
             _context.Guitarras.Add(guitarra);
+            
             await _context.SaveChangesAsync();
+            
 
             return Ok();
 

@@ -6,45 +6,10 @@
 <body>
 
     <h1>Detalles</h1>
-    <div id="detalles"></div>
+    <div id="contenedorDetalles"></div>
     <a href="/Home/GuitarrasCrud">Volver a la lista</a>
 
-    <script>
-
-        async function MostrarDetalles()
-        {
-        
-            const url = window.location.pathname;
-            const partes = url.split('/');
-            const id = partes[partes.length - 1];
-
-            try
-            {
-
-               const respuesta = await fetch(`/api/guitarra/Get/${id}`);
-               if(!respuesta.ok){new error("Error al cargar los detalles de la guitarra. Respuesta: " + respuesta.status);}
-
-               const guitarra = await respuesta.json();
-
-               const detallesdiv = document.getElementById("detalles");
-
-                 detallesdiv.innerHTML = `
-                    <h2>Detalles de la guitarra</h2>
-                    <p><strong>Marca:</strong> ${guitarra.marca}</p>
-                    <p><strong>Modelo:</strong> ${guitarra.modelo}</p>
-                    <p><strong>Precio:</strong> ${guitarra.precio} €</p>
-                  `;
-
-            }
-            catch(error){
-
-                alert("Error al cargar los detalles de la guitarra: " + error.message);
-
-            }
-        
-        }
-
-        MostrarDetalles();
+    <script type="module" src="/js/main.js">
 
     </script>
 
