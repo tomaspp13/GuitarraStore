@@ -3,16 +3,26 @@
     ViewData["Title"] = "GuitarrasCrud";
 }
 
-<h1>GuitarrasCrud</h1>
+<body class="bg-light">
 
-<body>
+    <div class="container mt-4">
 
-    <button id="botonagregar">Agregar</button>
-    <ul id="listado"></ul>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Listado de Guitarras</h2>
+            <button id="botonagregar" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Agregar
+            </button>
+        </div>
 
-    <script type="module" src="/js/main.js">
+        <ul id="listado" class="list-group">
+            
+        </ul>
 
-    </script>
+    </div>
 
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+    <script type="module" src="/js/main.js"></script>
 </body>
 

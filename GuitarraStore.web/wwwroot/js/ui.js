@@ -1,46 +1,53 @@
 ﻿import { obtenerGuitarras, eliminarGuitarras } from "./GuitarraServicios.js";
 
-export async function MostrarGuitarras(guitarras, contenedor,dolar) {
+export async function MostrarGuitarras(guitarras, contenedor, dolar) {
 
     if (!contenedor) {
         console.warn("Contenedor no encontrado");
         return;
     } else if (!guitarras) {
-        console.warn("Guitarras no encontrada");
+        console.warn("Guitarras no encontradas");
         return;
     }
 
     console.log("Ejecutando UI");
 
     contenedor.innerHTML = "";
-   
+
+    const fila = document.createElement("div");
+    fila.className = "row";
+
     guitarras.forEach(guitarra => {
 
-        var div = document.createElement("div");
+        const col = document.createElement("div");
+        col.className = "col-md-4 mb-4"; 
 
-        div.classList.add("card", "m-2");
-        div.style.width = "18rem";
+        const card = document.createElement("div");
+        card.className = "card shadow-sm h-100";
 
         const imagen = guitarra.urlImagen || "/images/placeholder.png";
 
-        let precioDolar = (guitarra.precio / dolar).toFixed(2);
+        const precioDolar = (guitarra.precio / dolar).toFixed(2);
+        const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
 
-        console.log(dolar);
-        console.log(precioDolar);
+        card.innerHTML = `
+            <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; object-fit: cover;">
+            <div class="card-body">
+                <h5 class="card-title">${guitarra.marca} ${guitarra.modelo}</h5>
+                <p class="card-text"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
+                <p class="card-text"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
+                <p class="card-text"><strong>USD:</strong> U$${precioDolar}</p>
+                <p class="card-text text-success fw-bold">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>
+            </div>
+        `;
 
-        div.innerHTML = `
-                <img src="${imagen}" alt="Imagen de guitarra" width="250" height="250">
-                <h4>${guitarra.marca} ${guitarra.modelo}</h3>
-                <p>Precio: $${guitarra.precio}</p>
-                <p>U$ ${precioDolar}</p>
-                <p>6 x $ ${(guitarra.precio / 6).toFixed(2)}</p>
-                `;
+        col.appendChild(card);
+        fila.appendChild(col);
+    });
 
-        contenedor.appendChild(div);
-
-    })
-
+    contenedor.appendChild(fila);
 }
+
 export function mostrarGuitarraDetalles(guitarra,contenedor)
 {
 
@@ -59,73 +66,65 @@ export function mostrarGuitarraDetalles(guitarra,contenedor)
     return;
 
 }
-export async function MostrarGuitarrasCrud(listado)
-{
-
-    try
-    {
-
+export async function MostrarGuitarrasCrud(listado) {
+    try {
         const guitarras = await obtenerGuitarras();
 
         listado.innerHTML = "";
 
         guitarras.forEach(guitarra => {
-
             const li = document.createElement("li");
-            li.innerHTML = `<strong>${guitarra.marca}</strong> - ${guitarra.modelo} - ${guitarra.precio} €`;
+            li.className = "list-group-item d-flex justify-content-between align-items-center flex-wrap";
 
-            const botonelim = document.createElement("button");
-            botonelim.innerText = "Eliminar";
+            
+            const info = document.createElement("div");
+            info.innerHTML = `
+                <h5 class="mb-1">${guitarra.marca} - ${guitarra.modelo}</h5>
+                <p class="mb-1 text-muted">$${guitarra.precio}</p>
+            `;
 
-            const botonedit = document.createElement("button");
-            botonedit.innerText = "Editar";
+            const botones = document.createElement("div");
+            botones.className = "btn-group";
 
             const botondetalles = document.createElement("button");
+            botondetalles.className = "btn btn-outline-primary btn-sm";
             botondetalles.innerText = "Detalles";
-
-            botondetalles.addEventListener("click", function () {
-
+            botondetalles.addEventListener("click", () => {
                 window.location.href = `/Home/Detalles/${guitarra.id}`;
+            });
 
-            })
-            botonedit.addEventListener("click", function () {
-
+            const botonedit = document.createElement("button");
+            botonedit.className = "btn btn-outline-warning btn-sm";
+            botonedit.innerText = "Editar";
+            botonedit.addEventListener("click", () => {
                 window.location.href = `/Home/Editar/${guitarra.id}`;
+            });
 
-            })
-            botonelim.addEventListener("click", async function (e) {
-
+            const botonelim = document.createElement("button");
+            botonelim.className = "btn btn-outline-danger btn-sm";
+            botonelim.innerText = "Eliminar";
+            botonelim.addEventListener("click", async (e) => {
                 e.preventDefault();
-
                 try {
-
                     await eliminarGuitarras(guitarra.id);
-
-                   await MostrarGuitarrasCrud(listado);
-
-                    
+                    await MostrarGuitarrasCrud(listado);
+                } catch (error) {
+                    alert("Error al eliminar la guitarra: " + error.message);
                 }
-                catch (error) {
-                    alert("Error al eliminar la guitarra: " + error.message)
-                }
+            });
 
-            })
+            botones.appendChild(botondetalles);
+            botones.appendChild(botonedit);
+            botones.appendChild(botonelim);
 
-            li.appendChild(botondetalles);
-            li.appendChild(botonedit);
-            li.appendChild(botonelim);
-
+            li.appendChild(info);
+            li.appendChild(botones);
             listado.appendChild(li);
-
         });
 
-    }
-    catch (error)
-    {
-
+    } catch (error) {
         alert("Error al cargar las guitarras: " + error.message);
-
-    } 
-    
+    }
 }
+
             

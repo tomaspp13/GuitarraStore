@@ -55,6 +55,7 @@ namespace GuitarraStore.web.Controllers
             guitarra.Marca = guitarraEditada.Marca;
             guitarra.Modelo = guitarraEditada.Modelo;
             guitarra.Precio = guitarraEditada.Precio;
+            guitarra.UrlImagen = guitarraEditada.UrlImagen;
 
             _context.SaveChanges();
 
