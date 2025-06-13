@@ -10,7 +10,39 @@
 </head>
 <body>
 
-    <h3>Listado GUitarras</h3>
+    <h3>Guitarras</h3>
+
+    <span role="button" class="text-primary text-white" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFiltros" >
+        Filtrar y Ordenar
+    </span>
+
+
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFiltros" aria-labelledby="offcanvasFiltrosLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasFiltrosLabel">Filtrar resultados</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+        </div>
+        <div class="offcanvas-body">
+            
+            <form>
+                <div class="mb-3">
+                    <label class="form-label">Ordenar Por</label>
+                    <select class="form-select">
+                        <option value="">Mas relevante</option>
+                        <option value="Fender">Menor-Mayor</option>
+                        <option value="Gibson">Mayor-Menor</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Precio minimo</label>
+                    <input type="number" class="form-control">
+                    <label class="form-label">Precio maximo</label>
+                    <input type="number" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-success">Aplicar filtros</button>
+            </form>
+        </div>
+    </div>
 
     <div class="container mt-4">
         <div id="contenedorGuitarras"></div>
