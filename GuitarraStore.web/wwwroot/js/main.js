@@ -1,20 +1,34 @@
 ﻿
-import { obtenerGuitarras, obtenerGuitarrasPorId, obtenerValorDolar } from "./GuitarraServicios.js";
+import { obtenerGuitarras, obtenerGuitarrasPorId, obtenerValorDolar, obtenerGuitarrasPorFiltros } from "./GuitarraServicios.js";
 import { MostrarGuitarras, MostrarGuitarrasCrud, mostrarGuitarraDetalles } from "./ui.js";
 import { validarFormulario } from "./Form.js"; 
 
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    const contenedor = document.getElementById("contenedorGuitarras");
+    const contenedor_principal = document.getElementById("contenedorGuitarras");
     const contenedorDetalles = document.getElementById("contenedorDetalles");
     const formulario = document.getElementById("formulario");
     const listado_del_crud = document.getElementById("listado");
     const botonCrear = document.getElementById("botonagregar");
+    const filtros = document.getElementById("filtro");
+
+    if (filtros) {
+        console.log("Estoy en el filtro");
+        filtros.addEventListener("change", async function () {
+            console.log("Entre al evento del filtro");
+            const tipoFiltro = filtros.value;
+            contenedor_principal.innerHTML = "";
+            const guitarras_filtradas = await obtenerGuitarrasPorFiltros(tipoFiltro);
+            await MostrarGuitarras(guitarras_filtradas, contenedor_principal);
+
+        });
+
+    }
 
     if (formulario) {
 
-        validarFormulario(contenedor);
+        validarFormulario(contenedor_principal);
 
     }
 
@@ -30,13 +44,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (botonCrear) { botonCrear.addEventListener("click", function () { window.location.href = "/Home/Privacy" }); }
 
-    if (contenedor) {
+    if (contenedor_principal) {
 
         try {
 
             const guitarras = await obtenerGuitarras();
 
-            MostrarGuitarras(guitarras, contenedor,dolar);
+            MostrarGuitarras(guitarras, contenedor_principal,dolar);
 
         } catch (error) {
             console.error("Error al cargar las guitarras:", error);
@@ -49,12 +63,11 @@ document.addEventListener("DOMContentLoaded", async () => {
         const url = window.location.href;
         const id = url.split("/").pop();
 
-        console.log("ID de guitarra:", id);
-
         try {
 
             const guitarra_detalles = await obtenerGuitarrasPorId(id);
-            mostrarGuitarraDetalles(guitarra_detalles, contenedorDetalles);
+            
+           await mostrarGuitarraDetalles(guitarra_detalles, contenedorDetalles);
         }
         catch (error) {
             console.error("Error al cargar los detalles de la guitarra:", error);

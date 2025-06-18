@@ -1,74 +1,128 @@
 ﻿export async function obtenerGuitarras() {
-    
-    const respuesta = await fetch("/api/guitarra/Get");
 
-    if (!respuesta.ok) {
+    try {
 
-        const errorText = await respuesta.text();
-        throw new Error("Error al obtener las guitarras. Respuesta: " + respuesta.status + " - " + errorText);
+        const respuesta = await fetch("/api/guitarra/Get");
 
-    }
+        if (!respuesta.ok) {
 
-    return await respuesta.json();
+            const errorText = await respuesta.text();
+            throw new Error("Error al obtener las guitarras. Respuesta: " + respuesta.status + " - " + errorText);
+
+        }
+
+        return await respuesta.json();
+
+    } catch (error) {
+        alert("Error al obtener las guitarras: " + error.message);
+    }  
 
 }
-export async function obtenerGuitarrasPorId(id)
-{
+export async function obtenerGuitarrasPorFiltros(tipofiltro) {
 
-    const respuesta = await fetch(`/api/guitarra/Get/${id}`);
+    try {
+        console.log("Entre al obtenerGuitarrasPorFiltros");
+        const guitarrasFiltradas = await fetch(`/api/guitarra/FiltroGuitarras/${tipofiltro}`);
 
-    if (!respuesta.ok) {
-        const errorText = await respuesta.text();
-        throw new Error("Error al obtener la guitarra por ID. Respuesta: " + respuesta.status + " - " + errorText);
+        if (!guitarrasFiltradas.ok) {
+
+            const errorText = await guitarrasFiltradas.text();
+            throw new Error("Error al obtener las guitarras. Respuesta: " + guitarrasFiltradas.status + " - " + errorText);
+
+        }
+
+        return await guitarrasFiltradas.json();
+
+    } catch (error) {
+
+        alert("Error al obtener guitarras por filtros: " + error.message);
+        return [];
+        
     }
     
-    return await respuesta.json();
+}
+
+export async function obtenerGuitarrasPorId(id)
+{
+    try
+    {
+
+        const respuesta = await fetch(`/api/guitarra/Get/${id}`);
+
+        if (!respuesta.ok) {
+            const errorText = await respuesta.text();
+            throw new Error("Error al obtener la guitarra por ID. Respuesta: " + respuesta.status + " - " + errorText);
+        }
+
+        return await respuesta.json();
+
+    } catch (error)
+    {
+        alert("Error al obtener guitarra por ID: " + error.message);
+    }
 
 }
 
 export async function crearGuitarras(guitarra) {
 
-    const documento = await fetch("/api/guitarra/Create", {
+    try
+    {
 
-        method: "POST",
-        headers: {
+        const documento = await fetch("/api/guitarra/Create", {
 
-             "Content-Type": "application/json"
+            method: "POST",
+            headers: {
 
-        },
-        body: JSON.stringify(guitarra)
+                "Content-Type": "application/json"
 
-    });
+            },
+            body: JSON.stringify(guitarra)
 
-    if (!documento.ok) {
-       throw new Error("Error en la respuesta de la API");
+        });
+
+        if (!documento.ok) {
+            throw new Error("Error en la respuesta de la API");
+        }
+
+        return;
+
+    } catch (error)
+    {
+
+        alert("Error al crear la guitarra: " + error.message);
+
     }
-
-    return;
 
 }
 export async function editarGuitarras(id,guitarraCambio)
 {
+    try
+    {
 
-    const respuesta = await fetch(`/api/guitarra/Put/${id}`, {
-        method: "PUT",
+        const respuesta = await fetch(`/api/guitarra/Put/${id}`, {
+            method: "PUT",
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+            headers: {
+                "Content-Type": "application/json"
+            },
 
-        body: JSON.stringify(guitarraCambio)
-    });
+            body: JSON.stringify(guitarraCambio)
+        });
 
-    if (!respuesta.ok) {
-        const errorText = await respuesta.text();
-        throw new Error("Error al editar la guitarra. Respuesta: " + respuesta.status + " - " + errorText);
-        return;
+        if (!respuesta.ok) {
+            const errorText = await respuesta.text();
+            throw new Error("Error al editar la guitarra. Respuesta: " + respuesta.status + " - " + errorText);
+            return;
+        }
+
+        alert("Guitarra actualizada correctamente.");
+        window.location.href = "/Home/GuitarrasCrud";
+
+    } catch (error) {
+
+        alert("Error al editar: " + error.message);
     }
-
-    alert("Guitarra actualizada correctamente.");
-    window.location.href = "/Home/GuitarrasCrud";
-
+    
 }
 
 export async function obtenerValorDolar() {
@@ -94,14 +148,20 @@ export async function obtenerValorDolar() {
 export async function eliminarGuitarras(id)
 {
 
-    const respuesta = await fetch(`/api/guitarra/Delete/${id}`, { method: "DELETE" });
+    try {
 
-    if (!respuesta.ok) {
-        const errorText = await respuesta.text();
-        throw new Error("Error al eliminar la guitarra. Respuesta: " + respuesta.status + " - " + errorText);
+        const respuesta = await fetch(`/api/guitarra/Delete/${id}`, { method: "DELETE" });
+
+        if (!respuesta.ok) {
+            const errorText = await respuesta.text();
+            throw new Error("Error al eliminar la guitarra. Respuesta: " + respuesta.status + " - " + errorText);
+        }
+
+        alert("Guitarra eliminada correctamente.");
+        return;
     }
-
-    alert("Guitarra eliminada correctamente.");
-    return;
+    catch (error) {
+        alert("Error al eliminar la guitarra: " + error.message);
+    }    
 
 }

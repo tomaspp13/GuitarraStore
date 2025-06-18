@@ -1,31 +1,37 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Editar";
 }
-
-
 
 <body>
 
     <h2>Editar</h2>
     <form id="formulario">
+        <div class="mb-3">
+            <label class="form-label" for="marca">Marca :</label>
+            <input class="form-control" id="marca" />
+        </div>
 
-        <label for="marca">Marca :</label>
-        <input id="marca" />
-        <label>Modelo</label>
-        <input id="modelo" />
-        <label>Precio</label>
-        <input id="precio" />
-        <label>UrlImagen</label>
-        <input id="imagen"/>
+        <div class="mb-3">
+            <label class="form-label">Modelo:</label>
+            <input class="form-control" id="modelo" />
+        </div>
 
-        <button id="botoneditar">Guardar</button>
-    
+        <div class="mb-3">
+            <label class="form-label">Precio:</label>
+            <input class="form-control" id="precio" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">UrlImagen:</label>
+            <input class="form-control" id="imagen" />
+        </div>
+
+        <div class="mb-3">
+            <button id="botoneditar">Guardar</button>
+        </div>
+
     </form>
-        
 
-   <script type="module" src="/js/main.js">
-       
-    </script>
+   <script type="module" src="/js/main.js"></script>
 
 </body>

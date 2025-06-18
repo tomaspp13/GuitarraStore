@@ -36,6 +36,30 @@ namespace GuitarraStore.web.Controllers
 
         }
 
+        [HttpGet("FiltroGuitarras/{tipofiltro}")]
+        public IActionResult FiltroGuitarras(string tipofiltro)
+        {
+            Console.WriteLine(tipofiltro);
+
+            if (string.IsNullOrEmpty(tipofiltro))
+            {
+                return BadRequest("Los parámetros no pueden ser nulos.");
+            }
+
+            var guitarras = _context.Guitarras.ToList(); 
+
+            if (tipofiltro.Equals("menoramayor", StringComparison.OrdinalIgnoreCase))
+            {
+               guitarras = guitarras.OrderBy(g => g.Precio).ToList();
+            }
+            else if (tipofiltro.Equals("mayoramenor", StringComparison.OrdinalIgnoreCase))
+            {
+                guitarras = guitarras.OrderByDescending(g => g.Precio).ToList();
+            }
+
+            return Ok(guitarras);
+        }
+
         [HttpPut("Put/{id}")]
 
         public IActionResult Update(int id, [FromBody] Guitarras guitarraEditada)

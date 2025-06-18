@@ -10,8 +10,6 @@ export async function MostrarGuitarras(guitarras, contenedor, dolar) {
         return;
     }
 
-    console.log("Ejecutando UI");
-
     contenedor.innerHTML = "";
 
     const fila = document.createElement("div");
@@ -40,25 +38,47 @@ export async function MostrarGuitarras(guitarras, contenedor, dolar) {
                 <p class="card-text text-success fw-bold">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>
             </div>
         `;
+       
+        card.style.cursor = "pointer";
+        card.classList.add('card');
+
+        card.addEventListener('mouseenter', () => {
+            card.classList.add('card-hover');
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.classList.remove('card-hover');
+        });
+
+        card.addEventListener("click", function () {
+
+            window.location.href = `/Home/Detalles/${guitarra.id}`;
+
+        })
 
         col.appendChild(card);
+
         fila.appendChild(col);
     });
 
     contenedor.appendChild(fila);
 }
 
-export function mostrarGuitarraDetalles(guitarra,contenedor)
+export async function mostrarGuitarraDetalles(guitarra,contenedor)
 {
+
+    console.log("Guitarra:", guitarra);
 
     var div = document.createElement("div");
 
     const imagen = guitarra.urlImagen || "/images/placeholder.png"; 
+    
+    console.log("Imagen:", imagen);
 
     div.innerHTML = `
                 <h3>${guitarra.marca} - ${guitarra.modelo}</h3>
                 <p>Precio: $${guitarra.precio}</p>
-                <img src="${imagen}" alt="Imagen de guitarra" width="200" height="150">
+                <img src="${imagen}" style="width: 400px !important; height: auto !important;">
                 `;
 
     contenedor.appendChild(div);
@@ -68,6 +88,7 @@ export function mostrarGuitarraDetalles(guitarra,contenedor)
 }
 export async function MostrarGuitarrasCrud(listado) {
     try {
+
         const guitarras = await obtenerGuitarras();
 
         listado.innerHTML = "";
