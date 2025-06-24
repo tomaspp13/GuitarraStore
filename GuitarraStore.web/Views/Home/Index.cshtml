@@ -38,7 +38,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
         </div>
         <div class="offcanvas-body">
-            <form>
+            <form id="formulario_filtro">
                 <div class="mb-3">
                     <label class="form-label">Ordenar Por</label>
                     <select class="form-select" id="filtro">
@@ -49,9 +49,9 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Precio mínimo</label>
-                    <input type="number" class="form-control">
+                    <input type="number" class="form-control" id="precioMin">
                     <label class="form-label">Precio máximo</label>
-                    <input type="number" class="form-control">
+                    <input type="number" class="form-control" id="precioMax">
                 </div>
                 <button type="submit" class="btn btn-success">Aplicar filtros</button>
             </form>

@@ -18,11 +18,18 @@
     }  
 
 }
-export async function obtenerGuitarrasPorFiltros(tipofiltro) {
+export async function obtenerGuitarrasPorFiltros(busqueda, tipoFiltro, precioMin, precioMax) {
+
+    const params = new URLSearchParams({
+        busqueda: busqueda || "",
+        tipofiltro: tipoFiltro || "",
+        precioMin: isNaN(precioMin) ? "" : precioMin,
+        precioMax: isNaN(precioMax) ? "" : precioMax
+    });
 
     try {
-        console.log("Entre al obtenerGuitarrasPorFiltros");
-        const guitarrasFiltradas = await fetch(`/api/guitarra/FiltroGuitarras/${tipofiltro}`);
+
+        const guitarrasFiltradas = await fetch(`/api/guitarra/FiltroGuitarras?${params.toString()}`);
 
         if (!guitarrasFiltradas.ok) {
 
@@ -34,13 +41,11 @@ export async function obtenerGuitarrasPorFiltros(tipofiltro) {
         return await guitarrasFiltradas.json();
 
     } catch (error) {
-
-        alert("Error al obtener guitarras por filtros: " + error.message);
+        console.error("Error al obtener guitarras por filtros:", error);
         return [];
-        
     }
-    
 }
+
 
 export async function obtenerGuitarrasPorId(id)
 {

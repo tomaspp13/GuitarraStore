@@ -1,6 +1,7 @@
 ﻿using GuitarraStore.Data.Context;
 using GuitarraStore.Modelos;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,11 +22,9 @@ namespace GuitarraStore.web.Controllers
         }
 
         [HttpGet("Get/{id}")]
-
-        public IActionResult GetGuitarrasById(int id)
+        public async Task<IActionResult> GetGuitarrasById(int id)
         {
-
-            var guitarra = _context.Guitarras.FirstOrDefault(g => g.Id == id);
+            var guitarra = await _context.Guitarras.FirstOrDefaultAsync(g => g.Id == id);
 
             if (guitarra == null)
             {
@@ -33,38 +32,54 @@ namespace GuitarraStore.web.Controllers
             }
 
             return Ok(guitarra);
-
         }
 
-        [HttpGet("FiltroGuitarras/{tipofiltro}")]
-        public IActionResult FiltroGuitarras(string tipofiltro)
+        [HttpGet("FiltroGuitarras")]
+        public async Task<IActionResult> FiltroGuitarras(string? busqueda, string? tipofiltro, float? precioMin, float? precioMax)
         {
-            Console.WriteLine(tipofiltro);
+            var guitarras = _context.Guitarras.AsQueryable();
 
-            if (string.IsNullOrEmpty(tipofiltro))
+            if (!string.IsNullOrEmpty(busqueda))
             {
-                return BadRequest("Los parámetros no pueden ser nulos.");
+                var palabras = busqueda.ToLower().Split(" ");
+
+                guitarras = guitarras.Where(g =>
+                    palabras.Any(p =>
+                        g.Marca.ToLower().Contains(p) ||
+                        g.Modelo.ToLower().Contains(p)
+                    )
+                );
             }
 
-            var guitarras = _context.Guitarras.ToList(); 
 
-            if (tipofiltro.Equals("menoramayor", StringComparison.OrdinalIgnoreCase))
+            if (precioMax.HasValue)
             {
-               guitarras = guitarras.OrderBy(g => g.Precio).ToList();
-            }
-            else if (tipofiltro.Equals("mayoramenor", StringComparison.OrdinalIgnoreCase))
-            {
-                guitarras = guitarras.OrderByDescending(g => g.Precio).ToList();
+                guitarras = guitarras.Where(g => g.Precio <= precioMax);
             }
 
-            return Ok(guitarras);
+            if (precioMin.HasValue)
+            {
+                guitarras = guitarras.Where(g => g.Precio >= precioMin);
+            }
+
+            if (string.Equals(tipofiltro, "menoramayor", StringComparison.OrdinalIgnoreCase))
+            {
+                guitarras = guitarras.OrderBy(g => g.Precio);
+            }
+            else if (string.Equals(tipofiltro, "mayoramenor", StringComparison.OrdinalIgnoreCase))
+            {
+                guitarras = guitarras.OrderByDescending(g => g.Precio);
+            }
+
+            var result = await guitarras.ToListAsync();
+            return Ok(result);
         }
 
         [HttpPut("Put/{id}")]
 
-        public IActionResult Update(int id, [FromBody] Guitarras guitarraEditada)
+        public async Task<IActionResult>Update(int id, [FromBody] Guitarras guitarraEditada)
         {
-            var guitarra = _context.Guitarras.FirstOrDefault(g => g.Id == id);
+            var guitarra = await _context.Guitarras.FirstOrDefaultAsync(g => g.Id == id);
 
             if (guitarra == null)
             {
@@ -87,32 +102,26 @@ namespace GuitarraStore.web.Controllers
         }
 
         [HttpPost("Create")]
-
         public async Task<IActionResult> CreateGuitarras([FromBody] Guitarras guitarra)
         {
-
-            Console.WriteLine("Entre al create guitarras");
-
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _context.Guitarras.Add(guitarra);
-            
+            await _context.Guitarras.AddAsync(guitarra);
+
             await _context.SaveChangesAsync();
-            
 
             return Ok();
-
         }
 
         [HttpDelete("Delete/{id}")]
 
-        public IActionResult EliminarGuitarra(int id) 
+        public async Task<IActionResult>EliminarGuitarra(int id) 
         {
 
-            var guitarra = _context.Guitarras.FirstOrDefault(g => g.Id == id);
+            var guitarra = await _context.Guitarras.FirstOrDefaultAsync(g => g.Id == id);
 
             if(guitarra == null)
             {
@@ -121,8 +130,8 @@ namespace GuitarraStore.web.Controllers
 
             }
 
-            _context.Guitarras.Remove(guitarra);
-            _context.SaveChanges();
+           _context.Guitarras.Remove(guitarra);
+           await _context.SaveChangesAsync();
 
             return Ok();
 

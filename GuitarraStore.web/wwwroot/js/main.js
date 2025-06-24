@@ -12,19 +12,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     const listado_del_crud = document.getElementById("listado");
     const botonCrear = document.getElementById("botonagregar");
     const filtros = document.getElementById("filtro");
+    const form_filtros = document.getElementById("formulario_filtro");
+    const botonBuscar = document.getElementById("botonBuscar");
+    const buscar = document.getElementById("inputBuscar").value.trim();
+    
+    botonBuscar.addEventListener("click", async function (e) {
+        e.preventDefault();
 
-    if (filtros) {
-        console.log("Estoy en el filtro");
-        filtros.addEventListener("change", async function () {
-            console.log("Entre al evento del filtro");
-            const tipoFiltro = filtros.value;
-            contenedor_principal.innerHTML = "";
-            const guitarras_filtradas = await obtenerGuitarrasPorFiltros(tipoFiltro);
-            await MostrarGuitarras(guitarras_filtradas, contenedor_principal);
+        const tipoFiltro = filtros.value;
+        const preMin = parseFloat(document.getElementById("precioMin").value);
+        const preMax = parseFloat(document.getElementById("precioMax").value);
 
-        });
+        const guitarras = await obtenerGuitarrasPorFiltros(inputBuscar, tipoFiltro, preMin, preMax);
+        await MostrarGuitarras(guitarras, contenedor_principal, dolar); 
+    });
 
-    }
+    form_filtros.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const tipoFiltro = filtros.value;
+        const preMin = parseFloat(document.getElementById("precioMin").value);
+        const preMax = parseFloat(document.getElementById("precioMax").value);
+
+        const guitarras_filtradas = await obtenerGuitarrasPorFiltros(buscar, tipoFiltro, preMin, preMax);
+        await MostrarGuitarras(guitarras_filtradas, contenedor_principal, dolar); 
+    });
 
     if (formulario) {
 
