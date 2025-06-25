@@ -1,4 +1,5 @@
-﻿export async function obtenerGuitarras() {
+﻿import { MostrarGuitarras } from "./ui.js";
+export async function obtenerGuitarras() {
 
     try {
 
@@ -17,6 +18,59 @@
         alert("Error al obtener las guitarras: " + error.message);
     }  
 
+}
+
+export async function obtenerMarcas() {
+    try {
+        const respuesta = await fetch(`/api/guitarra/ObtenerMarcas`);
+
+        if (!respuesta.ok) {
+            const errorText = await respuesta.text();
+            throw new Error("Error al obtener las guitarras. Respuesta: " + respuesta.status + " - " + errorText);
+        }
+
+        const marcas = await respuesta.json();
+        return marcas;
+    } catch (error) {
+        alert("Error al obtener las guitarras: " + error.message);
+        return [];
+    }
+}
+export async function cargarDropdownMarcas(tipoFiltro, preMin, preMax, dolar, contenedorDrop, contenedorIndex) {
+
+    const marcas = await obtenerMarcas();
+
+    contenedorDrop.innerHTML = "";
+
+    const liTodas = document.createElement("li");
+    const aTodas = document.createElement("a");
+    aTodas.className = "dropdown-item";
+    aTodas.href = "#";
+    aTodas.textContent = "Todas las marcas";
+    aTodas.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const guitarras = await obtenerGuitarrasPorFiltros("", tipoFiltro, preMin, preMax);
+        await MostrarGuitarras(guitarras, contenedorIndex, dolar);
+    });
+    liTodas.appendChild(aTodas);
+    contenedorDrop.appendChild(liTodas);
+
+    marcas.forEach(marca => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.className = "dropdown-item";
+        a.href = "#";
+        a.textContent = marca;
+        a.dataset.marca = marca;
+        a.addEventListener("click", async (e) => {
+            e.preventDefault();
+            const marcaSeleccionada = e.target.dataset.marca;
+            const guitarras = await obtenerGuitarrasPorFiltros(marcaSeleccionada, tipoFiltro, preMin, preMax);
+            await MostrarGuitarras(guitarras, contenedorIndex, dolar);
+        });
+        li.appendChild(a);
+        contenedorDrop.appendChild(li);
+    });
 }
 export async function obtenerGuitarrasPorFiltros(busqueda, tipoFiltro, precioMin, precioMax) {
 

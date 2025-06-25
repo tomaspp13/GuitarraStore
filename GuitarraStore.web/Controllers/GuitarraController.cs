@@ -34,6 +34,19 @@ namespace GuitarraStore.web.Controllers
             return Ok(guitarra);
         }
 
+        [HttpGet("ObtenerMarcas")]
+
+        public async Task<IActionResult> ObtenerMarcas() 
+        {
+        
+            var marcas = _context.Guitarras.AsQueryable();
+
+            var resultado = await marcas.Select(m => m.Marca).Where(m => !string.IsNullOrEmpty(m)).Distinct().ToListAsync();
+
+            return Ok(resultado);
+
+        }
+
         [HttpGet("FiltroGuitarras")]
         public async Task<IActionResult> FiltroGuitarras(string? busqueda, string? tipofiltro, float? precioMin, float? precioMax)
         {

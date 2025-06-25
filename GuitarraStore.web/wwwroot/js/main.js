@@ -1,5 +1,5 @@
 ﻿
-import { obtenerGuitarras, obtenerGuitarrasPorId, obtenerValorDolar, obtenerGuitarrasPorFiltros } from "./GuitarraServicios.js";
+import { obtenerGuitarras, obtenerGuitarrasPorId, obtenerValorDolar, obtenerGuitarrasPorFiltros, cargarDropdownMarcas } from "./GuitarraServicios.js";
 import { MostrarGuitarras, MostrarGuitarrasCrud, mostrarGuitarraDetalles } from "./ui.js";
 import { validarFormulario } from "./Form.js"; 
 
@@ -14,42 +14,60 @@ document.addEventListener("DOMContentLoaded", async () => {
     const filtros = document.getElementById("filtro");
     const form_filtros = document.getElementById("formulario_filtro");
     const botonBuscar = document.getElementById("botonBuscar");
-    const buscar = document.getElementById("inputBuscar").value.trim();
     
-    botonBuscar.addEventListener("click", async function (e) {
-        e.preventDefault();
-
-        const tipoFiltro = filtros.value;
-        const preMin = parseFloat(document.getElementById("precioMin").value);
-        const preMax = parseFloat(document.getElementById("precioMax").value);
-
-        const guitarras = await obtenerGuitarrasPorFiltros(inputBuscar, tipoFiltro, preMin, preMax);
-        await MostrarGuitarras(guitarras, contenedor_principal, dolar); 
-    });
-
-    form_filtros.addEventListener("submit", async function (e) {
-        e.preventDefault();
-
-        const tipoFiltro = filtros.value;
-        const preMin = parseFloat(document.getElementById("precioMin").value);
-        const preMax = parseFloat(document.getElementById("precioMax").value);
-
-        const guitarras_filtradas = await obtenerGuitarrasPorFiltros(buscar, tipoFiltro, preMin, preMax);
-        await MostrarGuitarras(guitarras_filtradas, contenedor_principal, dolar); 
-    });
-
-    if (formulario) {
-
-        validarFormulario(contenedor_principal);
-
-    }
-
     let dolar = 1;
 
     try {
         dolar = await obtenerValorDolar();
     } catch (error) {
-        console.error("No se pudo obtener cotización:", error);  
+        console.error("No se pudo obtener cotización:", error);
+    }
+
+    botonBuscar.addEventListener("click", async function (e) {
+        e.preventDefault();
+
+        const buscar = document.getElementById("inputBuscar").value.trim();
+        const tipoFiltro = filtros.value;
+        const preMin = parseFloat(document.getElementById("precioMin").value);
+        const preMax = parseFloat(document.getElementById("precioMax").value);
+
+        const guitarras = await obtenerGuitarrasPorFiltros(buscar, tipoFiltro, preMin, preMax);
+        await MostrarGuitarras(guitarras, contenedor_principal, dolar);
+    });
+
+    try {
+
+        const tipoFiltro = document.getElementById("filtro").value ;
+        const preMin = parseFloat(document.getElementById("precioMin").value );
+        const preMax = parseFloat(document.getElementById("precioMax").value);
+        const dropdownMenu = document.getElementById("dropdownMarcas");
+        await cargarDropdownMarcas(tipoFiltro, preMin, preMax, dolar, dropdownMenu, contenedor_principal);
+    }
+    catch (error)
+    {
+        console.error("Error al cargar las marcas:", error);
+
+    }    
+
+    if (form_filtros)
+    {
+        form_filtros.addEventListener("submit", async function (e) {
+            e.preventDefault();
+
+            const buscar = document.getElementById("inputBuscar").value.trim();
+            const tipoFiltro = filtros.value;
+            const preMin = parseFloat(document.getElementById("precioMin").value);
+            const preMax = parseFloat(document.getElementById("precioMax").value);
+
+            const guitarras_filtradas = await obtenerGuitarrasPorFiltros(buscar, tipoFiltro, preMin, preMax);
+            await MostrarGuitarras(guitarras_filtradas, contenedor_principal, dolar);
+        });
+    }
+
+    if (formulario) {
+
+        validarFormulario(contenedor_principal);
+
     }
 
     if (listado_del_crud) { MostrarGuitarrasCrud(listado_del_crud); }
