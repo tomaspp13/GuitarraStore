@@ -14,9 +14,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const form_filtros = document.getElementById("formulario_filtro");
     const botonBuscar = document.getElementById("botonBuscar");
     const contenedorDropdown = document.getElementById("dropdownMarcas");
-    console.log("Elemento dropdownMarcas:", document.getElementById("dropdownMarcas"));
-
     
+
     let dolar = 1;
 
     try {
@@ -27,11 +26,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (contenedorDropdown)
     {
-
         try
-        {
-            console.log("Entre en el main del contenedorDropdown");
+        {           
             const marcas = await obtenerMarcas();
+            const filtros = document.getElementById("filtro");
             const tipoFiltro = filtros.value;
             const preMin = parseFloat(document.getElementById("precioMin").value);
             const preMax = parseFloat(document.getElementById("precioMax").value);
@@ -45,12 +43,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     botonBuscar.addEventListener("click", async function (e) {
         e.preventDefault();
-
-        const buscar = document.getElementById("inputBuscar").value.trim();
+        
+        const buscar = document.getElementById("inputBuscar").value.trim();        
         const tipoFiltro = filtros.value;
         const preMin = parseFloat(document.getElementById("precioMin").value);
         const preMax = parseFloat(document.getElementById("precioMax").value);
-
         const guitarras = await obtenerGuitarrasPorFiltros(buscar, tipoFiltro, preMin, preMax);
         await MostrarGuitarras(guitarras, contenedor_principal, dolar);
     });
@@ -60,7 +57,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         form_filtros.addEventListener("submit", async function (e) {
             e.preventDefault();
 
-            const buscar = document.getElementById("inputBuscar").value.trim();
+            const buscar = document.getElementById("inputBuscar").value.trim();          
             const tipoFiltro = filtros.value;
             const preMin = parseFloat(document.getElementById("precioMin").value);
             const preMax = parseFloat(document.getElementById("precioMax").value);

@@ -21,7 +21,7 @@ export async function obtenerGuitarras() {
 }
 
 export async function obtenerMarcas() {
-    console.log("Entre a obtenerMarcas()");
+    
     try {
         const respuesta = await fetch(`/api/guitarra/ObtenerMarcas`);
 
@@ -31,8 +31,7 @@ export async function obtenerMarcas() {
         }
 
         const marcas = await respuesta.json();
-        console.log("Marcas recibidas del servidor:", marcas);
-
+        
         return marcas;
     } catch (error) {
         alert("Error al obtener las guitarras: " + error.message);
@@ -41,14 +40,14 @@ export async function obtenerMarcas() {
 }
 
 export async function obtenerGuitarrasPorFiltros(busqueda, tipoFiltro, precioMin, precioMax) {
-
+    
     const params = new URLSearchParams({
         busqueda: busqueda || "",
         tipofiltro: tipoFiltro || "",
         precioMin: isNaN(precioMin) ? "" : precioMin,
         precioMax: isNaN(precioMax) ? "" : precioMax
     });
-
+    
     try {
 
         const guitarrasFiltradas = await fetch(`/api/guitarra/FiltroGuitarras?${params.toString()}`);
@@ -60,14 +59,15 @@ export async function obtenerGuitarrasPorFiltros(busqueda, tipoFiltro, precioMin
 
         }
 
-        return await guitarrasFiltradas.json();
+        const guitarras = await guitarrasFiltradas.json();
+
+        return guitarras;     
 
     } catch (error) {
         console.error("Error al obtener guitarras por filtros:", error);
         return [];
     }
 }
-
 
 export async function obtenerGuitarrasPorId(id)
 {

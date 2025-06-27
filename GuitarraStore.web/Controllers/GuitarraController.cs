@@ -42,7 +42,7 @@ namespace GuitarraStore.web.Controllers
             var marcas = _context.Guitarras.AsQueryable();
 
             var resultado = await marcas.Select(m => m.Marca).Where(m => !string.IsNullOrEmpty(m)).Distinct().ToListAsync();
-
+            
             return Ok(resultado);
 
         }
@@ -50,20 +50,20 @@ namespace GuitarraStore.web.Controllers
         [HttpGet("FiltroGuitarras")]
         public async Task<IActionResult> FiltroGuitarras(string? busqueda, string? tipofiltro, float? precioMin, float? precioMax)
         {
+            Console.WriteLine("tipoFiltro en el controlador FiltroGuitarras : " + tipofiltro);
+            Console.WriteLine("busqueda en el controlador FiltroGuitarras : " + busqueda);
+
             var guitarras = _context.Guitarras.AsQueryable();
 
-            if (!string.IsNullOrEmpty(busqueda))
+            if (!string.IsNullOrWhiteSpace(busqueda))
             {
-                var palabras = busqueda.ToLower().Split(" ");
+                var busquedaMinuscula = busqueda.ToLower();
 
                 guitarras = guitarras.Where(g =>
-                    palabras.Any(p =>
-                        g.Marca.ToLower().Contains(p) ||
-                        g.Modelo.ToLower().Contains(p)
-                    )
+                    g.Marca.ToLower().Contains(busquedaMinuscula) ||
+                    g.Modelo.ToLower().Contains(busquedaMinuscula)
                 );
             }
-
 
             if (precioMax.HasValue)
             {

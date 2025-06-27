@@ -63,12 +63,14 @@ export async function MostrarGuitarras(guitarras, contenedor, dolar) {
 
     contenedor.appendChild(fila);
 }
-export async function cargarDropdownMarcas(marcas, contenedorDropdown,contenedorPrincipal, dolar, tipofiltro, precioMin, precioMax) {
-    console.log("Entre a cargarDropdownMarcas()");
+export async function cargarDropdownMarcas(marcas, contenedorDropdown, contenedorPrincipal, dolar, tipofiltro, precioMin, precioMax) {
+    console.log("marcas", marcas);
+    console.log("tipo filtro", tipofiltro);
+    
     contenedorDropdown.innerHTML = "";
 
     const liTodas = document.createElement("li");
-    console.log("Elemento li creado:", liTodas);
+    
     const aTodas = document.createElement("a");
     aTodas.className = "dropdown-item";
     aTodas.href = "#";
@@ -76,29 +78,30 @@ export async function cargarDropdownMarcas(marcas, contenedorDropdown,contenedor
 
     aTodas.addEventListener("click", async (e) => {
         e.preventDefault();
-        const guitarras = await obtenerGuitarrasPorFiltros("", tipofiltro, precioMin, precioMax);
+        const guitarras = await obtenerGuitarrasPorFiltros("todas", tipofiltro, precioMin, precioMax);
         await MostrarGuitarras(guitarras, contenedorPrincipal, dolar);
+        document.getElementById("inputBuscar") = ""; 
     });
 
     liTodas.appendChild(aTodas);
     contenedorDropdown.appendChild(liTodas);
     
     marcas.forEach(marca => {
-        console.log("Agregando marca al dropdown:", marca);
+        
         const li = document.createElement("li");
-        console.log("Elemento li creado:", li);
+        
         const a = document.createElement("a");
 
         a.className = "dropdown-item";
         a.href = "#";
-        a.textContent = marca;
         a.textContent = marca.trim();
 
         a.addEventListener("click", async function (e) {
 
-            e.preventDefault();
+            e.preventDefault();  
             const guitarras_obtenidas = await obtenerGuitarrasPorFiltros(marca, tipofiltro, precioMin, precioMax);
             await MostrarGuitarras(guitarras_obtenidas, contenedorPrincipal, dolar);
+            document.getElementById("inputBuscar").value = marca; 
 
         })
 
@@ -107,17 +110,15 @@ export async function cargarDropdownMarcas(marcas, contenedorDropdown,contenedor
 
     })
 
+
 }
 export async function mostrarGuitarraDetalles(guitarra,contenedor)
-{
-
-    console.log("Guitarra:", guitarra);
+{ 
 
     var div = document.createElement("div");
 
     const imagen = guitarra.urlImagen || "/images/placeholder.png"; 
-    
-    console.log("Imagen:", imagen);
+      
 
     div.innerHTML = `
                 <h3>${guitarra.marca} - ${guitarra.modelo}</h3>
