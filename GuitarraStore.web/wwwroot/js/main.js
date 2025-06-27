@@ -1,8 +1,7 @@
 ﻿
-import { obtenerGuitarras, obtenerGuitarrasPorId, obtenerValorDolar, obtenerGuitarrasPorFiltros, cargarDropdownMarcas } from "./GuitarraServicios.js";
-import { MostrarGuitarras, MostrarGuitarrasCrud, mostrarGuitarraDetalles } from "./ui.js";
+import { obtenerGuitarras, obtenerGuitarrasPorId, obtenerValorDolar, obtenerGuitarrasPorFiltros, obtenerMarcas } from "./GuitarraServicios.js";
+import { MostrarGuitarras, MostrarGuitarrasCrud, mostrarGuitarraDetalles, cargarDropdownMarcas } from "./ui.js";
 import { validarFormulario } from "./Form.js"; 
-
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -14,6 +13,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const filtros = document.getElementById("filtro");
     const form_filtros = document.getElementById("formulario_filtro");
     const botonBuscar = document.getElementById("botonBuscar");
+    const contenedorDropdown = document.getElementById("dropdownMarcas");
+    console.log("Elemento dropdownMarcas:", document.getElementById("dropdownMarcas"));
+
     
     let dolar = 1;
 
@@ -21,6 +23,24 @@ document.addEventListener("DOMContentLoaded", async () => {
         dolar = await obtenerValorDolar();
     } catch (error) {
         console.error("No se pudo obtener cotización:", error);
+    }
+
+    if (contenedorDropdown)
+    {
+
+        try
+        {
+            console.log("Entre en el main del contenedorDropdown");
+            const marcas = await obtenerMarcas();
+            const tipoFiltro = filtros.value;
+            const preMin = parseFloat(document.getElementById("precioMin").value);
+            const preMax = parseFloat(document.getElementById("precioMax").value);
+            await cargarDropdownMarcas(marcas, contenedorDropdown, contenedor_principal, dolar, tipoFiltro, preMin, preMax);
+        }
+        catch (error) {
+            console.error("Error al obtenerMarcas:", error);
+        }
+   
     }
 
     botonBuscar.addEventListener("click", async function (e) {
@@ -34,20 +54,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         const guitarras = await obtenerGuitarrasPorFiltros(buscar, tipoFiltro, preMin, preMax);
         await MostrarGuitarras(guitarras, contenedor_principal, dolar);
     });
-
-    try {
-
-        const tipoFiltro = document.getElementById("filtro").value ;
-        const preMin = parseFloat(document.getElementById("precioMin").value );
-        const preMax = parseFloat(document.getElementById("precioMax").value);
-        const dropdownMenu = document.getElementById("dropdownMarcas");
-        await cargarDropdownMarcas(tipoFiltro, preMin, preMax, dolar, dropdownMenu, contenedor_principal);
-    }
-    catch (error)
-    {
-        console.error("Error al cargar las marcas:", error);
-
-    }    
 
     if (form_filtros)
     {
