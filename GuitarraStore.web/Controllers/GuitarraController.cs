@@ -34,6 +34,25 @@ namespace GuitarraStore.web.Controllers
             return Ok(guitarra);
         }
 
+        [HttpGet("AgregarGuitarraaCarrito")]
+
+        public async Task<IActionResult> AgregarGuitarraaCarrito(int id)
+        {
+
+            var guitarra = _context.Guitarras.AsQueryable();
+
+            var obtenido = guitarra.FirstOrDefault(g => g.Id == id);
+
+            if (obtenido == null)
+            {
+                return NotFound();
+            }
+
+
+
+            return Ok();
+        }
+
         [HttpGet("ObtenerMarcas")]
 
         public async Task<IActionResult> ObtenerMarcas() 
@@ -55,14 +74,23 @@ namespace GuitarraStore.web.Controllers
 
             var guitarras = _context.Guitarras.AsQueryable();
 
+            
+
             if (!string.IsNullOrWhiteSpace(busqueda))
             {
                 var busquedaMinuscula = busqueda.ToLower();
 
-                guitarras = guitarras.Where(g =>
-                    g.Marca.ToLower().Contains(busquedaMinuscula) ||
-                    g.Modelo.ToLower().Contains(busquedaMinuscula)
-                );
+                if (!busqueda.Equals("todas"))
+                {
+
+                    guitarras = guitarras.Where(g =>
+                                            g.Marca.ToLower().Contains(busquedaMinuscula) ||
+                                            g.Modelo.ToLower().Contains(busquedaMinuscula)
+                                        );
+
+                }
+               
+                    
             }
 
             if (precioMax.HasValue)

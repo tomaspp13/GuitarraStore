@@ -1,4 +1,4 @@
-﻿import { obtenerGuitarras, eliminarGuitarras, obtenerGuitarrasPorFiltros } from "./GuitarraServicios.js";
+﻿import { obtenerGuitarras, eliminarGuitarras, obtenerGuitarrasPorFiltros,agregarAlCarrito } from "./GuitarraServicios.js";
 
 export async function MostrarGuitarras(guitarras, contenedor, dolar) {
 
@@ -36,11 +36,22 @@ export async function MostrarGuitarras(guitarras, contenedor, dolar) {
                 <p class="card-text"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
                 <p class="card-text"><strong>USD:</strong> U$${precioDolar}</p>
                 <p class="card-text text-success fw-bold">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>
+                <button class="btn btn-primary btn-agregar-carrito">Agregar al carrito</button>
             </div>
         `;
        
         card.style.cursor = "pointer";
         card.classList.add('card');
+
+        const btnAgregar = card.querySelector(".btn-agregar-carrito");
+
+        btnAgregar.addEventListener("click", function (e) {
+
+            e.preventDefault();
+
+            agregarAlCarrito(guitarra);
+
+        })
 
         card.addEventListener('mouseenter', () => {
             card.classList.add('card-hover');
@@ -63,6 +74,106 @@ export async function MostrarGuitarras(guitarras, contenedor, dolar) {
 
     contenedor.appendChild(fila);
 }
+export function mostrarCarrito() {
+    const contenedor = document.getElementById("carritoContainer");
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+    if (carrito.length === 0) {
+        contenedor.innerHTML = "<p>El carrito está vacío.</p>";
+        return;
+    }
+
+    let html = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Precio</th>
+                    <th>Cantidad</th>
+                    <th>Total</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    let totalCarrito = 0;
+
+    carrito.forEach((guitarra, index) => {
+        const total = guitarra.precio * guitarra.cantidad;
+        totalCarrito += total;
+
+        html += `
+            <tr>
+                <td><img src="${guitarra.urlImagen}" width="60"/></td>
+                <td>${guitarra.marca}</td>
+                <td>${guitarra.modelo}</td>
+                <td>$${guitarra.precio}</td>
+                <td>${guitarra.cantidad}</td>
+                <td>$${total}</td>
+                <td>
+                    <button class="btn btn-sm btn-success btn-sumar" data-id="${guitarra.id}">+</button>
+                    <button class="btn btn-sm btn-warning btn-restar" data-id="${guitarra.id}">-</button>
+                    <button class="btn btn-sm btn-danger btn-eliminar" data-id="${guitarra.id}">Eliminar</button>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += `
+            </tbody>
+        </table>
+        <h4>Total del carrito: $${totalCarrito}</h4>
+    `;
+
+    contenedor.innerHTML = html;
+
+    document.querySelectorAll(".btn-sumar").forEach(btn => {
+        btn.addEventListener("click", () => {
+            modificarCantidad(parseInt(btn.dataset.id), 1);
+        });
+    });
+
+    document.querySelectorAll(".btn-restar").forEach(btn => {
+        btn.addEventListener("click", () => {
+            modificarCantidad(parseInt(btn.dataset.id), -1);
+        });
+    });
+
+    document.querySelectorAll(".btn-eliminar").forEach(btn => {
+        btn.addEventListener("click", () => {
+            eliminarGuitarra(parseInt(btn.dataset.id));
+        });
+    });
+}
+function modificarCantidad(id, cambio) {
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+    const index = carrito.findIndex(g => g.id === id);
+    if (index !== -1) {
+        carrito[index].cantidad += cambio;
+
+        if (carrito[index].cantidad <= 0) {
+            carrito.splice(index, 1);
+        }
+
+        localStorage.setItem("carrito", JSON.stringify(carrito));
+        mostrarCarrito();
+    }
+}
+
+function eliminarGuitarra(id) {
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+    carrito = carrito.filter(g => g.id !== id);
+
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    mostrarCarrito(); 
+}
+
+
 export async function cargarDropdownMarcas(marcas, contenedorDropdown, contenedorPrincipal, dolar, tipofiltro, precioMin, precioMax) {
     console.log("marcas", marcas);
     console.log("tipo filtro", tipofiltro);
@@ -155,6 +266,7 @@ export async function MostrarGuitarrasCrud(listado) {
             const botondetalles = document.createElement("button");
             botondetalles.className = "btn btn-outline-primary btn-sm";
             botondetalles.innerText = "Detalles";
+
             botondetalles.addEventListener("click", () => {
                 window.location.href = `/Home/Detalles/${guitarra.id}`;
             });

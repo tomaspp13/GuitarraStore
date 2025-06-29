@@ -1,6 +1,6 @@
 ﻿
 import { obtenerGuitarras, obtenerGuitarrasPorId, obtenerValorDolar, obtenerGuitarrasPorFiltros, obtenerMarcas } from "./GuitarraServicios.js";
-import { MostrarGuitarras, MostrarGuitarrasCrud, mostrarGuitarraDetalles, cargarDropdownMarcas } from "./ui.js";
+import { MostrarGuitarras, MostrarGuitarrasCrud, mostrarGuitarraDetalles, cargarDropdownMarcas, mostrarCarrito } from "./ui.js";
 import { validarFormulario } from "./Form.js"; 
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const form_filtros = document.getElementById("formulario_filtro");
     const botonBuscar = document.getElementById("botonBuscar");
     const contenedorDropdown = document.getElementById("dropdownMarcas");
+    const contenedor_carrito = document.getElementById("carritoContainer");
     
 
     let dolar = 1;
@@ -73,6 +74,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     }
 
+    if (contenedor_carrito) {
+
+        mostrarCarrito();
+
+    }
     if (listado_del_crud) { MostrarGuitarrasCrud(listado_del_crud); }
 
     if (botonCrear) { botonCrear.addEventListener("click", function () { window.location.href = "/Home/Privacy" }); }
@@ -90,7 +96,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
     }
-
+    
     if (contenedorDetalles) {
 
         const url = window.location.href;

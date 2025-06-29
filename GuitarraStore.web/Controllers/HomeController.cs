@@ -36,7 +36,10 @@ namespace GuitarraStore.web.Controllers
         {
             return View();
         }
-
+        public IActionResult carrito()
+        {
+            return View();
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

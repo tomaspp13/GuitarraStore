@@ -151,7 +151,25 @@ export async function editarGuitarras(id,guitarraCambio)
     }
     
 }
+export function agregarAlCarrito(guitarra) {
 
+    let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+    const index = carrito.findIndex(g => g.id === guitarra.id);
+
+    if (index === -1) {
+        
+        carrito.push({ ...guitarra, cantidad: 1 });
+        alert("Guitarra agregada al carrito.");
+    } else {
+        
+        carrito[index].cantidad += 1;
+        alert("Cantidad aumentada en el carrito.");
+    }
+
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+
+}
 export async function obtenerValorDolar() {
 
     try {
