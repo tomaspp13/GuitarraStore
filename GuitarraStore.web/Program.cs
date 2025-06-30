@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Agrega servicios
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -11,7 +10,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
-// Manejo de errores
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");

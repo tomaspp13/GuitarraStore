@@ -72,4 +72,75 @@ export async function validarFormulario(contenedor) {
             alert("Error al guardar la guitarra: " + error.message);
         }
     });
+
+}
+export async function registrarUsuario(usuario, contraseña) {
+
+    const user = {
+
+        Email: usuario.trim(),
+        Password: contraseña.trim()
+    }
+
+    try {
+
+        const respuesta = await fetch(`/api/UsuariosApi/RegistrarUsuario`, {
+
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(user)
+        })
+
+        if (!respuesta.ok) {
+
+            const errorText = await respuesta.text();
+            throw new Error("Error al registrar usuario. Respuesta: " + respuesta.status + " - " + errorText);
+        }
+
+        window.location.href = "/Home/Index";
+        
+    }
+    catch (error) {
+        alert("Error al registrar usuario: " + error.message);
+    }
+}
+export async function ingresarUsuario(email, contraseña) {
+
+    const user = {
+
+        Email: email.trim(),
+        Password: contraseña.trim()
+
+    };
+
+    try {
+
+        const respuesta = await fetch(`/api/UsuariosApi/DevolverUsuario`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(user)
+        });
+
+
+        if (!respuesta.ok) {
+            const errorText = await respuesta.text();
+            throw new Error("Error al ingresar usuario. Respuesta: " + respuesta.status + " - " + errorText);
+        }
+
+        const usuario = await respuesta.json();
+
+        if (usuario.tipofiltro === "Administrador") {
+            window.location.href = "/Home/GuitarrasCrud";
+        }
+        else {
+
+            if (usuario.tipofiltro === "Cliente") {
+                window.location.href = "/Home/Index";
+            }
+        }
+
+    }
+    catch (error) {
+        alert("Error al ingresar usuario: " + error.message);
+    }
 }

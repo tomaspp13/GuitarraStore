@@ -1,0 +1,21 @@
+﻿@{
+    ViewData["Title"] = "Iniciar sesion";
+}
+<form id="ingresar_usuario">
+    
+    <label>Email</label>
+    <input type="email" id="email" placeholder="Ingrese email" required/>
+    <label>Contraseña</label>
+    <input type="password" id="contraseña" placeholder="Ingrese contraseña" required/>
+
+    <button type="submit">Aceptar</button>
+
+    <p>
+        ¿No tiene cuenta? <a asp-controller="Usuarios" asp-action="Registrar" class="text-white text-decoration-none">
+            <p>Ingrese aqui</p>
+        </a>
+    </p>
+
+</form>
+
+@section Scripts{ <script type="module" src="/js/UsuarioMain.js"></script>}

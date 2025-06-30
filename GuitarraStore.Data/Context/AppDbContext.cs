@@ -9,5 +9,6 @@ namespace GuitarraStore.Data.Context
         {
         }
         public DbSet<Guitarras> Guitarras { get; set; }
+        public DbSet<Usuarios> Usuarios { get; set; }
     }
 }

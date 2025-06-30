@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     const botonBuscar = document.getElementById("botonBuscar");
     const contenedorDropdown = document.getElementById("dropdownMarcas");
     const contenedor_carrito = document.getElementById("carritoContainer");
-    
 
     let dolar = 1;
 
@@ -31,9 +30,13 @@ document.addEventListener("DOMContentLoaded", async () => {
         {           
             const marcas = await obtenerMarcas();
             const filtros = document.getElementById("filtro");
+            const precioMinEl = document.getElementById("precioMin");
+            const precioMaxEl = document.getElementById("precioMax");
+
             const tipoFiltro = filtros.value;
-            const preMin = parseFloat(document.getElementById("precioMin").value);
-            const preMax = parseFloat(document.getElementById("precioMax").value);
+            const preMin = parseFloat(precioMinEl.value);
+            const preMax = parseFloat(precioMaxEl.value);
+
             await cargarDropdownMarcas(marcas, contenedorDropdown, contenedor_principal, dolar, tipoFiltro, preMin, preMax);
         }
         catch (error) {
