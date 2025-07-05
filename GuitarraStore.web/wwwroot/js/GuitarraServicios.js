@@ -23,6 +23,7 @@ export async function obtenerGuitarras() {
 export async function obtenerMarcas() {
     
     try {
+
         const respuesta = await fetch(`/api/guitarra/ObtenerMarcas`);
 
         if (!respuesta.ok) {
@@ -39,14 +40,15 @@ export async function obtenerMarcas() {
     }
 }
 
-export async function obtenerGuitarrasPorFiltros(busqueda, tipoFiltro, precioMin, precioMax) {
+export async function obtenerGuitarrasPorMarca(busqueda,marca, tipoFiltro, precioMin, precioMax) {
     
-    const params = new URLSearchParams({
-        busqueda: busqueda || "",
-        tipofiltro: tipoFiltro || "",
-        precioMin: isNaN(precioMin) ? "" : precioMin,
-        precioMax: isNaN(precioMax) ? "" : precioMax
-    });
+    const params = new URLSearchParams();
+
+    if (busqueda) params.append("busqueda", busqueda);
+    if (marca) params.append("marca", marca);
+    if (tipoFiltro) params.append("tipofiltro", tipoFiltro);
+    if (precioMin != null && precioMin !== "") params.append("precioMin", precioMin);
+    if (precioMax != null && precioMax !== "") params.append("precioMax", precioMax);
     
     try {
 
@@ -68,7 +70,26 @@ export async function obtenerGuitarrasPorFiltros(busqueda, tipoFiltro, precioMin
         return [];
     }
 }
+export async function cargarMarcas(contenedorMarcas) {
 
+    const respuesta = await fetch('/api/guitarra/ObtenerMarcas');
+
+    if (!respuesta.ok) {
+
+        const errorText = await respuesta.text();
+
+        throw new Error("Error al obtener las guitarras. Respuesta: " + respuesta.status + " - " + errorText);
+    }
+
+    const marcas = await respuesta.json();
+
+    marcas.forEach(marca => {
+        const option = document.createElement('option');
+        option.value = marca;
+        option.textContent = marca;
+        contenedorMarcas.appendChild(option);
+    });
+}
 export async function obtenerGuitarrasPorId(id)
 {
     try

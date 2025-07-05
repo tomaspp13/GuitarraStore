@@ -67,30 +67,33 @@ namespace GuitarraStore.web.Controllers
         }
 
         [HttpGet("FiltroGuitarras")]
-        public async Task<IActionResult> FiltroGuitarras(string? busqueda, string? tipofiltro, float? precioMin, float? precioMax)
+        public async Task<IActionResult> FiltroGuitarras(string? busqueda, string? marca,string? tipofiltro, float? precioMin, float? precioMax)
         {
-            Console.WriteLine("tipoFiltro en el controlador FiltroGuitarras : " + tipofiltro);
-            Console.WriteLine("busqueda en el controlador FiltroGuitarras : " + busqueda);
+     
+
+            if (precioMin.HasValue && precioMax.HasValue && precioMin > precioMax)
+            {
+                return BadRequest("El precio mínimo no puede ser mayor al precio máximo.");
+            }
 
             var guitarras = _context.Guitarras.AsQueryable();
-
-            
 
             if (!string.IsNullOrWhiteSpace(busqueda))
             {
                 var busquedaMinuscula = busqueda.ToLower();
 
-                if (!busqueda.Equals("todas"))
+                if (!busqueda.Equals("todas", StringComparison.OrdinalIgnoreCase))
                 {
-
                     guitarras = guitarras.Where(g =>
-                                            g.Marca.ToLower().Contains(busquedaMinuscula) ||
-                                            g.Modelo.ToLower().Contains(busquedaMinuscula)
-                                        );
-
+                        g.Marca != null && g.Marca.ToLower().Contains(busquedaMinuscula) ||
+                        g.Modelo != null && g.Modelo.ToLower().Contains(busquedaMinuscula)
+                    );
                 }
-               
-                    
+            }
+
+            if (!string.IsNullOrEmpty(marca))
+            {
+                guitarras = guitarras.Where(g => g.Marca!=null && g.Marca.Contains(marca));
             }
 
             if (precioMax.HasValue)
@@ -111,10 +114,12 @@ namespace GuitarraStore.web.Controllers
             {
                 guitarras = guitarras.OrderByDescending(g => g.Precio);
             }
+            
 
             var result = await guitarras.ToListAsync();
             return Ok(result);
         }
+
 
         [HttpPut("Put/{id}")]
 

@@ -29,19 +29,20 @@ namespace GuitarraStore.web.Controllers
         [HttpPost("DevolverUsuario")]
         public async Task<IActionResult> Devolver_usuario([FromBody] Usuarios usuario_enviado)
         {
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email.Equals(usuario_enviado.Email, StringComparison.CurrentCultureIgnoreCase));
+            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == usuario_enviado.Email);
+
             if (usuario == null)
             {
                 return NotFound("Usuario no encontrado");
             }
 
-            bool contraseña_correcta = BCrypt.Net.BCrypt.Verify(usuario_enviado.Password, usuario.Password);
-            if (!contraseña_correcta)
+            if (!BCrypt.Net.BCrypt.Verify(usuario_enviado.Password, usuario.Password))
             {
-                return BadRequest("Contraseña incorrecta");
-            }
 
-            return Ok(usuario.TipoUsuario);
+                return NotFound("Contraseña incorrecta");
+            }
+            Console.WriteLine("\n\nUSUARIO ES : " + usuario.Email);
+            return Ok(usuario);
         }
 
         [HttpPost("RegistrarUsuario")]

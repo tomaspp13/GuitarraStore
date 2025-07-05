@@ -121,7 +121,6 @@ export async function ingresarUsuario(email, contraseña) {
             body: JSON.stringify(user)
         });
 
-
         if (!respuesta.ok) {
             const errorText = await respuesta.text();
             throw new Error("Error al ingresar usuario. Respuesta: " + respuesta.status + " - " + errorText);
@@ -129,12 +128,12 @@ export async function ingresarUsuario(email, contraseña) {
 
         const usuario = await respuesta.json();
 
-        if (usuario.tipofiltro === "Administrador") {
+        if (usuario.tipoUsuario == "Administrador") {
             window.location.href = "/Home/GuitarrasCrud";
         }
         else {
 
-            if (usuario.tipofiltro === "Cliente") {
+            if (usuario.tipoUsuario == "Cliente") {
                 window.location.href = "/Home/Index";
             }
         }

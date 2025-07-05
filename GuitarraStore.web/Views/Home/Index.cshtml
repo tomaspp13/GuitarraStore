@@ -30,6 +30,7 @@
         </div>
         <div class="offcanvas-body">
             <form id="formulario_filtro">
+
                 <div class="mb-3">
                     <label class="form-label">Ordenar Por</label>
                     <select class="form-select" id="filtro">
@@ -38,16 +39,27 @@
                         <option id="MayorMenor" value="mayoramenor">Mayor a menor</option>
                     </select>
                 </div>
+
+                <div class="mb-3">
+                <label class="form-label" for="selectMarca">Marcas</label>
+                <select class="form-select" id="selectMarca">
+                    <option value="todas">Todas las marcas</option>   
+                </select>
+                 </div>
+
                 <div class="mb-3">
                     <label class="form-label">Precio mínimo</label>
                     <input type="number" class="form-control" id="precioMin">
                     <label class="form-label">Precio máximo</label>
                     <input type="number" class="form-control" id="precioMax">
                 </div>
+
                 <button type="submit" class="btn btn-success">Aplicar filtros</button>
+
             </form>
         </div>
     </div>
+
 @section Scripts {
 
     <script>
