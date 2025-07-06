@@ -6,7 +6,7 @@
 
     <h2>Ingreso de guitarra</h2>
 
-    <form id="formulario" >
+    <form id="formulario" enctype="multipart/form-data">
 
         <div class="mb-3">
 
@@ -32,8 +32,8 @@
 
         <div class="mb-3">
 
-            <label for="imagen" class="form-label">Imagen:</label>
-            <input type="text" id="imagen" name="imagen" class="form-control" required>
+            <label for="imagen" class="form-label">Imagen:</label>  
+            <input type="file" id="imagen" name="imagen" class="form-control" accept="image/*" required>
 
         </div>
         

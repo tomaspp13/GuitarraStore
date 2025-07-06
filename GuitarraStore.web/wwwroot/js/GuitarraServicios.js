@@ -43,7 +43,7 @@ export async function obtenerMarcas() {
 export async function obtenerGuitarrasPorMarca(busqueda,marca, tipoFiltro, precioMin, precioMax) {
     
     const params = new URLSearchParams();
-
+    
     if (busqueda) params.append("busqueda", busqueda);
     if (marca) params.append("marca", marca);
     if (tipoFiltro) params.append("tipofiltro", tipoFiltro);

@@ -21,7 +21,11 @@ export async function validarFormulario(contenedor) {
             document.getElementById("marca").value = guitarra.marca;
             document.getElementById("modelo").value = guitarra.modelo;
             document.getElementById("precio").value = guitarra.precio;
-            document.getElementById("imagen").value = guitarra.urlImagen || "";
+
+            const imgPreview = document.getElementById("previewImagen");
+            if (imgPreview && guitarra.urlImagen) {
+                imgPreview.src = guitarra.urlImagen;
+            }
 
         }
         catch (error) {
@@ -32,7 +36,7 @@ export async function validarFormulario(contenedor) {
 
     }
 
-    formulario.addEventListener("submit", async (e) => {
+   /* formulario.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const marcaInput = document.getElementById("marca").value;
@@ -60,6 +64,42 @@ export async function validarFormulario(contenedor) {
                     urlImagen: imagenInput
                 });
 
+                formulario.reset();
+                alert("Guitarra creada exitosamente");
+
+                if (contenedor) {
+                    const mostrar = await obtenerGuitarras();
+                    await MostrarGuitarras(mostrar, contenedor);
+                }
+            }
+        } catch (error) {
+            alert("Error al guardar la guitarra: " + error.message);
+        }
+    });
+    */
+    formulario.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const marcaInput = document.getElementById("marca").value;
+        const modeloInput = document.getElementById("modelo").value;
+        const precioInput = parseFloat(document.getElementById("precio").value);
+        const imagenInput = document.getElementById("imagen");
+
+        try {
+            const formData = new FormData();
+            formData.append("marca", marcaInput);
+            formData.append("modelo", modeloInput);
+            formData.append("precio", precioInput);
+
+            if (imagenInput.files.length > 0) {
+                formData.append("imagen", imagenInput.files[0]);                
+            }
+
+            if (siEditar && id) {
+                await editarGuitarras(id, formData);
+                window.location.href = "/Home/GuitarrasCrud";
+            } else {
+                await crearGuitarras(formData);
                 formulario.reset();
                 alert("Guitarra creada exitosamente");
 

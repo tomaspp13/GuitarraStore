@@ -47,18 +47,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const preMinStr = document.getElementById("precioMin").value.trim();
             const preMaxStr = document.getElementById("precioMax").value.trim();
-            const preMin = preMinStr !== "" ? parseFloat(preMinStr) : null;
-            const preMax = preMaxStr !== "" ? parseFloat(preMaxStr) : null;
+            const preMin = preMinStr !== "" ? parseFloat(preMinStr) : 0;
+            const preMax = preMaxStr !== "" ? parseFloat(preMaxStr) : 99999999;
 
             try {
 
                 const guitarra_filtrada = await obtenerGuitarrasPorMarca(inputBuscar, marca, filtro, preMin, preMax);
-
-                if (!guitarra_filtrada.ok) {
-
-                    const errorText = await guitarra_filtrada.text();
-                    throw new Error("Error al obtener las guitarras. Respuesta: " + guitarra_filtrada.status + " - " + errorText);
-                }
+                console.log(guitarra_filtrada);
 
                 await MostrarGuitarras(guitarra_filtrada, contenedor_principal, dolar);
 
@@ -154,14 +149,16 @@ document.addEventListener("DOMContentLoaded", async () => {
             const marca = document.getElementById("selectMarca").value;
             const busqueda = document.getElementById("inputBuscar").value;
 
+            console.log("marca : " + marca + " busqueda : " + busqueda);
+
             const contenedorFiltro = document.getElementById("filtro");
             const tipoFiltro = contenedorFiltro.value;
 
             const preMinInput = document.getElementById("precioMin").value;
             const preMaxInput = document.getElementById("precioMax").value;
 
-            const preMin = preMinInput ? parseFloat(preMinInput) : null;
-            const preMax = preMaxInput ? parseFloat(preMaxInput) : null;
+            const preMin = preMinInput ? parseFloat(preMinInput) : 0;
+            const preMax = preMaxInput ? parseFloat(preMaxInput) : 999999999;
             
             if ((preMin !== null && isNaN(preMin)) || (preMax !== null && isNaN(preMax))) {
                 alert("Por favor, ingresa valores numéricos válidos en los precios.");
@@ -173,7 +170,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-            console.log(buscar,tipoFiltro,preMin, preMax);
+            console.log(busqueda,tipoFiltro,preMin, preMax);
 
             const guitarras_filtradas = await obtenerGuitarrasPorMarca(busqueda, marca, tipoFiltro, preMin, preMax);
             await MostrarGuitarras(guitarras_filtradas, contenedor_principal, dolar);
@@ -191,7 +188,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     if (listado_del_crud) { MostrarGuitarrasCrud(listado_del_crud); }
 
-    if (botonCrear) { botonCrear.addEventListener("click", function () { window.location.href = "/Home/Privacy" }); }
+    if (botonCrear) { botonCrear.addEventListener("click", function () { window.location.href = "/Home/Crear" }); }
 
     if (contenedor_principal) {   
   

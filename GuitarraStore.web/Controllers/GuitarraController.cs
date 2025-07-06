@@ -1,5 +1,6 @@
 ﻿using GuitarraStore.Data.Context;
 using GuitarraStore.Modelos;
+using GuitarraStore.web.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -69,7 +70,8 @@ namespace GuitarraStore.web.Controllers
         [HttpGet("FiltroGuitarras")]
         public async Task<IActionResult> FiltroGuitarras(string? busqueda, string? marca,string? tipofiltro, float? precioMin, float? precioMax)
         {
-     
+
+            Console.WriteLine(busqueda + " "+marca +" "+tipofiltro+" "+precioMin+" "+precioMax);
 
             if (precioMin.HasValue && precioMax.HasValue && precioMin > precioMax)
             {
@@ -82,18 +84,23 @@ namespace GuitarraStore.web.Controllers
             {
                 var busquedaMinuscula = busqueda.ToLower();
 
-                if (!busqueda.Equals("todas", StringComparison.OrdinalIgnoreCase))
+                if (!busqueda.Equals("", StringComparison.OrdinalIgnoreCase))
                 {
                     guitarras = guitarras.Where(g =>
                         g.Marca != null && g.Marca.ToLower().Contains(busquedaMinuscula) ||
                         g.Modelo != null && g.Modelo.ToLower().Contains(busquedaMinuscula)
                     );
                 }
+                
             }
-
-            if (!string.IsNullOrEmpty(marca))
+            
+            if (string.Equals(marca, "todas", StringComparison.OrdinalIgnoreCase))
             {
-                guitarras = guitarras.Where(g => g.Marca!=null && g.Marca.Contains(marca));
+                guitarras = guitarras.OrderBy(g => g.Id);
+            }
+            else if (!string.IsNullOrEmpty(marca))
+            {
+                guitarras = guitarras.Where(g => g.Marca != null && g.Marca.Contains(marca));
             }
 
             if (precioMax.HasValue)
@@ -114,16 +121,25 @@ namespace GuitarraStore.web.Controllers
             {
                 guitarras = guitarras.OrderByDescending(g => g.Precio);
             }
-            
+            else if (string.Equals(tipofiltro,"masrelevante", StringComparison.OrdinalIgnoreCase))
+            {
+                guitarras = guitarras.OrderBy(g => g.Id);
+            }
 
             var result = await guitarras.ToListAsync();
+
+            foreach (var G in guitarras)
+            {
+
+                Console.WriteLine("\n\n"+G.Marca);
+            }
+
             return Ok(result);
         }
 
 
         [HttpPut("Put/{id}")]
-
-        public async Task<IActionResult>Update(int id, [FromBody] Guitarras guitarraEditada)
+        public async Task<IActionResult> Update(int id, [FromForm] GuitarraViewModel guitarraVm)
         {
             var guitarra = await _context.Guitarras.FirstOrDefaultAsync(g => g.Id == id);
 
@@ -137,26 +153,70 @@ namespace GuitarraStore.web.Controllers
                 return BadRequest(ModelState);
             }
 
-            guitarra.Marca = guitarraEditada.Marca;
-            guitarra.Modelo = guitarraEditada.Modelo;
-            guitarra.Precio = guitarraEditada.Precio;
-            guitarra.UrlImagen = guitarraEditada.UrlImagen;
+            guitarra.Marca = guitarraVm.Marca;
+            guitarra.Modelo = guitarraVm.Modelo;
+            guitarra.Precio = guitarraVm.Precio;
 
-            _context.SaveChanges();
+            if (guitarraVm.ImagenArchivo != null)
+            {
+                string carpetaDestino = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imagenes");
+                if (!Directory.Exists(carpetaDestino))
+                    Directory.CreateDirectory(carpetaDestino);
+
+                string nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(guitarraVm.ImagenArchivo.FileName);
+                string rutaCompleta = Path.Combine(carpetaDestino, nombreArchivo);
+
+                using (var stream = new FileStream(rutaCompleta, FileMode.Create))
+                {
+                    await guitarraVm.ImagenArchivo.CopyToAsync(stream);
+                }
+
+                guitarra.UrlImagen = "/imagenes/" + nombreArchivo;
+            }
+
+            _context.Guitarras.Update(guitarra);
+            await _context.SaveChangesAsync();
 
             return Ok();
         }
 
+
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateGuitarras([FromBody] Guitarras guitarra)
+        public async Task<IActionResult> CreateGuitarras([FromForm] GuitarraViewModel guitarraVm)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            await _context.Guitarras.AddAsync(guitarra);
+            string rutaImagen = null;
 
+            if (guitarraVm.ImagenArchivo != null)
+            {
+                string carpetaDestino = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imagenes");
+                if (!Directory.Exists(carpetaDestino))
+                    Directory.CreateDirectory(carpetaDestino);
+
+                string nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(guitarraVm.ImagenArchivo.FileName);
+                string rutaCompleta = Path.Combine(carpetaDestino, nombreArchivo);
+
+                using (var stream = new FileStream(rutaCompleta, FileMode.Create))
+                {
+                    await guitarraVm.ImagenArchivo.CopyToAsync(stream);
+                }
+
+                rutaImagen = "/imagenes/" + nombreArchivo;
+            }
+
+            var nuevaGuitarra = new Guitarras
+            {
+                Marca = guitarraVm.Marca,
+                Modelo = guitarraVm.Modelo,
+                Precio = guitarraVm.Precio,
+                UrlImagen = rutaImagen
+            };
+
+            await _context.Guitarras.AddAsync(nuevaGuitarra);
             await _context.SaveChangesAsync();
 
             return Ok();
@@ -176,7 +236,17 @@ namespace GuitarraStore.web.Controllers
 
             }
 
-           _context.Guitarras.Remove(guitarra);
+            if (!string.IsNullOrEmpty(guitarra.UrlImagen))
+            {
+                string rutaImagen = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", guitarra.UrlImagen.TrimStart('/'));
+
+                if (System.IO.File.Exists(rutaImagen))
+                {
+                    System.IO.File.Delete(rutaImagen);
+                }
+            }
+
+            _context.Guitarras.Remove(guitarra);
            await _context.SaveChangesAsync();
 
             return Ok();

@@ -5,7 +5,7 @@
 <body>
 
     <h2>Editar</h2>
-    <form id="formulario">
+    <form id="formulario" enctype="multipart/form-data">
         <div class="mb-3">
             <label class="form-label" for="marca">Marca :</label>
             <input class="form-control" id="marca" />
@@ -22,8 +22,12 @@
         </div>
 
         <div class="mb-3">
-            <label class="form-label">UrlImagen:</label>
-            <input class="form-control" id="imagen" />
+            <img id="previewImagen" src="" alt="Imagen actual" style="max-height: 200px;" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="imagen">Imagen:</label>
+            <input class="form-control" type="file" id="imagen" name="ImagenArchivo" accept="image/*" />
         </div>
 
         <div class="mb-3">

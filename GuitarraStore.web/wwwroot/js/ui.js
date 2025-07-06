@@ -48,6 +48,7 @@ export async function MostrarGuitarras(guitarras, contenedor, dolar) {
         btnAgregar.addEventListener("click", function (e) {
 
             e.preventDefault();
+            e.stopPropagation();
 
             agregarAlCarrito(guitarra);
 
@@ -62,7 +63,7 @@ export async function MostrarGuitarras(guitarras, contenedor, dolar) {
         });
 
         card.addEventListener("click", function () {
-
+            
             window.location.href = `/Home/Detalles/${guitarra.id}`;
 
         })
