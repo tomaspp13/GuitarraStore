@@ -16,7 +16,7 @@
         <nav class="navbar bg-body-tertiary fixed-top bg-white navbar-dark bg-dark ">
             <div class="container-fluid navbar-collapse collapse d-sm-inline-flex">
 
-                <button id="abrirMenu" class="btn btn-outline-light">
+                <button id="abrirMenu" class="btn btn-outline-light" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
@@ -35,7 +35,11 @@
                 </div>
 
                 <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
-                      
+ 
+                    <div class="offcanvas-header"> 
+                        <button type="button" class="btn-close ms-auto" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                    </div>
+
                     <div class="offcanvas-body">
                         <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
 

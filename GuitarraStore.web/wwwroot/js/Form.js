@@ -35,48 +35,6 @@ export async function validarFormulario(contenedor) {
         }
 
     }
-
-   /* formulario.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const marcaInput = document.getElementById("marca").value;
-        const modeloInput = document.getElementById("modelo").value;
-        const precioInput = parseFloat(document.getElementById("precio").value);
-        const imagenInput = document.getElementById("imagen").value;
-
-        try {
-            if (siEditar && id) {
-                await editarGuitarras(id, {
-                    marca: marcaInput,
-                    modelo: modeloInput,
-                    precio: precioInput,
-                    urlImagen: imagenInput
-                });
-
-                window.location.href = "/Home/GuitarrasCrud";
-
-            } else {
-
-                await crearGuitarras({
-                    marca: marcaInput,
-                    modelo: modeloInput,
-                    precio: precioInput,
-                    urlImagen: imagenInput
-                });
-
-                formulario.reset();
-                alert("Guitarra creada exitosamente");
-
-                if (contenedor) {
-                    const mostrar = await obtenerGuitarras();
-                    await MostrarGuitarras(mostrar, contenedor);
-                }
-            }
-        } catch (error) {
-            alert("Error al guardar la guitarra: " + error.message);
-        }
-    });
-    */
     formulario.addEventListener("submit", async (e) => {
         e.preventDefault();
 
@@ -85,14 +43,20 @@ export async function validarFormulario(contenedor) {
         const precioInput = parseFloat(document.getElementById("precio").value);
         const imagenInput = document.getElementById("imagen");
 
+        console.log("siEditar: " + siEditar);
+        console.log("id: " + id);
+        console.log("marcaInput: " + marcaInput);
+        console.log("modeloInput: " + modeloInput);
+        console.log("precioInput: " + precioInput);
+
         try {
             const formData = new FormData();
-            formData.append("marca", marcaInput);
-            formData.append("modelo", modeloInput);
-            formData.append("precio", precioInput);
+            formData.append("Marca", marcaInput);
+            formData.append("Modelo", modeloInput);
+            formData.append("Precio", precioInput);
 
             if (imagenInput.files.length > 0) {
-                formData.append("imagen", imagenInput.files[0]);                
+                formData.append("ImagenArchivo", imagenInput.files[0]);
             }
 
             if (siEditar && id) {

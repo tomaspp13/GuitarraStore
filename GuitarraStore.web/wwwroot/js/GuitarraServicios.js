@@ -111,7 +111,7 @@ export async function obtenerGuitarrasPorId(id)
 
 }
 
-export async function crearGuitarras(guitarra) {
+export async function crearGuitarras(formData) {
 
     try
     {
@@ -119,12 +119,8 @@ export async function crearGuitarras(guitarra) {
         const documento = await fetch("/api/guitarra/Create", {
 
             method: "POST",
-            headers: {
-
-                "Content-Type": "application/json"
-
-            },
-            body: JSON.stringify(guitarra)
+            
+            body: formData
 
         });
 
@@ -142,19 +138,13 @@ export async function crearGuitarras(guitarra) {
     }
 
 }
-export async function editarGuitarras(id,guitarraCambio)
+export async function editarGuitarras(id, formData)
 {
     try
     {
-
         const respuesta = await fetch(`/api/guitarra/Put/${id}`, {
             method: "PUT",
-
-            headers: {
-                "Content-Type": "application/json"
-            },
-
-            body: JSON.stringify(guitarraCambio)
+            body: formData 
         });
 
         if (!respuesta.ok) {

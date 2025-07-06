@@ -109,7 +109,7 @@ export function mostrarCarrito() {
 
         html += `
             <tr>
-                <td><img src="${guitarra.urlImagen}" width="60"/></td>
+                <td><img src="${guitarra.urlImagen}" style="width: 206px; height: 400px; object-fit: cover;"/></td>
                 <td>${guitarra.marca}</td>
                 <td>${guitarra.modelo}</td>
                 <td>$${guitarra.precio}</td>
