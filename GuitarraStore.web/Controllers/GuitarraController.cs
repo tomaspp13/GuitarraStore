@@ -71,8 +71,6 @@ namespace GuitarraStore.web.Controllers
         public async Task<IActionResult> FiltroGuitarras(string? busqueda, string? marca,string? tipofiltro, float? precioMin, float? precioMax)
         {
 
-            Console.WriteLine(busqueda + " "+marca +" "+tipofiltro+" "+precioMin+" "+precioMax);
-
             if (precioMin.HasValue && precioMax.HasValue && precioMin > precioMax)
             {
                 return BadRequest("El precio mínimo no puede ser mayor al precio máximo.");
@@ -127,12 +125,6 @@ namespace GuitarraStore.web.Controllers
             }
 
             var result = await guitarras.ToListAsync();
-
-            foreach (var G in guitarras)
-            {
-
-                Console.WriteLine("\n\n"+G.Marca);
-            }
 
             return Ok(result);
         }

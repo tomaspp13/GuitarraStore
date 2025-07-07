@@ -41,13 +41,7 @@ export async function validarFormulario(contenedor) {
         const marcaInput = document.getElementById("marca").value;
         const modeloInput = document.getElementById("modelo").value;
         const precioInput = parseFloat(document.getElementById("precio").value);
-        const imagenInput = document.getElementById("imagen");
-
-        console.log("siEditar: " + siEditar);
-        console.log("id: " + id);
-        console.log("marcaInput: " + marcaInput);
-        console.log("modeloInput: " + modeloInput);
-        console.log("precioInput: " + precioInput);
+        const imagenInput = document.getElementById("imagen"); 
 
         try {
             const formData = new FormData();
@@ -130,14 +124,14 @@ export async function ingresarUsuario(email, contraseña) {
             throw new Error("Error al ingresar usuario. Respuesta: " + respuesta.status + " - " + errorText);
         }
 
-        const usuario = await respuesta.json();
+        const usuario = await respuesta.text();
 
-        if (usuario.tipoUsuario == "Administrador") {
+        if (usuario == "Administrador") {
             window.location.href = "/Home/GuitarrasCrud";
         }
         else {
 
-            if (usuario.tipoUsuario == "Cliente") {
+            if (usuario == "Cliente") {
                 window.location.href = "/Home/Index";
             }
         }

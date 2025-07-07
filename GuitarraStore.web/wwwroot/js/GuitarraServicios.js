@@ -112,32 +112,23 @@ export async function obtenerGuitarrasPorId(id)
 }
 
 export async function crearGuitarras(formData) {
-
-    try
-    {
-
-        const documento = await fetch("/api/guitarra/Create", {
-
+    try {
+        const response = await fetch("/api/Guitarra/Create", {
             method: "POST",
-            
             body: formData
-
         });
 
-        if (!documento.ok) {
-            throw new Error("Error en la respuesta de la API");
+        if (!response.ok) {
+            throw new Error("Error en la respuesta de la API: " + response.status);
         }
 
         return;
 
-    } catch (error)
-    {
-
+    } catch (error) {
         alert("Error al crear la guitarra: " + error.message);
-
     }
-
 }
+
 export async function editarGuitarras(id, formData)
 {
     try

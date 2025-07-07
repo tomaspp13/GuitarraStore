@@ -17,7 +17,7 @@ namespace GuitarraStore.web.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public IActionResult Crear()
         {
             return View();
         }

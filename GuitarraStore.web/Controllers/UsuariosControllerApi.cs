@@ -29,7 +29,9 @@ namespace GuitarraStore.web.Controllers
         [HttpPost("DevolverUsuario")]
         public async Task<IActionResult> Devolver_usuario([FromBody] Usuarios usuario_enviado)
         {
+
             var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == usuario_enviado.Email);
+
 
             if (usuario == null)
             {
@@ -38,12 +40,12 @@ namespace GuitarraStore.web.Controllers
 
             if (!BCrypt.Net.BCrypt.Verify(usuario_enviado.Password, usuario.Password))
             {
-
                 return NotFound("Contraseña incorrecta");
             }
-            Console.WriteLine("\n\nUSUARIO ES : " + usuario.Email);
-            return Ok(usuario);
+
+            return Ok(usuario.TipoUsuario);
         }
+
 
         [HttpPost("RegistrarUsuario")]
         public async Task<IActionResult> Registrar_usuario([FromBody] Usuarios usuario_enviado)

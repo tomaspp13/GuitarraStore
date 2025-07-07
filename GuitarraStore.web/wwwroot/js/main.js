@@ -53,8 +53,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             try {
 
                 const guitarra_filtrada = await obtenerGuitarrasPorMarca(inputBuscar, marca, filtro, preMin, preMax);
-                console.log(guitarra_filtrada);
-
                 await MostrarGuitarras(guitarra_filtrada, contenedor_principal, dolar);
 
             }
@@ -149,8 +147,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             const marca = document.getElementById("selectMarca").value;
             const busqueda = document.getElementById("inputBuscar").value;
 
-            console.log("marca : " + marca + " busqueda : " + busqueda);
-
             const contenedorFiltro = document.getElementById("filtro");
             const tipoFiltro = contenedorFiltro.value;
 
@@ -169,8 +165,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 alert("El precio mínimo no puede ser mayor que el precio máximo.");
                 return;
             }
-
-            console.log(busqueda,tipoFiltro,preMin, preMax);
 
             const guitarras_filtradas = await obtenerGuitarrasPorMarca(busqueda, marca, tipoFiltro, preMin, preMax);
             await MostrarGuitarras(guitarras_filtradas, contenedor_principal, dolar);
