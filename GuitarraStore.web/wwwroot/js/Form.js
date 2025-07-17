@@ -45,6 +45,7 @@ export async function validarFormulario(contenedor) {
 
         try {
             const formData = new FormData();
+
             formData.append("Marca", marcaInput);
             formData.append("Modelo", modeloInput);
             formData.append("Precio", precioInput);
@@ -52,14 +53,15 @@ export async function validarFormulario(contenedor) {
             if (imagenInput.files.length > 0) {
                 formData.append("ImagenArchivo", imagenInput.files[0]);
             }
-
+            
             if (siEditar && id) {
-                await editarGuitarras(id, formData);
+                formData.append("Id", id);
+                await editarGuitarras(formData);
                 window.location.href = "/Home/GuitarrasCrud";
             } else {
                 await crearGuitarras(formData);
-                formulario.reset();
-                alert("Guitarra creada exitosamente");
+                formulario.reset();                
+                window.location.href = "/Home/GuitarrasCrud";
 
                 if (contenedor) {
                     const mostrar = await obtenerGuitarras();
@@ -80,6 +82,8 @@ export async function registrarUsuario(usuario, contraseña) {
         Password: contraseña.trim()
     }
 
+    console.log("usuario : "+usuario);
+    console.log("contraseña :"+contraseña);
     try {
 
         const respuesta = await fetch(`/api/UsuariosApi/RegistrarUsuario`, {

@@ -94,7 +94,6 @@ export async function obtenerGuitarrasPorId(id)
 {
     try
     {
-
         const respuesta = await fetch(`/api/guitarra/Get/${id}`);
 
         if (!respuesta.ok) {
@@ -112,6 +111,7 @@ export async function obtenerGuitarrasPorId(id)
 }
 
 export async function crearGuitarras(formData) {
+
     try {
         const response = await fetch("/api/Guitarra/Create", {
             method: "POST",
@@ -129,11 +129,11 @@ export async function crearGuitarras(formData) {
     }
 }
 
-export async function editarGuitarras(id, formData)
+export async function editarGuitarras(formData)
 {
     try
     {
-        const respuesta = await fetch(`/api/guitarra/Put/${id}`, {
+        const respuesta = await fetch(`/api/guitarra/Put`, {
             method: "PUT",
             body: formData 
         });
@@ -192,12 +192,16 @@ export async function obtenerValorDolar() {
     }
 }
 
-export async function eliminarGuitarras(id)
+export async function eliminarGuitarras(guitarra)
 {
+    console.log(guitarra)
 
     try {
 
-        const respuesta = await fetch(`/api/guitarra/Delete/${id}`, { method: "DELETE" });
+        const respuesta = await fetch(`/api/guitarra/Delete/${guitarra.id}`, {
+            method: "DELETE"
+            
+        });
 
         if (!respuesta.ok) {
             const errorText = await respuesta.text();

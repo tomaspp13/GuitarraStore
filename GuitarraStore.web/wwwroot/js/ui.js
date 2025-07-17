@@ -234,7 +234,7 @@ export async function MostrarGuitarrasCrud(listado) {
             botonelim.addEventListener("click", async (e) => {
                 e.preventDefault();
                 try {
-                    await eliminarGuitarras(guitarra.id);
+                    await eliminarGuitarras(guitarra);
                     await MostrarGuitarrasCrud(listado);
                 } catch (error) {
                     alert("Error al eliminar la guitarra: " + error.message);

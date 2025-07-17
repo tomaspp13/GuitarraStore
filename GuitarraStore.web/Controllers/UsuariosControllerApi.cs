@@ -32,7 +32,6 @@ namespace GuitarraStore.web.Controllers
 
             var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == usuario_enviado.Email);
 
-
             if (usuario == null)
             {
                 return NotFound("Usuario no encontrado");

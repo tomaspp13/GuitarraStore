@@ -1,6 +1,8 @@
 ﻿using GuitarraStore.Data.Context;
+using GuitarraStore.Data.Migrations;
 using GuitarraStore.Modelos;
 using GuitarraStore.web.ViewModels;
+using GuitarraStore.Web.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +12,15 @@ namespace GuitarraStore.web.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GuitarraController(AppDbContext context) : ControllerBase
+    public class GuitarraController : ControllerBase
     {
-
-        private readonly AppDbContext _context = context;
+        private readonly AppDbContext _context;
+        private readonly CloudinaryService _cloudinaryService;
+        public GuitarraController(AppDbContext context, CloudinaryService cloudinaryService)
+        {
+            _context = context;
+            _cloudinaryService = cloudinaryService;
+        }
 
         [HttpGet("Get")]
         public async Task<IActionResult> GetGuitarras()
@@ -130,10 +137,10 @@ namespace GuitarraStore.web.Controllers
         }
 
 
-        [HttpPut("Put/{id}")]
-        public async Task<IActionResult> Update(int id, [FromForm] GuitarraViewModel guitarraVm)
+        [HttpPut("Put")]
+        public async Task<IActionResult> Update([FromForm] GuitarraViewModel guitarraVm)
         {
-            var guitarra = await _context.Guitarras.FirstOrDefaultAsync(g => g.Id == id);
+            var guitarra = await _context.Guitarras.FirstOrDefaultAsync(g => g.Id == guitarraVm.Id);
 
             if (guitarra == null)
             {
@@ -149,24 +156,16 @@ namespace GuitarraStore.web.Controllers
             guitarra.Modelo = guitarraVm.Modelo;
             guitarra.Precio = guitarraVm.Precio;
 
-            if (guitarraVm.ImagenArchivo != null)
+            if (guitarraVm.ImagenArchivo != null && guitarraVm.ImagenArchivo.Length > 0)
             {
-                string carpetaDestino = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imagenes");
-                if (!Directory.Exists(carpetaDestino))
-                    Directory.CreateDirectory(carpetaDestino);
+                await _cloudinaryService.EliminarImagenAsync(guitarra.IdImagen);
 
-                string nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(guitarraVm.ImagenArchivo.FileName);
-                string rutaCompleta = Path.Combine(carpetaDestino, nombreArchivo);
+                var (url, id) = await _cloudinaryService.SubirImagenAsync(guitarraVm.ImagenArchivo);
 
-                using (var stream = new FileStream(rutaCompleta, FileMode.Create))
-                {
-                    await guitarraVm.ImagenArchivo.CopyToAsync(stream);
-                }
-
-                guitarra.UrlImagen = "/imagenes/" + nombreArchivo;
+                guitarra.UrlImagen = url;
+                guitarra.IdImagen = id;
             }
 
-            _context.Guitarras.Update(guitarra);
             await _context.SaveChangesAsync();
 
             return Ok();
@@ -176,72 +175,67 @@ namespace GuitarraStore.web.Controllers
         [HttpPost("Create")]
         public async Task<IActionResult> CreateGuitarras([FromForm] GuitarraViewModel guitarraVm)
         {
-            if (!ModelState.IsValid)
+
+            try
             {
-                return BadRequest(ModelState);
-            }
 
-            string rutaImagen = null;
-
-            if (guitarraVm.ImagenArchivo != null)
-            {
-                string carpetaDestino = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imagenes");
-                if (!Directory.Exists(carpetaDestino))
-                    Directory.CreateDirectory(carpetaDestino);
-
-                string nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(guitarraVm.ImagenArchivo.FileName);
-                string rutaCompleta = Path.Combine(carpetaDestino, nombreArchivo);
-
-                using (var stream = new FileStream(rutaCompleta, FileMode.Create))
+                if (!ModelState.IsValid)
                 {
-                    await guitarraVm.ImagenArchivo.CopyToAsync(stream);
+                    return BadRequest(ModelState); 
                 }
 
-                rutaImagen = "/imagenes/" + nombreArchivo;
+                string? rutaImagen = null;
+                string? idimagen = null;
+
+                if (guitarraVm.ImagenArchivo != null)
+                {
+                    var resultadoSubida = await _cloudinaryService.SubirImagenAsync(guitarraVm.ImagenArchivo);
+                    rutaImagen = resultadoSubida.url;
+                    idimagen = resultadoSubida.publicId;
+                }
+
+                var nuevaGuitarra = new Guitarras
+                {
+                    Marca = guitarraVm.Marca,
+                    Modelo = guitarraVm.Modelo,
+                    Precio = guitarraVm.Precio,
+                    UrlImagen = rutaImagen,
+                    IdImagen = idimagen
+                };
+
+                await _context.Guitarras.AddAsync(nuevaGuitarra);
+                await _context.SaveChangesAsync();
+
+                return Ok();
             }
-
-            var nuevaGuitarra = new Guitarras
+            catch (Exception ex)
             {
-                Marca = guitarraVm.Marca,
-                Modelo = guitarraVm.Modelo,
-                Precio = guitarraVm.Precio,
-                UrlImagen = rutaImagen
-            };
-
-            await _context.Guitarras.AddAsync(nuevaGuitarra);
-            await _context.SaveChangesAsync();
-
-            return Ok();
+                return BadRequest(new { error = ex.Message });
+            }
+            
         }
 
         [HttpDelete("Delete/{id}")]
 
-        public async Task<IActionResult>EliminarGuitarra(int id) 
+        public async Task<IActionResult> EliminarGuitarra(int id) 
         {
 
             var guitarra = await _context.Guitarras.FirstOrDefaultAsync(g => g.Id == id);
 
             if(guitarra == null)
             {
-
                 return NotFound();
-
             }
 
-            if (!string.IsNullOrEmpty(guitarra.UrlImagen))
+            if (!string.IsNullOrEmpty(guitarra.IdImagen))
             {
-                string rutaImagen = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", guitarra.UrlImagen.TrimStart('/'));
-
-                if (System.IO.File.Exists(rutaImagen))
-                {
-                    System.IO.File.Delete(rutaImagen);
-                }
+               await _cloudinaryService.EliminarImagenAsync(guitarra.IdImagen);
             }
 
-            _context.Guitarras.Remove(guitarra);
+           _context.Guitarras.Remove(guitarra);
            await _context.SaveChangesAsync();
 
-            return Ok();
+           return Ok();
 
         }
 

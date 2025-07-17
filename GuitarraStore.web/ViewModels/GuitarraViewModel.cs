@@ -7,6 +7,6 @@
         public string? Modelo { get; set; }
         public float Precio { get; set; }
         public IFormFile? ImagenArchivo { get; set; }
-        public string? UrlImagen { get; set; }
+        public string? IdImagen { get; set; }
     }
 }
