@@ -25,6 +25,11 @@ html {
   min-height: 100%;
 }
 
+img{
+    object-fit:cover;
+    border-radius:8px;
+}
+
 body {
   margin-bottom: 60px;
 }
