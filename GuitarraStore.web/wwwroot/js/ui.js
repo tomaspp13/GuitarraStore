@@ -252,12 +252,41 @@ async function contenedor_Guitarras_Jazz(dolar) {
     filaPrincipal.className = "row";
 
     const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center";
+    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
     columnaTitulo.style.zIndex = "10";
     columnaTitulo.style.flex = "0 0 25%";
     columnaTitulo.style.maxWidth = "25%";
     columnaTitulo.style.padding = "1rem";
-    columnaTitulo.innerHTML = `<h3 class="text-center">Jazz</h3>`;
+    columnaTitulo.style.color = "white";
+    columnaTitulo.style.fontWeight = "bold";
+    columnaTitulo.style.textShadow = "2px 2px 4px rgba(0,0,0,0.7)";
+
+    columnaTitulo.style.position = "relative";
+
+    const fondoGif = document.createElement("div");
+    fondoGif.style.backgroundImage = "url('https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdnplNmcyZGFlN2F2YWo0YTRpZHFrdW02b3g1cDVoaTg0Y3ljdnhmNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/loSbOhhEjg0ROfM1Mr/giphy.gif')";
+    fondoGif.style.backgroundSize = "cover";
+    fondoGif.style.backgroundPosition = "center";
+    fondoGif.style.backgroundRepeat = "no-repeat";
+
+    fondoGif.style.position = "absolute";
+    fondoGif.style.top = "0";
+    fondoGif.style.left = "0";
+    fondoGif.style.width = "100%";
+    fondoGif.style.height = "100%";
+    fondoGif.style.zIndex = "1";
+
+    fondoGif.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+
+    fondoGif.style.backgroundBlendMode = "darken";
+
+    const tituloDiv = document.createElement("div");
+    tituloDiv.style.position = "relative";
+    tituloDiv.style.zIndex = "2";
+    tituloDiv.innerHTML = `<h3 class="text-center m-0">Jazz</h3>`;
+
+    columnaTitulo.appendChild(fondoGif);
+    columnaTitulo.appendChild(tituloDiv);
 
     const columnaGuitarras = document.createElement("div");
     columnaGuitarras.className = "col-12 col-md-9 position-relative";
@@ -362,12 +391,41 @@ async function contenedor_Guitarras_Pop(dolar) {
     filaPrincipal.className = "row";
 
     const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center";
+    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
     columnaTitulo.style.zIndex = "10";
     columnaTitulo.style.flex = "0 0 25%";
     columnaTitulo.style.maxWidth = "25%";
     columnaTitulo.style.padding = "1rem";
-    columnaTitulo.innerHTML = `<h3 class="text-center">Pop</h3>`;
+    columnaTitulo.style.color = "white";
+    columnaTitulo.style.fontWeight = "bold";
+    columnaTitulo.style.textShadow = "2px 2px 4px rgba(0,0,0,0.7)";
+
+    columnaTitulo.style.position = "relative";
+
+    const fondoGif = document.createElement("div");
+    fondoGif.style.backgroundImage = "url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDJnMHkwemZraWswYmNjcTMzaXRvbW00NHpydDJnZTJ5MHV6aGpmMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/zMyimpINxc6c6Joi99/giphy.gif')";
+    fondoGif.style.backgroundSize = "cover";
+    fondoGif.style.backgroundPosition = "center";
+    fondoGif.style.backgroundRepeat = "no-repeat";
+
+    fondoGif.style.position = "absolute";
+    fondoGif.style.top = "0";
+    fondoGif.style.left = "0";
+    fondoGif.style.width = "100%";
+    fondoGif.style.height = "100%";
+    fondoGif.style.zIndex = "1";
+
+    fondoGif.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+
+    fondoGif.style.backgroundBlendMode = "darken";
+
+    const tituloDiv = document.createElement("div");
+    tituloDiv.style.position = "relative";
+    tituloDiv.style.zIndex = "2";
+    tituloDiv.innerHTML = `<h3 class="text-center m-0">Pop</h3>`;
+
+    columnaTitulo.appendChild(fondoGif);
+    columnaTitulo.appendChild(tituloDiv);
 
     const columnaGuitarras = document.createElement("div");
     columnaGuitarras.className = "col-12 col-md-9 position-relative";
@@ -470,14 +528,43 @@ async function contenedor_Guitarras_Rock(dolar) {
 
     const filaPrincipal = document.createElement("div");
     filaPrincipal.className = "row";
-
+ 
     const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center";
+    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
     columnaTitulo.style.zIndex = "10";
     columnaTitulo.style.flex = "0 0 25%";
     columnaTitulo.style.maxWidth = "25%";
     columnaTitulo.style.padding = "1rem";
-    columnaTitulo.innerHTML = `<h3 class="text-center">Rock</h3>`;
+    columnaTitulo.style.color = "white";
+    columnaTitulo.style.fontWeight = "bold";
+    columnaTitulo.style.textShadow = "2px 2px 4px rgba(0,0,0,0.7)";
+
+    columnaTitulo.style.position = "relative";
+
+    const fondoGif = document.createElement("div");
+    fondoGif.style.backgroundImage = "url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaDVzeWc2azR5b3NoNDF0NmZ6bWYzdzAyb3lrZXVpOHp2azBjcGdncyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1dMQmQ0fexFtQeNxNj/giphy.gif')";
+    fondoGif.style.backgroundSize = "cover";
+    fondoGif.style.backgroundPosition = "center";
+    fondoGif.style.backgroundRepeat = "no-repeat";
+
+    fondoGif.style.position = "absolute";
+    fondoGif.style.top = "0";
+    fondoGif.style.left = "0";
+    fondoGif.style.width = "100%";
+    fondoGif.style.height = "100%";
+    fondoGif.style.zIndex = "1";
+
+    fondoGif.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+
+    fondoGif.style.backgroundBlendMode = "darken";
+
+    const tituloDiv = document.createElement("div");
+    tituloDiv.style.position = "relative";
+    tituloDiv.style.zIndex = "2";
+    tituloDiv.innerHTML = `<h3 class="text-center m-0">Rock</h3>`;
+
+    columnaTitulo.appendChild(fondoGif);
+    columnaTitulo.appendChild(tituloDiv);
 
     const columnaGuitarras = document.createElement("div");
     columnaGuitarras.className = "col-12 col-md-9 position-relative";
@@ -582,12 +669,41 @@ async function contenedor_Guitarras_Metal(dolar) {
     filaPrincipal.className = "row";
 
     const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center";
+    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
     columnaTitulo.style.zIndex = "10";
     columnaTitulo.style.flex = "0 0 25%";
     columnaTitulo.style.maxWidth = "25%";
     columnaTitulo.style.padding = "1rem";
-    columnaTitulo.innerHTML = `<h3 class="text-center">Metal</h3>`;
+    columnaTitulo.style.color = "white";
+    columnaTitulo.style.fontWeight = "bold";
+    columnaTitulo.style.textShadow = "2px 2px 4px rgba(0,0,0,0.7)";
+
+    columnaTitulo.style.position = "relative";
+
+    const fondoGif = document.createElement("div");
+    fondoGif.style.backgroundImage = "url('https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMWF0M2s4czF4Y253MjBqNnB2b29zcjBvYWdhZ3M5aHZ0MDRndWtmNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/M3w8IfaVAo2iY/giphy.gif')";
+    fondoGif.style.backgroundSize = "cover";
+    fondoGif.style.backgroundPosition = "center";
+    fondoGif.style.backgroundRepeat = "no-repeat";
+
+    fondoGif.style.position = "absolute";
+    fondoGif.style.top = "0";
+    fondoGif.style.left = "0";
+    fondoGif.style.width = "100%";
+    fondoGif.style.height = "100%";
+    fondoGif.style.zIndex = "1";
+
+    fondoGif.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+
+    fondoGif.style.backgroundBlendMode = "darken";
+
+    const tituloDiv = document.createElement("div");
+    tituloDiv.style.position = "relative";
+    tituloDiv.style.zIndex = "2";
+    tituloDiv.innerHTML = `<h3 class="text-center m-0">Metal</h3>`;
+
+    columnaTitulo.appendChild(fondoGif);
+    columnaTitulo.appendChild(tituloDiv);
 
     const columnaGuitarras = document.createElement("div");
     columnaGuitarras.className = "col-12 col-md-9 position-relative";
@@ -693,12 +809,35 @@ async function contenedor_Guitarras_Nuevas(dolar) {
     filaPrincipal.className = "row";
 
     const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center";
+    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
     columnaTitulo.style.zIndex = "10";
     columnaTitulo.style.flex = "0 0 25%";
     columnaTitulo.style.maxWidth = "25%";
     columnaTitulo.style.padding = "1rem";
-    columnaTitulo.innerHTML = `<h3 class="text-center">Nuevos Ingresos</h3>`;
+    columnaTitulo.style.position = "relative";
+    columnaTitulo.style.overflow = "hidden";
+
+    const fondo = document.createElement("div");
+    fondo.style.position = "absolute";
+    fondo.style.top = "0";
+    fondo.style.left = "0";
+    fondo.style.width = "100%";
+    fondo.style.height = "100%";
+    fondo.style.backgroundImage = "url('https://images.unsplash.com/photo-1615716175369-dbcda46573c9?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')";
+    fondo.style.backgroundSize = "cover";
+    fondo.style.backgroundPosition = "center";
+    fondo.style.backgroundRepeat = "no-repeat";
+    fondo.style.backgroundColor = "rgba(0,0,0,0.5)";
+    fondo.style.backgroundBlendMode = "darken";
+    fondo.style.zIndex = "1";
+
+    const texto = document.createElement("div");
+    texto.style.position = "relative";
+    texto.style.zIndex = "2";
+    texto.innerHTML = `<h3 class="text-center text-white m-0">Nuevos Ingresos</h3>`;
+
+    columnaTitulo.appendChild(fondo);
+    columnaTitulo.appendChild(texto);
 
     const columnaGuitarras = document.createElement("div");
     columnaGuitarras.className = "col-12 col-md-9 position-relative";
@@ -804,12 +943,35 @@ async function contenedor_Guitarras_En_Ofertas(dolar) {
     filaPrincipal.className = "row";
 
     const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center";
+    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
     columnaTitulo.style.zIndex = "10";
     columnaTitulo.style.flex = "0 0 25%";
     columnaTitulo.style.maxWidth = "25%";
     columnaTitulo.style.padding = "1rem";
-    columnaTitulo.innerHTML = `<h3 class="text-center">En Oferta</h3>`;
+    columnaTitulo.style.position = "relative";
+    columnaTitulo.style.overflow = "hidden";
+
+    const fondo = document.createElement("div");
+    fondo.style.position = "absolute";
+    fondo.style.top = "0";
+    fondo.style.left = "0";
+    fondo.style.width = "100%";
+    fondo.style.height = "100%";
+    fondo.style.backgroundImage = "url('https://images.unsplash.com/photo-1589264110781-1ebfa05f901e?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')";
+    fondo.style.backgroundSize = "cover";
+    fondo.style.backgroundPosition = "center";
+    fondo.style.backgroundRepeat = "no-repeat";
+    fondo.style.backgroundColor = "rgba(0,0,0,0.5)";
+    fondo.style.backgroundBlendMode = "darken";
+    fondo.style.zIndex = "1";
+
+    const texto = document.createElement("div");
+    texto.style.position = "relative";
+    texto.style.zIndex = "2";
+    texto.innerHTML = `<h3 class="text-center text-white m-0">En Oferta</h3>`;
+
+    columnaTitulo.appendChild(fondo);
+    columnaTitulo.appendChild(texto);
 
     const columnaGuitarras = document.createElement("div");
     columnaGuitarras.className = "col-12 col-md-9 position-relative";
@@ -915,12 +1077,35 @@ async function contenedor_Guitarras_Mas_Vendidas(dolar) {
     filaPrincipal.className = "row";
 
     const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center";
+    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
     columnaTitulo.style.zIndex = "10";
     columnaTitulo.style.flex = "0 0 25%";
     columnaTitulo.style.maxWidth = "25%";
     columnaTitulo.style.padding = "1rem";
-    columnaTitulo.innerHTML = `<h3 class="text-center">Mas Vendidas</h3>`;
+    columnaTitulo.style.position = "relative";
+    columnaTitulo.style.overflow = "hidden"; 
+
+    const fondo = document.createElement("div");
+    fondo.style.position = "absolute";
+    fondo.style.top = "0";
+    fondo.style.left = "0";
+    fondo.style.width = "100%";
+    fondo.style.height = "100%";
+    fondo.style.backgroundImage = "url('https://images.unsplash.com/photo-1569982175971-d92b01cf8694?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGZvbmRvJTIwZGVncmFkYWRvfGVufDB8fDB8fHww')";
+    fondo.style.backgroundSize = "cover";
+    fondo.style.backgroundPosition = "center";
+    fondo.style.backgroundRepeat = "no-repeat";
+    fondo.style.backgroundColor = "rgba(0,0,0,0.5)";
+    fondo.style.backgroundBlendMode = "darken";
+    fondo.style.zIndex = "1";
+
+    const texto = document.createElement("div");
+    texto.style.position = "relative";
+    texto.style.zIndex = "2";
+    texto.innerHTML = `<h3 class="text-center text-white m-0">Más Vendidas</h3>`;
+
+    columnaTitulo.appendChild(fondo);
+    columnaTitulo.appendChild(texto);
 
     const columnaGuitarras = document.createElement("div");
     columnaGuitarras.className = "col-12 col-md-9 position-relative";
