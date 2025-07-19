@@ -1,6 +1,6 @@
 ﻿
 import { obtenerGuitarras, obtenerGuitarrasPorId, obtenerValorDolar, obtenerGuitarrasPorMarca, cargarMarcas } from "./GuitarraServicios.js";
-import { MostrarGuitarras, MostrarGuitarrasCrud, mostrarGuitarraDetalles, mostrarCarrito } from "./ui.js";
+import { MostrarGuitarras, MostrarGuitarrasCrud, mostrarGuitarraDetalles, mostrarCarrito, MostrarGuitarrasInicio } from "./ui.js";
 import { validarFormulario } from "./Form.js"; 
 obtenerGuitarrasPorMarca
 document.addEventListener("DOMContentLoaded", async () => {
@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const contenedor_carrito = document.getElementById("carritoContainer");
     const contenedor_marcas = document.getElementById("selectMarca");
     const btn_buscar = document.getElementById("botonBuscar");
+    const contenedor_inicio = document.getElementById("contenedor_inicio");
 
     let dolar = 1;
 
@@ -22,6 +23,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         dolar = await obtenerValorDolar();
     } catch (error) {
         console.error("No se pudo obtener cotización:", error);
+    }
+
+    if (contenedor_inicio) {
+
+        await MostrarGuitarrasInicio(contenedor_inicio, dolar);
+
     }
 
     if (contenedor_marcas)

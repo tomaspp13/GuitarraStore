@@ -6,13 +6,15 @@ using System.Diagnostics;
 
 namespace GuitarraStore.web.Controllers
 {
-    public class HomeController(AppDbContext context) : Controller
+    public class HomeController() : Controller
     {
-        private readonly ILogger<HomeController> _logger;
 
-        private readonly AppDbContext _context = context;
+        public IActionResult Guitarras()
+        {
+            return View();
+        }
 
-        public IActionResult Index()
+        public IActionResult Inicio()
         {
             return View();
         }

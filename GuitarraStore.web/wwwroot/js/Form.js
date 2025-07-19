@@ -21,6 +21,11 @@ export async function validarFormulario(contenedor) {
             document.getElementById("marca").value = guitarra.marca;
             document.getElementById("modelo").value = guitarra.modelo;
             document.getElementById("precio").value = guitarra.precio;
+            const fechaFormateada = guitarra.fechaIngreso.split("T")[0];
+            document.getElementById("FechaIngreso").value = fechaFormateada;
+            document.getElementById("MasVendido").checked = guitarra.esMasVendida;
+            document.getElementById("EstaEnOferta").checked = guitarra.estaEnOferta;
+            document.getElementById("Genero").value = guitarra.genero;
 
             const imgPreview = document.getElementById("previewImagen");
             if (imgPreview && guitarra.urlImagen) {
@@ -41,7 +46,10 @@ export async function validarFormulario(contenedor) {
         const marcaInput = document.getElementById("marca").value;
         const modeloInput = document.getElementById("modelo").value;
         const precioInput = parseFloat(document.getElementById("precio").value);
-        const imagenInput = document.getElementById("imagen"); 
+        const esMasVendida = document.getElementById("MasVendido").checked;
+        const estaEnOferta = document.getElementById("EstaEnOferta").checked;
+        const genero = document.getElementById("Genero")?.value || "Sin genero";
+        const imagenInput = document.getElementById("imagen");        
 
         try {
             const formData = new FormData();
@@ -49,6 +57,9 @@ export async function validarFormulario(contenedor) {
             formData.append("Marca", marcaInput);
             formData.append("Modelo", modeloInput);
             formData.append("Precio", precioInput);
+            formData.append("Oferta", estaEnOferta);
+            formData.append("MasVendida", esMasVendida);
+            formData.append("Genero", genero);
 
             if (imagenInput.files.length > 0) {
                 formData.append("ImagenArchivo", imagenInput.files[0]);
@@ -56,6 +67,8 @@ export async function validarFormulario(contenedor) {
             
             if (siEditar && id) {
                 formData.append("Id", id);
+                const fechaIngreso = document.getElementById("FechaIngreso").value;
+                formData.append("FechaIngreso", fechaIngreso);
                 await editarGuitarras(formData);
                 window.location.href = "/Home/GuitarrasCrud";
             } else {
@@ -99,7 +112,7 @@ export async function registrarUsuario(usuario, contraseña) {
             throw new Error("Error al registrar usuario. Respuesta: " + respuesta.status + " - " + errorText);
         }
 
-        window.location.href = "/Home/Index";
+        window.location.href = "/Home/Inicio";
         
     }
     catch (error) {
@@ -136,7 +149,7 @@ export async function ingresarUsuario(email, contraseña) {
         else {
 
             if (usuario == "Cliente") {
-                window.location.href = "/Home/Index";
+                window.location.href = "/Home/Inicio";
             }
         }
 

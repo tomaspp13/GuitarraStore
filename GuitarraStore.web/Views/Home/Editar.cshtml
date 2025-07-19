@@ -8,17 +8,37 @@
     <form id="formulario" enctype="multipart/form-data">
         <div class="mb-3">
             <label class="form-label" for="marca">Marca :</label>
-            <input class="form-control" id="marca" />
+            <input class="form-control" id="marca" required />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Modelo:</label>
-            <input class="form-control" id="modelo" />
+            <input class="form-control" id="modelo" required />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Precio:</label>
-            <input class="form-control" id="precio" />
+            <input class="form-control" id="precio" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="Genero" class="form-label">Genero:</label>
+            <input type="text" id="Genero" class="form-control">
+        </div>
+
+        <div class="form-check mb-3">
+            <input type="checkbox" id="MasVendido" class="form-check-input">
+            <label for="MasVendido" class="form-check-label">Es más vendido</label>
+        </div>
+
+        <div class="form-check mb-3">
+            <input type="checkbox" id="EstaEnOferta" class="form-check-input">
+            <label for="EstaEnOferta" class="form-check-label">En oferta</label>
+        </div>
+
+        <div class="mb-3">
+            <label for="FechaIngreso" class="form-label">Fecha de ingreso</label>
+            <input type="date" id="FechaIngreso" class="form-control" required>
         </div>
 
         <div class="mb-3">

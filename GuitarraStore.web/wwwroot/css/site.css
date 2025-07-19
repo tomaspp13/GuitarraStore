@@ -29,6 +29,16 @@ img{
     object-fit:cover;
     border-radius:8px;
 }
+.scroll-container::-webkit-scrollbar {
+    display: none;
+}
+.scroll-container {
+    scrollbar-width: none;
+}
+
+.scroll-container {
+    -ms-overflow-style: none;
+}
 
 body {
   margin-bottom: 60px;

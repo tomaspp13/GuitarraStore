@@ -4,6 +4,7 @@ using GuitarraStore.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GuitarraStore.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250718181442_GenerarPreferenciasGuitarras")]
+    partial class GenerarPreferenciasGuitarras
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -36,11 +39,11 @@ namespace GuitarraStore.Data.Migrations
                     b.Property<bool>("EstaEnOferta")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Estilo")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("FechaIngreso")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Genero")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("IdImagen")
                         .HasColumnType("nvarchar(max)");

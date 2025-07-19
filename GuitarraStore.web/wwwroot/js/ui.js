@@ -1,4 +1,4 @@
-﻿import { obtenerGuitarras, eliminarGuitarras,agregarAlCarrito } from "./GuitarraServicios.js";
+﻿import { obtenerGuitarras, eliminarGuitarras, agregarAlCarrito, GuitarrasMasVendidas, GuitarrasEnOferta, ObtenerNuevosIngresos, guitarrasPorGenero } from "./GuitarraServicios.js";
 
 export async function MostrarGuitarras(guitarras, contenedor, dolar) {
 
@@ -192,6 +192,830 @@ export async function mostrarGuitarraDetalles(guitarra,contenedor)
     return;
 
 }
+
+export async function MostrarGuitarrasInicio(contenedor,dolar) {
+
+    contenedor.innerHTML = "";
+
+    const div_mas_vendido = await contenedor_Guitarras_Mas_Vendidas(dolar);
+    const div_ofertas = await contenedor_Guitarras_En_Ofertas(dolar);
+    const div_nuevos_ingresos = await contenedor_Guitarras_Nuevas(dolar);
+    const div_genero_metal = await contenedor_Guitarras_Metal(dolar);
+    const div_genero_rock = await contenedor_Guitarras_Rock(dolar);
+    const div_genero_pop = await contenedor_Guitarras_Pop(dolar);
+    const div_genero_jazz = await contenedor_Guitarras_Jazz(dolar);
+    
+    if (div_mas_vendido) {
+        div_mas_vendido.classList.add("mb-3");
+        contenedor.appendChild(div_mas_vendido);
+    }
+
+    if (div_ofertas) {
+        div_ofertas.classList.add("mb-3");
+        contenedor.appendChild(div_ofertas);
+    }
+
+    if (div_nuevos_ingresos) {
+        div_nuevos_ingresos.classList.add("mb-3");
+        contenedor.appendChild(div_nuevos_ingresos);
+    }
+
+    if (div_genero_metal) {
+        div_genero_metal.classList.add("mb-3");
+        contenedor.appendChild(div_genero_metal);
+    }
+
+    if (div_genero_rock) {
+        div_genero_rock.classList.add("mb-3");
+        contenedor.appendChild(div_genero_rock);
+    }
+
+    if (div_genero_pop) {
+        div_genero_pop.classList.add("mb-3");
+        contenedor.appendChild(div_genero_pop);
+    }
+
+    if (div_genero_jazz) {
+        div_genero_jazz.classList.add("mb-3");
+        contenedor.appendChild(div_genero_jazz);
+    }
+
+}
+async function contenedor_Guitarras_Jazz(dolar) {
+    const guitarras = await guitarrasPorGenero("Jazz");
+
+    if (!Array.isArray(guitarras) || guitarras.length === 0) {
+        return null;
+    }
+
+    const filaPrincipal = document.createElement("div");
+    filaPrincipal.className = "row";
+
+    const columnaTitulo = document.createElement("div");
+    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center";
+    columnaTitulo.style.zIndex = "10";
+    columnaTitulo.style.flex = "0 0 25%";
+    columnaTitulo.style.maxWidth = "25%";
+    columnaTitulo.style.padding = "1rem";
+    columnaTitulo.innerHTML = `<h3 class="text-center">Jazz</h3>`;
+
+    const columnaGuitarras = document.createElement("div");
+    columnaGuitarras.className = "col-12 col-md-9 position-relative";
+
+    const scrollContainer = document.createElement("div");
+    scrollContainer.className = "scroll-container";
+    scrollContainer.style.display = "flex";
+    scrollContainer.style.overflowX = "auto";
+    scrollContainer.style.gap = "1rem";
+    scrollContainer.style.paddingBottom = "0.5rem";
+    scrollContainer.style.scrollBehavior = "smooth";
+    scrollContainer.style.whiteSpace = "nowrap";
+
+    guitarras.forEach(guitarra => {
+        const card = document.createElement("div");
+        card.className = "card shadow-sm h-100";
+        card.style.minWidth = "300px";
+        card.style.display = "inline-block";
+
+        const imagen = guitarra.urlImagen || "/images/placeholder.png";
+        const precioDolar = (guitarra.precio / dolar).toFixed(2);
+        const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+
+        card.innerHTML = `
+            <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; width: 100%; object-fit: cover;">
+            <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
+                <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">${guitarra.marca} ${guitarra.modelo}</h5>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>USD:</strong> U$${precioDolar}</p>
+                <p class="card-text text-success fw-bold" style="margin-bottom: 0.15rem;">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
+            </div>
+        `;
+        card.style.cursor = "pointer";
+
+        card.addEventListener("click", () => {
+            window.location.href = `/Home/Detalles/${guitarra.id}`;
+        });
+
+        scrollContainer.appendChild(card);
+    });
+
+    columnaGuitarras.appendChild(scrollContainer);
+
+    const flechaIzq = document.createElement("button");
+    flechaIzq.innerHTML = "&#8249;";
+    flechaIzq.style.position = "absolute";
+    flechaIzq.style.top = "50%";
+    flechaIzq.style.left = "0";
+    flechaIzq.style.transform = "translateY(-50%)";
+    flechaIzq.style.zIndex = "20";
+    flechaIzq.style.background = "rgba(255,255,255,0.8)";
+    flechaIzq.style.border = "none";
+    flechaIzq.style.fontSize = "2rem";
+    flechaIzq.style.cursor = "pointer";
+    flechaIzq.style.padding = "0 0.5rem";
+    flechaIzq.style.borderRadius = "0 5px 5px 0";
+    flechaIzq.style.userSelect = "none";
+
+    const flechaDer = document.createElement("button");
+    flechaDer.innerHTML = "&#8250;";
+    flechaDer.style.position = "absolute";
+    flechaDer.style.top = "50%";
+    flechaDer.style.right = "0";
+    flechaDer.style.transform = "translateY(-50%)";
+    flechaDer.style.zIndex = "20";
+    flechaDer.style.background = "rgba(255,255,255,0.8)";
+    flechaDer.style.border = "none";
+    flechaDer.style.fontSize = "2rem";
+    flechaDer.style.cursor = "pointer";
+    flechaDer.style.padding = "0 0.5rem";
+    flechaDer.style.borderRadius = "5px 0 0 5px";
+    flechaDer.style.userSelect = "none";
+
+    const scrollAmount = 300;
+
+    flechaIzq.addEventListener("click", () => {
+        scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    flechaDer.addEventListener("click", () => {
+        scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+
+    columnaGuitarras.appendChild(flechaIzq);
+    columnaGuitarras.appendChild(flechaDer);
+
+    filaPrincipal.appendChild(columnaTitulo);
+    filaPrincipal.appendChild(columnaGuitarras);
+
+    return filaPrincipal;
+
+}
+async function contenedor_Guitarras_Pop(dolar) {
+    const guitarras = await guitarrasPorGenero("Pop");
+
+    if (!Array.isArray(guitarras) || guitarras.length === 0) {
+        return null;
+    }
+
+    const filaPrincipal = document.createElement("div");
+    filaPrincipal.className = "row";
+
+    const columnaTitulo = document.createElement("div");
+    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center";
+    columnaTitulo.style.zIndex = "10";
+    columnaTitulo.style.flex = "0 0 25%";
+    columnaTitulo.style.maxWidth = "25%";
+    columnaTitulo.style.padding = "1rem";
+    columnaTitulo.innerHTML = `<h3 class="text-center">Pop</h3>`;
+
+    const columnaGuitarras = document.createElement("div");
+    columnaGuitarras.className = "col-12 col-md-9 position-relative";
+
+    const scrollContainer = document.createElement("div");
+    scrollContainer.className = "scroll-container";
+    scrollContainer.style.display = "flex";
+    scrollContainer.style.overflowX = "auto";
+    scrollContainer.style.gap = "1rem";
+    scrollContainer.style.paddingBottom = "0.5rem";
+    scrollContainer.style.scrollBehavior = "smooth";
+    scrollContainer.style.whiteSpace = "nowrap";
+
+    guitarras.forEach(guitarra => {
+        const card = document.createElement("div");
+        card.className = "card shadow-sm h-100";
+        card.style.minWidth = "300px";
+        card.style.display = "inline-block";
+
+        const imagen = guitarra.urlImagen || "/images/placeholder.png";
+        const precioDolar = (guitarra.precio / dolar).toFixed(2);
+        const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+
+        card.innerHTML = `
+            <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; width: 100%; object-fit: cover;">
+            <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
+                <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">${guitarra.marca} ${guitarra.modelo}</h5>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>USD:</strong> U$${precioDolar}</p>
+                <p class="card-text text-success fw-bold" style="margin-bottom: 0.15rem;">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
+            </div>
+        `;
+        card.style.cursor = "pointer";
+
+        card.addEventListener("click", () => {
+            window.location.href = `/Home/Detalles/${guitarra.id}`;
+        });
+
+        scrollContainer.appendChild(card);
+    });
+
+    columnaGuitarras.appendChild(scrollContainer);
+
+    const flechaIzq = document.createElement("button");
+    flechaIzq.innerHTML = "&#8249;";
+    flechaIzq.style.position = "absolute";
+    flechaIzq.style.top = "50%";
+    flechaIzq.style.left = "0";
+    flechaIzq.style.transform = "translateY(-50%)";
+    flechaIzq.style.zIndex = "20";
+    flechaIzq.style.background = "rgba(255,255,255,0.8)";
+    flechaIzq.style.border = "none";
+    flechaIzq.style.fontSize = "2rem";
+    flechaIzq.style.cursor = "pointer";
+    flechaIzq.style.padding = "0 0.5rem";
+    flechaIzq.style.borderRadius = "0 5px 5px 0";
+    flechaIzq.style.userSelect = "none";
+
+    const flechaDer = document.createElement("button");
+    flechaDer.innerHTML = "&#8250;";
+    flechaDer.style.position = "absolute";
+    flechaDer.style.top = "50%";
+    flechaDer.style.right = "0";
+    flechaDer.style.transform = "translateY(-50%)";
+    flechaDer.style.zIndex = "20";
+    flechaDer.style.background = "rgba(255,255,255,0.8)";
+    flechaDer.style.border = "none";
+    flechaDer.style.fontSize = "2rem";
+    flechaDer.style.cursor = "pointer";
+    flechaDer.style.padding = "0 0.5rem";
+    flechaDer.style.borderRadius = "5px 0 0 5px";
+    flechaDer.style.userSelect = "none";
+
+    const scrollAmount = 300;
+
+    flechaIzq.addEventListener("click", () => {
+        scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    flechaDer.addEventListener("click", () => {
+        scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+
+    columnaGuitarras.appendChild(flechaIzq);
+    columnaGuitarras.appendChild(flechaDer);
+
+    filaPrincipal.appendChild(columnaTitulo);
+    filaPrincipal.appendChild(columnaGuitarras);
+
+    return filaPrincipal;
+
+}
+async function contenedor_Guitarras_Rock(dolar) {
+    const guitarras = await guitarrasPorGenero("Rock");
+
+    if (!Array.isArray(guitarras) || guitarras.length === 0) {
+        return null;
+    }
+
+    const filaPrincipal = document.createElement("div");
+    filaPrincipal.className = "row";
+
+    const columnaTitulo = document.createElement("div");
+    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center";
+    columnaTitulo.style.zIndex = "10";
+    columnaTitulo.style.flex = "0 0 25%";
+    columnaTitulo.style.maxWidth = "25%";
+    columnaTitulo.style.padding = "1rem";
+    columnaTitulo.innerHTML = `<h3 class="text-center">Rock</h3>`;
+
+    const columnaGuitarras = document.createElement("div");
+    columnaGuitarras.className = "col-12 col-md-9 position-relative";
+
+    const scrollContainer = document.createElement("div");
+    scrollContainer.className = "scroll-container";
+    scrollContainer.style.display = "flex";
+    scrollContainer.style.overflowX = "auto";
+    scrollContainer.style.gap = "1rem";
+    scrollContainer.style.paddingBottom = "0.5rem";
+    scrollContainer.style.scrollBehavior = "smooth";
+    scrollContainer.style.whiteSpace = "nowrap";
+
+    guitarras.forEach(guitarra => {
+        const card = document.createElement("div");
+        card.className = "card shadow-sm h-100";
+        card.style.minWidth = "300px";
+        card.style.display = "inline-block";
+
+        const imagen = guitarra.urlImagen || "/images/placeholder.png";
+        const precioDolar = (guitarra.precio / dolar).toFixed(2);
+        const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+
+        card.innerHTML = `
+            <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; width: 100%; object-fit: cover;">
+            <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
+                <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">${guitarra.marca} ${guitarra.modelo}</h5>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>USD:</strong> U$${precioDolar}</p>
+                <p class="card-text text-success fw-bold" style="margin-bottom: 0.15rem;">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
+            </div>
+        `;
+        card.style.cursor = "pointer";
+
+        card.addEventListener("click", () => {
+            window.location.href = `/Home/Detalles/${guitarra.id}`;
+        });
+
+        scrollContainer.appendChild(card);
+    });
+
+    columnaGuitarras.appendChild(scrollContainer);
+
+    const flechaIzq = document.createElement("button");
+    flechaIzq.innerHTML = "&#8249;";
+    flechaIzq.style.position = "absolute";
+    flechaIzq.style.top = "50%";
+    flechaIzq.style.left = "0";
+    flechaIzq.style.transform = "translateY(-50%)";
+    flechaIzq.style.zIndex = "20";
+    flechaIzq.style.background = "rgba(255,255,255,0.8)";
+    flechaIzq.style.border = "none";
+    flechaIzq.style.fontSize = "2rem";
+    flechaIzq.style.cursor = "pointer";
+    flechaIzq.style.padding = "0 0.5rem";
+    flechaIzq.style.borderRadius = "0 5px 5px 0";
+    flechaIzq.style.userSelect = "none";
+
+    const flechaDer = document.createElement("button");
+    flechaDer.innerHTML = "&#8250;";
+    flechaDer.style.position = "absolute";
+    flechaDer.style.top = "50%";
+    flechaDer.style.right = "0";
+    flechaDer.style.transform = "translateY(-50%)";
+    flechaDer.style.zIndex = "20";
+    flechaDer.style.background = "rgba(255,255,255,0.8)";
+    flechaDer.style.border = "none";
+    flechaDer.style.fontSize = "2rem";
+    flechaDer.style.cursor = "pointer";
+    flechaDer.style.padding = "0 0.5rem";
+    flechaDer.style.borderRadius = "5px 0 0 5px";
+    flechaDer.style.userSelect = "none";
+
+    const scrollAmount = 300;
+
+    flechaIzq.addEventListener("click", () => {
+        scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    flechaDer.addEventListener("click", () => {
+        scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+
+    columnaGuitarras.appendChild(flechaIzq);
+    columnaGuitarras.appendChild(flechaDer);
+
+    filaPrincipal.appendChild(columnaTitulo);
+    filaPrincipal.appendChild(columnaGuitarras);
+
+    return filaPrincipal;
+
+}
+async function contenedor_Guitarras_Metal(dolar) {
+    const guitarras = await guitarrasPorGenero("Metal");
+
+    if (!Array.isArray(guitarras) || guitarras.length === 0) {
+        return null;
+    }
+
+    const filaPrincipal = document.createElement("div");
+    filaPrincipal.className = "row";
+
+    const columnaTitulo = document.createElement("div");
+    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center";
+    columnaTitulo.style.zIndex = "10";
+    columnaTitulo.style.flex = "0 0 25%";
+    columnaTitulo.style.maxWidth = "25%";
+    columnaTitulo.style.padding = "1rem";
+    columnaTitulo.innerHTML = `<h3 class="text-center">Metal</h3>`;
+
+    const columnaGuitarras = document.createElement("div");
+    columnaGuitarras.className = "col-12 col-md-9 position-relative";
+
+    const scrollContainer = document.createElement("div");
+    scrollContainer.className = "scroll-container";
+    scrollContainer.style.display = "flex";
+    scrollContainer.style.overflowX = "auto";
+    scrollContainer.style.gap = "1rem";
+    scrollContainer.style.paddingBottom = "0.5rem";
+    scrollContainer.style.scrollBehavior = "smooth";
+    scrollContainer.style.whiteSpace = "nowrap";
+
+    guitarras.forEach(guitarra => {
+        const card = document.createElement("div");
+        card.className = "card shadow-sm h-100";
+        card.style.minWidth = "300px";
+        card.style.display = "inline-block";
+
+        const imagen = guitarra.urlImagen || "/images/placeholder.png";
+        const precioDolar = (guitarra.precio / dolar).toFixed(2);
+        const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+
+        card.innerHTML = `
+            <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; width: 100%; object-fit: cover;">
+            <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
+                <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">${guitarra.marca} ${guitarra.modelo}</h5>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>USD:</strong> U$${precioDolar}</p>
+                <p class="card-text text-success fw-bold" style="margin-bottom: 0.15rem;">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
+            </div>
+        `;
+        card.style.cursor = "pointer";
+
+        card.addEventListener("click", () => {
+            window.location.href = `/Home/Detalles/${guitarra.id}`;
+        });
+
+        scrollContainer.appendChild(card);
+    });
+
+    columnaGuitarras.appendChild(scrollContainer);
+
+    const flechaIzq = document.createElement("button");
+    flechaIzq.innerHTML = "&#8249;";
+    flechaIzq.style.position = "absolute";
+    flechaIzq.style.top = "50%";
+    flechaIzq.style.left = "0";
+    flechaIzq.style.transform = "translateY(-50%)";
+    flechaIzq.style.zIndex = "20";
+    flechaIzq.style.background = "rgba(255,255,255,0.8)";
+    flechaIzq.style.border = "none";
+    flechaIzq.style.fontSize = "2rem";
+    flechaIzq.style.cursor = "pointer";
+    flechaIzq.style.padding = "0 0.5rem";
+    flechaIzq.style.borderRadius = "0 5px 5px 0";
+    flechaIzq.style.userSelect = "none";
+
+    const flechaDer = document.createElement("button");
+    flechaDer.innerHTML = "&#8250;";
+    flechaDer.style.position = "absolute";
+    flechaDer.style.top = "50%";
+    flechaDer.style.right = "0";
+    flechaDer.style.transform = "translateY(-50%)";
+    flechaDer.style.zIndex = "20";
+    flechaDer.style.background = "rgba(255,255,255,0.8)";
+    flechaDer.style.border = "none";
+    flechaDer.style.fontSize = "2rem";
+    flechaDer.style.cursor = "pointer";
+    flechaDer.style.padding = "0 0.5rem";
+    flechaDer.style.borderRadius = "5px 0 0 5px";
+    flechaDer.style.userSelect = "none";
+
+    const scrollAmount = 300;
+
+    flechaIzq.addEventListener("click", () => {
+        scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    flechaDer.addEventListener("click", () => {
+        scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+
+    columnaGuitarras.appendChild(flechaIzq);
+    columnaGuitarras.appendChild(flechaDer);
+
+    filaPrincipal.appendChild(columnaTitulo);
+    filaPrincipal.appendChild(columnaGuitarras);
+
+    return filaPrincipal;
+
+}
+async function contenedor_Guitarras_Nuevas(dolar) {
+
+    const guitarras = await ObtenerNuevosIngresos();
+
+    if (!Array.isArray(guitarras) || guitarras.length === 0) {
+        return null;
+    }
+
+    const filaPrincipal = document.createElement("div");
+    filaPrincipal.className = "row";
+
+    const columnaTitulo = document.createElement("div");
+    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center";
+    columnaTitulo.style.zIndex = "10";
+    columnaTitulo.style.flex = "0 0 25%";
+    columnaTitulo.style.maxWidth = "25%";
+    columnaTitulo.style.padding = "1rem";
+    columnaTitulo.innerHTML = `<h3 class="text-center">Nuevos Ingresos</h3>`;
+
+    const columnaGuitarras = document.createElement("div");
+    columnaGuitarras.className = "col-12 col-md-9 position-relative";
+
+    const scrollContainer = document.createElement("div");
+    scrollContainer.className = "scroll-container";
+    scrollContainer.style.display = "flex";
+    scrollContainer.style.overflowX = "auto";
+    scrollContainer.style.gap = "1rem";
+    scrollContainer.style.paddingBottom = "0.5rem";
+    scrollContainer.style.scrollBehavior = "smooth";
+    scrollContainer.style.whiteSpace = "nowrap";
+
+    guitarras.forEach(guitarra => {
+        const card = document.createElement("div");
+        card.className = "card shadow-sm h-100";
+        card.style.minWidth = "300px";
+        card.style.display = "inline-block";
+
+        const imagen = guitarra.urlImagen || "/images/placeholder.png";
+        const precioDolar = (guitarra.precio / dolar).toFixed(2);
+        const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+
+        card.innerHTML = `
+            <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; width: 100%; object-fit: cover;">
+            <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
+                <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">${guitarra.marca} ${guitarra.modelo}</h5>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>USD:</strong> U$${precioDolar}</p>
+                <p class="card-text text-success fw-bold" style="margin-bottom: 0.15rem;">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
+            </div>
+        `;
+        card.style.cursor = "pointer";
+
+        card.addEventListener("click", () => {
+            window.location.href = `/Home/Detalles/${guitarra.id}`;
+        });
+
+        scrollContainer.appendChild(card);
+    });
+
+    columnaGuitarras.appendChild(scrollContainer);
+
+    const flechaIzq = document.createElement("button");
+    flechaIzq.innerHTML = "&#8249;";
+    flechaIzq.style.position = "absolute";
+    flechaIzq.style.top = "50%";
+    flechaIzq.style.left = "0";
+    flechaIzq.style.transform = "translateY(-50%)";
+    flechaIzq.style.zIndex = "20";
+    flechaIzq.style.background = "rgba(255,255,255,0.8)";
+    flechaIzq.style.border = "none";
+    flechaIzq.style.fontSize = "2rem";
+    flechaIzq.style.cursor = "pointer";
+    flechaIzq.style.padding = "0 0.5rem";
+    flechaIzq.style.borderRadius = "0 5px 5px 0";
+    flechaIzq.style.userSelect = "none";
+
+    const flechaDer = document.createElement("button");
+    flechaDer.innerHTML = "&#8250;";
+    flechaDer.style.position = "absolute";
+    flechaDer.style.top = "50%";
+    flechaDer.style.right = "0";
+    flechaDer.style.transform = "translateY(-50%)";
+    flechaDer.style.zIndex = "20";
+    flechaDer.style.background = "rgba(255,255,255,0.8)";
+    flechaDer.style.border = "none";
+    flechaDer.style.fontSize = "2rem";
+    flechaDer.style.cursor = "pointer";
+    flechaDer.style.padding = "0 0.5rem";
+    flechaDer.style.borderRadius = "5px 0 0 5px";
+    flechaDer.style.userSelect = "none";
+
+    const scrollAmount = 300;
+
+    flechaIzq.addEventListener("click", () => {
+        scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    flechaDer.addEventListener("click", () => {
+        scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+
+    columnaGuitarras.appendChild(flechaIzq);
+    columnaGuitarras.appendChild(flechaDer);
+
+    filaPrincipal.appendChild(columnaTitulo);
+    filaPrincipal.appendChild(columnaGuitarras);
+
+    return filaPrincipal;
+
+}
+async function contenedor_Guitarras_En_Ofertas(dolar) {
+
+    const guitarras = await GuitarrasEnOferta();
+
+    if (!Array.isArray(guitarras) || guitarras.length === 0) {
+        return null;
+    }
+
+    const filaPrincipal = document.createElement("div");
+    filaPrincipal.className = "row";
+
+    const columnaTitulo = document.createElement("div");
+    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center";
+    columnaTitulo.style.zIndex = "10";
+    columnaTitulo.style.flex = "0 0 25%";
+    columnaTitulo.style.maxWidth = "25%";
+    columnaTitulo.style.padding = "1rem";
+    columnaTitulo.innerHTML = `<h3 class="text-center">En Oferta</h3>`;
+
+    const columnaGuitarras = document.createElement("div");
+    columnaGuitarras.className = "col-12 col-md-9 position-relative";
+
+    const scrollContainer = document.createElement("div");
+    scrollContainer.className = "scroll-container";
+    scrollContainer.style.display = "flex";
+    scrollContainer.style.overflowX = "auto";
+    scrollContainer.style.gap = "1rem";
+    scrollContainer.style.paddingBottom = "0.5rem";
+    scrollContainer.style.scrollBehavior = "smooth";
+    scrollContainer.style.whiteSpace = "nowrap";
+
+    guitarras.forEach(guitarra => {
+        const card = document.createElement("div");
+        card.className = "card shadow-sm h-100";
+        card.style.minWidth = "300px";
+        card.style.display = "inline-block";
+
+        const imagen = guitarra.urlImagen || "/images/placeholder.png";
+        const precioDolar = (guitarra.precio / dolar).toFixed(2);
+        const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+
+        card.innerHTML = `
+            <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; width: 100%; object-fit: cover;">
+            <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
+                <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">${guitarra.marca} ${guitarra.modelo}</h5>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>USD:</strong> U$${precioDolar}</p>
+                <p class="card-text text-success fw-bold" style="margin-bottom: 0.15rem;">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
+            </div>
+        `;
+        card.style.cursor = "pointer";
+
+        card.addEventListener("click", () => {
+            window.location.href = `/Home/Detalles/${guitarra.id}`;
+        });
+
+        scrollContainer.appendChild(card);
+    });
+
+    columnaGuitarras.appendChild(scrollContainer);
+
+    const flechaIzq = document.createElement("button");
+    flechaIzq.innerHTML = "&#8249;";
+    flechaIzq.style.position = "absolute";
+    flechaIzq.style.top = "50%";
+    flechaIzq.style.left = "0";
+    flechaIzq.style.transform = "translateY(-50%)";
+    flechaIzq.style.zIndex = "20";
+    flechaIzq.style.background = "rgba(255,255,255,0.8)";
+    flechaIzq.style.border = "none";
+    flechaIzq.style.fontSize = "2rem";
+    flechaIzq.style.cursor = "pointer";
+    flechaIzq.style.padding = "0 0.5rem";
+    flechaIzq.style.borderRadius = "0 5px 5px 0";
+    flechaIzq.style.userSelect = "none";
+
+    const flechaDer = document.createElement("button");
+    flechaDer.innerHTML = "&#8250;";
+    flechaDer.style.position = "absolute";
+    flechaDer.style.top = "50%";
+    flechaDer.style.right = "0";
+    flechaDer.style.transform = "translateY(-50%)";
+    flechaDer.style.zIndex = "20";
+    flechaDer.style.background = "rgba(255,255,255,0.8)";
+    flechaDer.style.border = "none";
+    flechaDer.style.fontSize = "2rem";
+    flechaDer.style.cursor = "pointer";
+    flechaDer.style.padding = "0 0.5rem";
+    flechaDer.style.borderRadius = "5px 0 0 5px";
+    flechaDer.style.userSelect = "none";
+
+    const scrollAmount = 300;
+
+    flechaIzq.addEventListener("click", () => {
+        scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    flechaDer.addEventListener("click", () => {
+        scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+
+    columnaGuitarras.appendChild(flechaIzq);
+    columnaGuitarras.appendChild(flechaDer);
+
+    filaPrincipal.appendChild(columnaTitulo);
+    filaPrincipal.appendChild(columnaGuitarras);
+
+    return filaPrincipal;
+
+}
+async function contenedor_Guitarras_Mas_Vendidas(dolar) {
+
+    const guitarras = await GuitarrasMasVendidas();
+
+    if (!Array.isArray(guitarras) || guitarras.length === 0) {
+        return null;
+    }
+
+    const filaPrincipal = document.createElement("div");
+    filaPrincipal.className = "row";
+
+    const columnaTitulo = document.createElement("div");
+    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center";
+    columnaTitulo.style.zIndex = "10";
+    columnaTitulo.style.flex = "0 0 25%";
+    columnaTitulo.style.maxWidth = "25%";
+    columnaTitulo.style.padding = "1rem";
+    columnaTitulo.innerHTML = `<h3 class="text-center">Mas Vendidas</h3>`;
+
+    const columnaGuitarras = document.createElement("div");
+    columnaGuitarras.className = "col-12 col-md-9 position-relative";
+
+    const scrollContainer = document.createElement("div");
+    scrollContainer.className = "scroll-container";
+    scrollContainer.style.display = "flex";
+    scrollContainer.style.overflowX = "auto";
+    scrollContainer.style.gap = "1rem";
+    scrollContainer.style.paddingBottom = "0.5rem";
+    scrollContainer.style.scrollBehavior = "smooth";
+    scrollContainer.style.whiteSpace = "nowrap";
+
+    guitarras.forEach(guitarra => {
+        const card = document.createElement("div");
+        card.className = "card shadow-sm h-100";
+        card.style.minWidth = "300px";
+        card.style.display = "inline-block";
+
+        const imagen = guitarra.urlImagen || "/images/placeholder.png";
+        const precioDolar = (guitarra.precio / dolar).toFixed(2);
+        const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+
+        card.innerHTML = `
+            <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; width: 100%; object-fit: cover;">
+            <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
+                <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">${guitarra.marca} ${guitarra.modelo}</h5>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
+                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>USD:</strong> U$${precioDolar}</p>
+                <p class="card-text text-success fw-bold" style="margin-bottom: 0.15rem;">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
+            </div>
+        `;
+        card.style.cursor = "pointer"; 
+
+        card.addEventListener("click", () => {
+            window.location.href = `/Home/Detalles/${guitarra.id}`;
+        });
+
+        scrollContainer.appendChild(card);
+    });
+
+    columnaGuitarras.appendChild(scrollContainer);
+
+    const flechaIzq = document.createElement("button");
+    flechaIzq.innerHTML = "&#8249;";
+    flechaIzq.style.position = "absolute";
+    flechaIzq.style.top = "50%";
+    flechaIzq.style.left = "0";
+    flechaIzq.style.transform = "translateY(-50%)";
+    flechaIzq.style.zIndex = "20";
+    flechaIzq.style.background = "rgba(255,255,255,0.8)";
+    flechaIzq.style.border = "none";
+    flechaIzq.style.fontSize = "2rem";
+    flechaIzq.style.cursor = "pointer";
+    flechaIzq.style.padding = "0 0.5rem";
+    flechaIzq.style.borderRadius = "0 5px 5px 0";
+    flechaIzq.style.userSelect = "none";
+
+    const flechaDer = document.createElement("button");
+    flechaDer.innerHTML = "&#8250;";
+    flechaDer.style.position = "absolute";
+    flechaDer.style.top = "50%";
+    flechaDer.style.right = "0";
+    flechaDer.style.transform = "translateY(-50%)";
+    flechaDer.style.zIndex = "20";
+    flechaDer.style.background = "rgba(255,255,255,0.8)";
+    flechaDer.style.border = "none";
+    flechaDer.style.fontSize = "2rem";
+    flechaDer.style.cursor = "pointer";
+    flechaDer.style.padding = "0 0.5rem";
+    flechaDer.style.borderRadius = "5px 0 0 5px";
+    flechaDer.style.userSelect = "none";
+
+    const scrollAmount = 300;
+
+    flechaIzq.addEventListener("click", () => {
+        scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+    });
+
+    flechaDer.addEventListener("click", () => {
+        scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+    });
+
+    columnaGuitarras.appendChild(flechaIzq);
+    columnaGuitarras.appendChild(flechaDer);
+
+    filaPrincipal.appendChild(columnaTitulo);
+    filaPrincipal.appendChild(columnaGuitarras);
+
+    return filaPrincipal;
+}
+
+
+
 export async function MostrarGuitarrasCrud(listado) {
     try {
 

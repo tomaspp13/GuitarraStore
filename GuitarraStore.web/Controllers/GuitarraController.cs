@@ -41,6 +41,57 @@ namespace GuitarraStore.web.Controllers
 
             return Ok(guitarra);
         }
+        [HttpGet("Genero/{genero}")]
+
+        public async Task<IActionResult> GuitarrasPorGenero(string genero)
+        {
+
+            var guitarras = await _context.Guitarras.Where(g => g.Genero == genero).ToListAsync();
+
+            if (guitarras == null) { return NotFound(); }
+
+            return Ok(guitarras);
+
+        }
+
+        [HttpGet("GuitarrasEnOfertas")]
+        public async Task<IActionResult> GuitarrasConOfertas()
+        {
+            var guitarra = await _context.Guitarras.Where(g=> g.EstaEnOferta == true).ToListAsync();
+
+            if(guitarra == null) 
+            { 
+                return NotFound(); 
+            }
+
+            return Ok(guitarra);
+        }
+
+        [HttpGet("GuitarrasNuevas")]
+
+        public async Task<IActionResult> GuitarrasNuevas()
+        {
+            var guitara = await _context.Guitarras.OrderByDescending(g=> g.FechaIngreso).Take(4).ToArrayAsync();
+
+            if(guitara == null) 
+            { 
+                return NotFound(); 
+            }
+
+            return Ok(guitara);
+        }
+
+        [HttpGet("GuitarrasMasVendidas")]
+
+        public async Task<IActionResult> GuitarrasMasVendidas()
+        {
+            var guitarra = await _context.Guitarras.Where(g => g.EsMasVendida == true).ToListAsync();
+
+            if(guitarra == null) { return NotFound();}
+
+            return Ok(guitarra);
+
+        }
 
         [HttpGet("AgregarGuitarraaCarrito")]
 
@@ -155,6 +206,10 @@ namespace GuitarraStore.web.Controllers
             guitarra.Marca = guitarraVm.Marca;
             guitarra.Modelo = guitarraVm.Modelo;
             guitarra.Precio = guitarraVm.Precio;
+            guitarra.EsMasVendida = guitarraVm.MasVendida;
+            guitarra.EstaEnOferta = guitarraVm.Oferta;
+            guitarra.Genero = guitarraVm.Genero;
+            guitarra.FechaIngreso = (DateTime)guitarraVm.FechaIngreso;
 
             if (guitarraVm.ImagenArchivo != null && guitarraVm.ImagenArchivo.Length > 0)
             {
@@ -200,7 +255,10 @@ namespace GuitarraStore.web.Controllers
                     Modelo = guitarraVm.Modelo,
                     Precio = guitarraVm.Precio,
                     UrlImagen = rutaImagen,
-                    IdImagen = idimagen
+                    IdImagen = idimagen,
+                    EsMasVendida = guitarraVm.MasVendida,
+                    EstaEnOferta = guitarraVm.Oferta,
+                    Genero = guitarraVm.Genero,
                 };
 
                 await _context.Guitarras.AddAsync(nuevaGuitarra);

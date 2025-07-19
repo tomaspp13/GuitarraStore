@@ -110,6 +110,72 @@ export async function obtenerGuitarrasPorId(id)
 
 }
 
+export async function ObtenerNuevosIngresos() {
+
+    try {
+        var respuesta = await fetch("/api/Guitarra/GuitarrasNuevas");
+
+        if (!respuesta.ok) { throw new Error("Error en la respuesta de la Api " + respuesta.status) }
+
+        return await respuesta.json();
+
+    }
+    catch (error) {
+
+        alert("Error al obtener nuevas guitarras" + error.message);
+    }
+}
+
+export async function GuitarrasMasVendidas() {
+
+    try {
+        var respuesta = await fetch("/api/Guitarra/GuitarrasMasVendidas");
+
+        if (!respuesta.ok) { throw new Error("Error en la respuesta de la Api" + respuesta.status) }
+
+        return await respuesta.json();
+
+    } catch (error) {
+
+        alert("Error al obtener guitarras mas vendidas" + error.message);
+    }
+}
+
+export async function GuitarrasEnOferta() {
+
+    try {
+
+        var respuesta = await fetch("/api/Guitarra/GuitarrasEnOfertas");
+
+        if (!respuesta.ok) {
+
+            throw new Error("Error en la respuesta de la Api " + respuesta.status);
+        }
+
+        return await respuesta.json();
+    }
+    catch (error) {
+        alert("Error al obtener guitarras en ofertas")
+    }
+}
+
+export async function guitarrasPorGenero(genero) {
+
+    try {
+
+        var guitarra = await fetch(`/api/Guitarra/Genero/${genero}`);
+        if (!guitarra.ok) {
+            throw new Error(`Error en la respuesta de la API (${guitarra.status})`);
+        }
+        return await guitarra.json();
+    }
+    catch (error) {
+
+        alert(`Error al obtener guitarras para ${genero}: ${error.message}`);
+
+    }
+}
+
 export async function crearGuitarras(formData) {
 
     try {
