@@ -13,15 +13,17 @@
         }
    </style>
 
-    <span id="abrirFiltros" role="button" class="text-primary fw-bold" style="cursor: pointer;">
-         Filtrar y Ordenar
-    </span>
+<div class="mt-4 mb-4">
+
+    <button id="abrirFiltros" class="btn btn-light fw-bold">
+        Filtrar y Ordenar
+    </button>
 
     <div class="container mt-4">
         <div id="contenedorGuitarras"></div>
     </div>
-    
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasFiltros" aria-labelledby="offcanvasFiltrosLabel">
+
+    <div class="offcanvas offcanvas-end bg-dark text-white" tabindex="-1" id="offcanvasFiltros" aria-labelledby="offcanvasFiltrosLabel">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title" id="offcanvasFiltrosLabel">Filtrar resultados</h5>
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
@@ -31,7 +33,7 @@
 
                 <div class="mb-3">
                     <label class="form-label">Ordenar Por</label>
-                    <select class="form-select" id="filtro">
+                    <select class="form-select bg-dark text-white" id="filtro">
                         <option id="masRelevante" value="relevante">Más relevante</option>
                         <option id="MenorMayor" value="menoramayor">Menor a mayor</option>
                         <option id="MayorMenor" value="mayoramenor">Mayor a menor</option>
@@ -39,17 +41,17 @@
                 </div>
 
                 <div class="mb-3">
-                <label class="form-label" for="selectMarca">Marcas</label>
-                <select class="form-select" id="selectMarca">
-                    <option value="todas">Todas las marcas</option>   
-                </select>
-                 </div>
+                    <label class="form-label" for="selectMarca">Marcas</label>
+                    <select class="form-select bg-dark text-white" id="selectMarca">
+                        <option value="todas">Todas las marcas</option>
+                    </select>
+                </div>
 
                 <div class="mb-3">
                     <label class="form-label">Precio mínimo</label>
-                    <input type="number" class="form-control" id="precioMin">
+                    <input type="number" class="form-control bg-dark text-white" id="precioMin">
                     <label class="form-label">Precio máximo</label>
-                    <input type="number" class="form-control" id="precioMax">
+                    <input type="number" class="form-control bg-dark text-white" id="precioMax">
                 </div>
 
                 <button type="submit" class="btn btn-success">Aplicar filtros</button>
@@ -57,6 +59,8 @@
             </form>
         </div>
     </div>
+
+</div>
 
 @section Scripts {
 

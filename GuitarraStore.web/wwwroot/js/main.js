@@ -30,7 +30,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         await MostrarGuitarrasInicio(contenedor_inicio, dolar);
 
     }
-
     if (contenedor_marcas)
     {
         try {
@@ -40,38 +39,37 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.error("Error al cargar las marcas : ", error);
         }
     }
-
     if (btn_buscar) {
+        btn_buscar.addEventListener("click", () => {
 
-        btn_buscar.addEventListener("click",async () => {
+            const busquedas = document.getElementById("inputBuscar").value.trim();
 
-            const inputBuscar = document.getElementById("inputBuscar").value;
-            const marca = "todas";
-            document.getElementById("selectMarca").value = "todas";
+            if (window.location.pathname.includes("/Home/Guitarras")) {
+                const marca = "todas";
+                document.getElementById("selectMarca").value = "todas";
 
-            const contenedorFiltro = document.getElementById("filtro");
-            const filtro = contenedorFiltro.value;
+                const contenedorFiltro = document.getElementById("filtro");
+                const filtro = contenedorFiltro.value;
 
-            const preMinStr = document.getElementById("precioMin").value.trim();
-            const preMaxStr = document.getElementById("precioMax").value.trim();
-            const preMin = preMinStr !== "" ? parseFloat(preMinStr) : 0;
-            const preMax = preMaxStr !== "" ? parseFloat(preMaxStr) : 99999999;
+                const preMinStr = document.getElementById("precioMin").value.trim();
+                const preMaxStr = document.getElementById("precioMax").value.trim();
+                const preMin = preMinStr !== "" ? parseFloat(preMinStr) : 0;
+                const preMax = preMaxStr !== "" ? parseFloat(preMaxStr) : 99999999;
 
-            try {
+                obtenerGuitarrasPorMarca(busquedas, marca, filtro, preMin, preMax)
+                    .then(guitarra_filtrada => {
+                        MostrarGuitarras(guitarra_filtrada, contenedor_principal, dolar);
+                    })
+                    .catch(error => {
+                        console.error("Error al buscar las guitarras:", error);
+                    });
 
-                const guitarra_filtrada = await obtenerGuitarrasPorMarca(inputBuscar, marca, filtro, preMin, preMax);
-                await MostrarGuitarras(guitarra_filtrada, contenedor_principal, dolar);
-
+            } else {
+                
+                window.location.href = `/Home/Guitarras?busqueda=${encodeURIComponent(busquedas)}`;
             }
-            catch (error) {
-
-                console.error("Error al buscar las guitarras:", error);
-
-            }
-        })
-
+        });
     }
-
     if (contenedorFiltro) {
 
         contenedorFiltro.addEventListener("change", async () => {
@@ -108,7 +106,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         })
 
     }
-
     if (contenedor_marcas) {
 
         contenedor_marcas.addEventListener("change", async () => {
@@ -145,7 +142,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         })
 
     }
-
     if (form_filtros)
     {
         form_filtros.addEventListener("submit", async function (e) {
@@ -178,32 +174,62 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         });
     }
-
     if (formulario) {
         validarFormulario(contenedor_principal);
     }
-
     if (contenedor_carrito) {
         mostrarCarrito();
     }
+    if (listado_del_crud) {
 
-    if (listado_del_crud) { MostrarGuitarrasCrud(listado_del_crud); }
-
-    if (botonCrear) { botonCrear.addEventListener("click", function () { window.location.href = "/Home/Crear" }); }
-
-    if (contenedor_principal) {   
-  
-        const guitarra = await obtenerGuitarras();            
-        await MostrarGuitarras(guitarra, contenedor_principal, dolar);
-
+        MostrarGuitarrasCrud(listado_del_crud);
     }
-    
+    if (botonCrear) { botonCrear.addEventListener("click", function () { window.location.href = "/Home/Crear" }); }
+    if (contenedor_principal && !window.location.search.includes("busqueda=")) {
+        const guitarra = await obtenerGuitarras();
+        await MostrarGuitarras(guitarra, contenedor_principal, dolar);
+    }
+    if (contenedor_principal && window.location.pathname.includes("/Home/Guitarras")) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const busqueda = urlParams.get("busqueda");
+
+        document.getElementById("inputBuscar").value = busqueda;
+
+        if (busqueda) {
+            const marca = "todas";
+            const filtro = "relevante";
+            const preMin = 0;
+            const preMax = 99999999;
+
+            try {
+                const guitarra_filtrada = await obtenerGuitarrasPorMarca(busqueda, marca, filtro, preMin, preMax);
+                await MostrarGuitarras(guitarra_filtrada, contenedor_principal, dolar);
+            } catch (error) {
+                console.error("Error al buscar las guitarras por URL:", error);
+            }
+
+            return; 
+        }
+    }
     if (contenedorDetalles) {
 
         const url = window.location.href;
         const id = url.split("/").pop();
 
         try {
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const from = urlParams.get("from");
+
+            const btnVolverCrud = document.getElementById("volverAlCrud");
+
+            if (btnVolverCrud) {
+                if (from === "crud") {
+                    btnVolverCrud.style.display = "inline-block";
+                } else {
+                    btnVolverCrud.style.display = "none";
+                }
+            }
 
             const guitarra_detalles = await obtenerGuitarrasPorId(id);
             

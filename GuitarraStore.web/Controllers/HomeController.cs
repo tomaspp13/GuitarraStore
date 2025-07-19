@@ -9,9 +9,10 @@ namespace GuitarraStore.web.Controllers
     public class HomeController() : Controller
     {
 
-        public IActionResult Guitarras()
+        public IActionResult Guitarras(string? busqueda)
         {
-            return View();
+            ViewBag.Busqueda = busqueda;
+            return View(); 
         }
 
         public IActionResult Inicio()

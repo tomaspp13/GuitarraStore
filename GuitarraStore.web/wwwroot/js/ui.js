@@ -21,7 +21,7 @@ export async function MostrarGuitarras(guitarras, contenedor, dolar) {
         col.className = "col-md-4 mb-4"; 
 
         const card = document.createElement("div");
-        card.className = "card shadow-sm h-100";
+        card.className = "card shadow-sm h-100 bg-dark text-white"; 
 
         const imagen = guitarra.urlImagen || "/images/placeholder.png";
 
@@ -41,7 +41,6 @@ export async function MostrarGuitarras(guitarras, contenedor, dolar) {
         `;
        
         card.style.cursor = "pointer";
-        card.classList.add('card');
 
         const btnAgregar = card.querySelector(".btn-agregar-carrito");
 
@@ -78,15 +77,17 @@ export async function MostrarGuitarras(guitarras, contenedor, dolar) {
 export function mostrarCarrito() {
 
     const contenedor = document.getElementById("carritoContainer");
+    contenedor.classList.add("bg-black", "text-white", "p-3");
+
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
     if (carrito.length === 0) {
         contenedor.innerHTML = "<p>El carrito está vacío.</p>";
         return;
     }
-
+    contenedor.classList.add("text-white");
     let html = `
-        <table class="table">
+        <table class="table table-dark text-white">
             <thead>
                 <tr>
                     <th>Imagen</th>
@@ -173,7 +174,6 @@ function eliminarGuitarra(id) {
     localStorage.setItem("carrito", JSON.stringify(carrito));
     mostrarCarrito(); 
 }
-
 export async function mostrarGuitarraDetalles(guitarra,contenedor)
 { 
 
@@ -192,7 +192,6 @@ export async function mostrarGuitarraDetalles(guitarra,contenedor)
     return;
 
 }
-
 export async function MostrarGuitarrasInicio(contenedor,dolar) {
 
     contenedor.innerHTML = "";
@@ -249,7 +248,7 @@ async function contenedor_Guitarras_Jazz(dolar) {
     }
 
     const filaPrincipal = document.createElement("div");
-    filaPrincipal.className = "row";
+    filaPrincipal.className = "row bg-black text-white";
 
     const columnaTitulo = document.createElement("div");
     columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
@@ -302,7 +301,7 @@ async function contenedor_Guitarras_Jazz(dolar) {
 
     guitarras.forEach(guitarra => {
         const card = document.createElement("div");
-        card.className = "card shadow-sm h-100";
+        card.className = "card shadow-sm h-100 bg-dark text-white";
         card.style.minWidth = "300px";
         card.style.display = "inline-block";
 
@@ -388,7 +387,7 @@ async function contenedor_Guitarras_Pop(dolar) {
     }
 
     const filaPrincipal = document.createElement("div");
-    filaPrincipal.className = "row";
+    filaPrincipal.className = "row bg-black text-white";
 
     const columnaTitulo = document.createElement("div");
     columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
@@ -441,7 +440,7 @@ async function contenedor_Guitarras_Pop(dolar) {
 
     guitarras.forEach(guitarra => {
         const card = document.createElement("div");
-        card.className = "card shadow-sm h-100";
+        card.className = "card shadow-sm h-100 bg-dark text-white";
         card.style.minWidth = "300px";
         card.style.display = "inline-block";
 
@@ -527,7 +526,7 @@ async function contenedor_Guitarras_Rock(dolar) {
     }
 
     const filaPrincipal = document.createElement("div");
-    filaPrincipal.className = "row";
+    filaPrincipal.className = "row bg-black text-white";
  
     const columnaTitulo = document.createElement("div");
     columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
@@ -580,7 +579,7 @@ async function contenedor_Guitarras_Rock(dolar) {
 
     guitarras.forEach(guitarra => {
         const card = document.createElement("div");
-        card.className = "card shadow-sm h-100";
+        card.className = "card shadow-sm h-100 bg-dark text-white";
         card.style.minWidth = "300px";
         card.style.display = "inline-block";
 
@@ -666,7 +665,7 @@ async function contenedor_Guitarras_Metal(dolar) {
     }
 
     const filaPrincipal = document.createElement("div");
-    filaPrincipal.className = "row";
+    filaPrincipal.className = "row bg-black text-white";
 
     const columnaTitulo = document.createElement("div");
     columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
@@ -719,7 +718,7 @@ async function contenedor_Guitarras_Metal(dolar) {
 
     guitarras.forEach(guitarra => {
         const card = document.createElement("div");
-        card.className = "card shadow-sm h-100";
+        card.className = "card shadow-sm h-100 bg-dark text-white";
         card.style.minWidth = "300px";
         card.style.display = "inline-block";
 
@@ -806,7 +805,7 @@ async function contenedor_Guitarras_Nuevas(dolar) {
     }
 
     const filaPrincipal = document.createElement("div");
-    filaPrincipal.className = "row";
+    filaPrincipal.className = "row bg-black text-white";
 
     const columnaTitulo = document.createElement("div");
     columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
@@ -853,7 +852,7 @@ async function contenedor_Guitarras_Nuevas(dolar) {
 
     guitarras.forEach(guitarra => {
         const card = document.createElement("div");
-        card.className = "card shadow-sm h-100";
+        card.className = "card shadow-sm h-100 bg-dark text-white";
         card.style.minWidth = "300px";
         card.style.display = "inline-block";
 
@@ -940,7 +939,7 @@ async function contenedor_Guitarras_En_Ofertas(dolar) {
     }
 
     const filaPrincipal = document.createElement("div");
-    filaPrincipal.className = "row";
+    filaPrincipal.className = "row bg-black text-white";
 
     const columnaTitulo = document.createElement("div");
     columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
@@ -987,7 +986,7 @@ async function contenedor_Guitarras_En_Ofertas(dolar) {
 
     guitarras.forEach(guitarra => {
         const card = document.createElement("div");
-        card.className = "card shadow-sm h-100";
+        card.className = "card shadow-sm h-100 bg-dark text-white";
         card.style.minWidth = "300px";
         card.style.display = "inline-block";
 
@@ -1074,7 +1073,7 @@ async function contenedor_Guitarras_Mas_Vendidas(dolar) {
     }
 
     const filaPrincipal = document.createElement("div");
-    filaPrincipal.className = "row";
+    filaPrincipal.className = "row bg-black text-white";
 
     const columnaTitulo = document.createElement("div");
     columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
@@ -1121,7 +1120,7 @@ async function contenedor_Guitarras_Mas_Vendidas(dolar) {
 
     guitarras.forEach(guitarra => {
         const card = document.createElement("div");
-        card.className = "card shadow-sm h-100";
+        card.className = "card shadow-sm h-100 bg-dark text-white";
         card.style.minWidth = "300px";
         card.style.display = "inline-block";
 
@@ -1198,9 +1197,6 @@ async function contenedor_Guitarras_Mas_Vendidas(dolar) {
 
     return filaPrincipal;
 }
-
-
-
 export async function MostrarGuitarrasCrud(listado) {
     try {
 
@@ -1210,7 +1206,7 @@ export async function MostrarGuitarrasCrud(listado) {
 
         guitarras.forEach(guitarra => {
             const li = document.createElement("li");
-            li.className = "list-group-item d-flex justify-content-between align-items-center flex-wrap";
+            li.className = "list-group-item d-flex justify-content-between align-items-center flex-wrap bg-dark text-white";
 
             
             const info = document.createElement("div");
@@ -1225,9 +1221,12 @@ export async function MostrarGuitarrasCrud(listado) {
             const botondetalles = document.createElement("button");
             botondetalles.className = "btn btn-outline-primary btn-sm";
             botondetalles.innerText = "Detalles";
+            botondetalles.type = "button";
 
-            botondetalles.addEventListener("click", () => {
-                window.location.href = `/Home/Detalles/${guitarra.id}`;
+            botondetalles.addEventListener("click", (e) => {
+                e.preventDefault();
+                console.log("Redirigiendo a:", `/Home/Detalles/${guitarra.id}?from=crud`);
+                window.location.href = `/Home/Detalles/${guitarra.id}?from=crud`;
             });
 
             const botonedit = document.createElement("button");
