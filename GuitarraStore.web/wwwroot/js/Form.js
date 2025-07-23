@@ -87,16 +87,15 @@ export async function validarFormulario(contenedor) {
     });
 
 }
-export async function registrarUsuario(usuario, contraseña) {
+export async function registrarUsuario(usuario, contraseña,nombre) {
 
     const user = {
 
         Email: usuario.trim(),
-        Password: contraseña.trim()
+        Password: contraseña.trim(),
+        Nombre: nombre.trim()
     }
 
-    console.log("usuario : "+usuario);
-    console.log("contraseña :"+contraseña);
     try {
 
         const respuesta = await fetch(`/api/UsuariosApi/RegistrarUsuario`, {
@@ -125,7 +124,6 @@ export async function ingresarUsuario(email, contraseña) {
 
         Email: email.trim(),
         Password: contraseña.trim()
-
     };
 
     try {

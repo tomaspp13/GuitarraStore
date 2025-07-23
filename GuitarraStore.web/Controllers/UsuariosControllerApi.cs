@@ -1,9 +1,12 @@
 ﻿using GuitarraStore.Data.Context;
 using GuitarraStore.Modelos;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using System.Security.Policy;
 
 namespace GuitarraStore.web.Controllers
@@ -22,28 +25,50 @@ namespace GuitarraStore.web.Controllers
         [HttpGet("Get")]
         public async Task<IActionResult> Verificar_correo(string correo)
         {
-            bool existe = await _context.Usuarios.AnyAsync(u => u.Email.Equals(correo, StringComparison.CurrentCultureIgnoreCase));
+            if (string.IsNullOrEmpty(correo))
+            {
+                return BadRequest("El correo no puede ser nulo o vacío.");
+            }
+
+            bool existe = await _context.Usuarios.AnyAsync(u => u.Email != null && u.Email.Equals(correo, StringComparison.CurrentCultureIgnoreCase));
             return Ok(!existe);
         }
 
         [HttpPost("DevolverUsuario")]
         public async Task<IActionResult> Devolver_usuario([FromBody] Usuarios usuario_enviado)
         {
-
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == usuario_enviado.Email);
-
-            if (usuario == null)
+            try
             {
-                return NotFound("Usuario no encontrado");
-            }
+                var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == usuario_enviado.Email);
 
-            if (!BCrypt.Net.BCrypt.Verify(usuario_enviado.Password, usuario.Password))
+                if (usuario == null)
+                {
+                    return NotFound("Usuario no encontrado");
+                }
+
+                if (!BCrypt.Net.BCrypt.Verify(usuario_enviado.Password, usuario.Password))
+                {
+                    return NotFound("Contraseña incorrecta");
+                }
+
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+        };
+
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var principal = new ClaimsPrincipal(identity);
+
+                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                return Ok(usuario.TipoUsuario);
+            }
+            catch (Exception ex)
             {
-                return NotFound("Contraseña incorrecta");
+                return StatusCode(500, "Error interno: " + ex.Message);
             }
-
-            return Ok(usuario.TipoUsuario);
         }
+
 
 
         [HttpPost("RegistrarUsuario")]
@@ -56,7 +81,8 @@ namespace GuitarraStore.web.Controllers
 
             string hash = BCrypt.Net.BCrypt.HashPassword(usuario_enviado.Password);
             var usuario = new Usuarios
-            {
+            {   
+                Nombre = usuario_enviado.Nombre,
                 Email = usuario_enviado.Email,
                 Password = hash,
                 TipoUsuario = "Cliente"

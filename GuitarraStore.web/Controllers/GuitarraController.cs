@@ -95,7 +95,7 @@ namespace GuitarraStore.web.Controllers
 
         [HttpGet("AgregarGuitarraaCarrito")]
 
-        public async Task<IActionResult> AgregarGuitarraaCarrito(int id)
+        public IActionResult AgregarGuitarraaCarrito(int id)
         {
 
             var guitarra = _context.Guitarras.AsQueryable();
@@ -106,8 +106,6 @@ namespace GuitarraStore.web.Controllers
             {
                 return NotFound();
             }
-
-
 
             return Ok();
         }

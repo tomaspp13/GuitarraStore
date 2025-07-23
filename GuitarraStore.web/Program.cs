@@ -1,4 +1,4 @@
-using GuitarraStore.Data.Context;
+﻿using GuitarraStore.Data.Context;
 using GuitarraStore.web.Services;
 using GuitarraStore.Web.Services;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +15,12 @@ builder.Services.Configure<CloudinarySettings>(
 
 builder.Services.AddScoped<CloudinaryService>();
 
+// ✅ Agregar autenticación ANTES de builder.Build()
+builder.Services.AddAuthentication("Cookies")
+    .AddCookie("Cookies", options =>
+    {
+        options.LoginPath = "/Usuarios/Ingresar";
+    });
 
 var app = builder.Build();
 
@@ -29,8 +35,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+// ✅ Importante: orden correcto
+app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.MapControllerRoute(
     name: "default",
@@ -39,4 +46,5 @@ app.MapControllerRoute(
 app.MapControllers();
 
 app.Run();
+
 

@@ -41,6 +41,10 @@ namespace GuitarraStore.web.Controllers
         }
         public IActionResult carrito()
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+               return RedirectToAction("Ingresar", "Usuarios");
+            }
             return View();
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

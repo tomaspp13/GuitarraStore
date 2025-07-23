@@ -29,8 +29,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             const email = document.getElementById("email").value.trim();
             const contraseña = document.getElementById("contraseña").value.trim();
+            const nombre = document.getElementById("nombre").value.trim();
 
-            await registrarUsuario(email, contraseña);
+            await registrarUsuario(email, contraseña,nombre);
 
         })
 
