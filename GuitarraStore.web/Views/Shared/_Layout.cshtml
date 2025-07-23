@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/GuitarraStore.web.styles.css" asp-append-version="true" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"> 
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/dgqkeshqh/image/upload/v1753230892/iconoweb_rqm3op.png" />
 
     <style>
         html, body {
@@ -20,7 +21,7 @@
 <body class="bg-black text-white">
     <header>
 
-        <nav class="navbar bg-body-tertiary fixed-top navbar-dark bg-black ">
+        <nav class="navbar bg-body-tertiary fixed-top navbar-dark bg-dark ">
             <div class="container-fluid navbar-collapse collapse d-sm-inline-flex ">
 
                 <button id="abrirMenu" class="btn btn-outline-dark" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
@@ -74,13 +75,13 @@
         </nav>
 
     </header>
-    <div class="container ">
+    <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted bg-dark text-white">
+    <footer class="footer text-muted bg-dark text-white">
         <div class="container">
             &copy; 2025 - GuitarraStore.web
         </div>
