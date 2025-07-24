@@ -191,6 +191,8 @@ namespace GuitarraStore.web.Controllers
         {
             var guitarra = await _context.Guitarras.FirstOrDefaultAsync(g => g.Id == guitarraVm.Id);
 
+            Console.WriteLine(guitarraVm.Descripcion);
+
             if (guitarra == null)
             {
                 return NotFound();
@@ -203,6 +205,7 @@ namespace GuitarraStore.web.Controllers
 
             guitarra.Marca = guitarraVm.Marca;
             guitarra.Modelo = guitarraVm.Modelo;
+            guitarra.Descripcion = guitarraVm.Descripcion;
             guitarra.Precio = guitarraVm.Precio;
             guitarra.EsMasVendida = guitarraVm.MasVendida;
             guitarra.EstaEnOferta = guitarraVm.Oferta;
@@ -251,6 +254,7 @@ namespace GuitarraStore.web.Controllers
                 {
                     Marca = guitarraVm.Marca,
                     Modelo = guitarraVm.Modelo,
+                    Descripcion = guitarraVm.Descripcion,
                     Precio = guitarraVm.Precio,
                     UrlImagen = rutaImagen,
                     IdImagen = idimagen,

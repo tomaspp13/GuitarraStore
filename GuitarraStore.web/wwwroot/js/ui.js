@@ -75,7 +75,6 @@ export async function MostrarGuitarras(guitarras, contenedor, dolar) {
     contenedor.appendChild(fila);
 }
 export function mostrarCarrito() {
-
     const contenedor = document.getElementById("carritoContainer");
     contenedor.classList.add("bg-black", "text-white", "p-3");
 
@@ -85,12 +84,12 @@ export function mostrarCarrito() {
         contenedor.innerHTML = "<p>El carrito está vacío.</p>";
         return;
     }
-    contenedor.classList.add("text-white");
+
     let html = `
-        <table class="table table-dark text-white">
+        <table class="table table-dark table-sm text-white">
             <thead>
                 <tr>
-                    <th>Imagen</th>
+                    <th style="min-width: 80px;">Imagen</th>
                     <th>Marca</th>
                     <th>Modelo</th>
                     <th>Precio</th>
@@ -104,15 +103,19 @@ export function mostrarCarrito() {
 
     let totalCarrito = 0;
 
-    carrito.forEach((guitarra, index) => {
+    carrito.forEach((guitarra) => {
         const total = guitarra.precio * guitarra.cantidad;
         totalCarrito += total;
 
         html += `
             <tr>
-                <td><img src="${guitarra.urlImagen}" style="width: 206px; height: 400px; object-fit: cover;"/></td>
-                <td>${guitarra.marca}</td>
-                <td>${guitarra.modelo}</td>
+                <td>
+                    <img src="${guitarra.urlImagen}" 
+                         alt="${guitarra.marca}" 
+                         style="width: 100%; max-width: 120px; height: auto; object-fit: cover; border-radius: 5px;" />
+                </td>
+                <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${guitarra.marca}</td>
+                <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${guitarra.modelo}</td>
                 <td>$${guitarra.precio}</td>
                 <td>${guitarra.cantidad}</td>
                 <td>$${total}</td>
@@ -174,23 +177,48 @@ function eliminarGuitarra(id) {
     localStorage.setItem("carrito", JSON.stringify(carrito));
     mostrarCarrito(); 
 }
-export async function mostrarGuitarraDetalles(guitarra,contenedor)
-{ 
+export async function mostrarGuitarraDetalles(guitarra, contenedor) {
 
-    var div = document.createElement("div");
+    const div_contenedor_general = document.createElement("div");
+    const div_contenedor = document.createElement("div");
+    const div_titulo = document.createElement("div");
+    const div_descripcion = document.createElement("div");
+    const div_imagen = document.createElement("div");
 
-    const imagen = guitarra.urlImagen || "/images/placeholder.png"; 
-      
-    div.innerHTML = `
-                <h3>${guitarra.marca} - ${guitarra.modelo}</h3>
-                <p>Precio: $${guitarra.precio}</p>
-                <img src="${imagen}" style="width: 400px !important; height: auto !important;">
-                `;
+    const imagen = guitarra.urlImagen || "/images/placeholder.png";
 
-    contenedor.appendChild(div);
+    div_titulo.innerHTML = `
+        <h3>${guitarra.marca} <br>${guitarra.modelo}</h3>
+        <p><strong>Precio:</strong> $${guitarra.precio}</p>
+    `;
 
-    return;
+    div_descripcion.innerHTML = `
+        <p>${guitarra.descripcion || "sin descripcion"}</p>
+    `;
 
+    div_imagen.innerHTML = `
+        <img src="${imagen}" class="img-fluid rounded shadow" alt="${guitarra.marca}" />
+    `;
+
+    contenedor.classList.add("container", "my-4");
+
+    div_contenedor.classList.add("row", "align-items-center", "mb-4");
+
+    div_imagen.classList.add("col-sm-6", "text-center");
+    div_titulo.classList.add("col-sm-6", "text-center");
+    div_descripcion.classList.add("col-sm-6", "text-center", "w-100");
+    div_contenedor_general.classList.add("col-sm-6", "d-flex", "flex-column", "justify-content-center", "align-items-center", "text-center");
+
+    div_titulo.style.fontFamily = "'Poppins', sans-serif";
+    div_descripcion.style.fontFamily = "'Montserrat', sans-serif";
+
+    div_contenedor_general.appendChild(div_titulo);
+    div_contenedor_general.appendChild(div_descripcion);
+
+    div_contenedor.appendChild(div_imagen);
+    div_contenedor.appendChild(div_contenedor_general);
+
+    contenedor.appendChild(div_contenedor);
 }
 export async function MostrarGuitarrasInicio(contenedor,dolar) {
 
@@ -251,7 +279,7 @@ async function contenedor_Guitarras_Jazz(dolar) {
     filaPrincipal.className = "row bg-black text-white";
 
     const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
+    columnaTitulo.className = "col-3 mb-3 d-flex align-items-center justify-content-center position-relative";
     columnaTitulo.style.zIndex = "10";
     columnaTitulo.style.flex = "0 0 25%";
     columnaTitulo.style.maxWidth = "25%";
@@ -288,7 +316,7 @@ async function contenedor_Guitarras_Jazz(dolar) {
     columnaTitulo.appendChild(tituloDiv);
 
     const columnaGuitarras = document.createElement("div");
-    columnaGuitarras.className = "col-12 col-md-9 position-relative";
+    columnaGuitarras.className = "col-9 position-relative";
 
     const scrollContainer = document.createElement("div");
     scrollContainer.className = "scroll-container";
@@ -390,7 +418,7 @@ async function contenedor_Guitarras_Pop(dolar) {
     filaPrincipal.className = "row bg-black text-white";
 
     const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
+    columnaTitulo.className = "col-3 mb-3 d-flex align-items-center justify-content-center position-relative";
     columnaTitulo.style.zIndex = "10";
     columnaTitulo.style.flex = "0 0 25%";
     columnaTitulo.style.maxWidth = "25%";
@@ -427,7 +455,7 @@ async function contenedor_Guitarras_Pop(dolar) {
     columnaTitulo.appendChild(tituloDiv);
 
     const columnaGuitarras = document.createElement("div");
-    columnaGuitarras.className = "col-12 col-md-9 position-relative";
+    columnaGuitarras.className = "col-9 position-relative";
 
     const scrollContainer = document.createElement("div");
     scrollContainer.className = "scroll-container";
@@ -529,7 +557,7 @@ async function contenedor_Guitarras_Rock(dolar) {
     filaPrincipal.className = "row bg-black text-white";
  
     const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
+    columnaTitulo.className = "col-3 mb-3 d-flex align-items-center justify-content-center position-relative";
     columnaTitulo.style.zIndex = "10";
     columnaTitulo.style.flex = "0 0 25%";
     columnaTitulo.style.maxWidth = "25%";
@@ -566,7 +594,8 @@ async function contenedor_Guitarras_Rock(dolar) {
     columnaTitulo.appendChild(tituloDiv);
 
     const columnaGuitarras = document.createElement("div");
-    columnaGuitarras.className = "col-12 col-md-9 position-relative";
+    columnaGuitarras.className = "col-9 position-relative";
+
 
     const scrollContainer = document.createElement("div");
     scrollContainer.className = "scroll-container";
@@ -668,7 +697,7 @@ async function contenedor_Guitarras_Metal(dolar) {
     filaPrincipal.className = "row bg-black text-white";
 
     const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
+    columnaTitulo.className = "col-3 mb-3 d-flex align-items-center justify-content-center position-relative";
     columnaTitulo.style.zIndex = "10";
     columnaTitulo.style.flex = "0 0 25%";
     columnaTitulo.style.maxWidth = "25%";
@@ -705,7 +734,7 @@ async function contenedor_Guitarras_Metal(dolar) {
     columnaTitulo.appendChild(tituloDiv);
 
     const columnaGuitarras = document.createElement("div");
-    columnaGuitarras.className = "col-12 col-md-9 position-relative";
+    columnaGuitarras.className = "col-9 position-relative";
 
     const scrollContainer = document.createElement("div");
     scrollContainer.className = "scroll-container";
@@ -808,7 +837,7 @@ async function contenedor_Guitarras_Nuevas(dolar) {
     filaPrincipal.className = "row bg-black text-white";
 
     const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
+    columnaTitulo.className = "col-3 mb-3 d-flex align-items-center justify-content-center position-relative";
     columnaTitulo.style.zIndex = "10";
     columnaTitulo.style.flex = "0 0 25%";
     columnaTitulo.style.maxWidth = "25%";
@@ -839,7 +868,7 @@ async function contenedor_Guitarras_Nuevas(dolar) {
     columnaTitulo.appendChild(texto);
 
     const columnaGuitarras = document.createElement("div");
-    columnaGuitarras.className = "col-12 col-md-9 position-relative";
+    columnaGuitarras.className = "col-9 position-relative";
 
     const scrollContainer = document.createElement("div");
     scrollContainer.className = "scroll-container";
@@ -942,7 +971,7 @@ async function contenedor_Guitarras_En_Ofertas(dolar) {
     filaPrincipal.className = "row bg-black text-white";
 
     const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
+    columnaTitulo.className = "col-3 mb-3 d-flex align-items-center justify-content-center position-relative";
     columnaTitulo.style.zIndex = "10";
     columnaTitulo.style.flex = "0 0 25%";
     columnaTitulo.style.maxWidth = "25%";
@@ -973,7 +1002,7 @@ async function contenedor_Guitarras_En_Ofertas(dolar) {
     columnaTitulo.appendChild(texto);
 
     const columnaGuitarras = document.createElement("div");
-    columnaGuitarras.className = "col-12 col-md-9 position-relative";
+    columnaGuitarras.className = "col-9 position-relative";
 
     const scrollContainer = document.createElement("div");
     scrollContainer.className = "scroll-container";
@@ -1076,7 +1105,7 @@ async function contenedor_Guitarras_Mas_Vendidas(dolar) {
     filaPrincipal.className = "row bg-black text-white";
 
     const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-12 col-md-3 mb-3 d-flex align-items-center justify-content-center position-relative";
+    columnaTitulo.className = "col-3 mb-3 d-flex align-items-center justify-content-center position-relative";
     columnaTitulo.style.zIndex = "10";
     columnaTitulo.style.flex = "0 0 25%";
     columnaTitulo.style.maxWidth = "25%";
@@ -1107,7 +1136,7 @@ async function contenedor_Guitarras_Mas_Vendidas(dolar) {
     columnaTitulo.appendChild(texto);
 
     const columnaGuitarras = document.createElement("div");
-    columnaGuitarras.className = "col-12 col-md-9 position-relative";
+    columnaGuitarras.className = "col-9 position-relative";
 
     const scrollContainer = document.createElement("div");
     scrollContainer.className = "scroll-container";
@@ -1262,5 +1291,3 @@ export async function MostrarGuitarrasCrud(listado) {
         alert("Error al cargar las guitarras: " + error.message);
     }
 }
-
-            

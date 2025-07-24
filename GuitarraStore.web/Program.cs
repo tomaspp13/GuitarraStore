@@ -1,7 +1,9 @@
 ﻿using GuitarraStore.Data.Context;
 using GuitarraStore.web.Services;
 using GuitarraStore.Web.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,12 +17,23 @@ builder.Services.Configure<CloudinarySettings>(
 
 builder.Services.AddScoped<CloudinaryService>();
 
-// ✅ Agregar autenticación ANTES de builder.Build()
 builder.Services.AddAuthentication("Cookies")
     .AddCookie("Cookies", options =>
     {
         options.LoginPath = "/Usuarios/Ingresar";
+        options.AccessDeniedPath = "/Usuarios/AccesoDenegado";
+        options.ClaimsIssuer = "GuitarraStore";
+        options.Events = new CookieAuthenticationEvents
+        {
+            OnSigningIn = context =>
+            {
+                var role = context.Principal.FindFirst(ClaimTypes.Role)?.Value;
+                Console.WriteLine("OnSigningIn Role: " + role);
+                return Task.CompletedTask;
+            }
+        };
     });
+
 
 var app = builder.Build();
 
@@ -35,7 +48,6 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// ✅ Importante: orden correcto
 app.UseAuthentication();
 app.UseAuthorization();
 

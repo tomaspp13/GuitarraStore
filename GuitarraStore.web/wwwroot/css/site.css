@@ -1,6 +1,3 @@
-html {
-  font-size: 14px;
-}
 
 @media (min-width: 768px) {
   html {
@@ -22,8 +19,23 @@ html {
         color: #ced4da; 
 }
 body, html {
-    background-color: #000; 
+    background-color: #000;
+    overflow-x: hidden;
 }
+
+.navbar {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+.offcanvas {
+    max-width: 280px;
+}
+nav {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
 .card-hover {
     transform: scale(1.05);
     box-shadow: 0 6px 20px rgba(0,0,0,0.2);
@@ -34,8 +46,9 @@ body, html {
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
+    font-size: 14px;
 }
 
 img{
@@ -54,5 +67,6 @@ img{
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    overflow-x: hidden;
 }

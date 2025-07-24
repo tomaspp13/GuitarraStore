@@ -20,6 +20,7 @@ export async function validarFormulario(contenedor) {
 
             document.getElementById("marca").value = guitarra.marca;
             document.getElementById("modelo").value = guitarra.modelo;
+            document.getElementById("descripcion").value = guitarra.descripcion;
             document.getElementById("precio").value = guitarra.precio;
             const fechaFormateada = guitarra.fechaIngreso.split("T")[0];
             document.getElementById("FechaIngreso").value = fechaFormateada;
@@ -45,17 +46,21 @@ export async function validarFormulario(contenedor) {
 
         const marcaInput = document.getElementById("marca").value;
         const modeloInput = document.getElementById("modelo").value;
+        const descripcionInput = document.getElementById("descripcion").value;
         const precioInput = parseFloat(document.getElementById("precio").value);
         const esMasVendida = document.getElementById("MasVendido").checked;
         const estaEnOferta = document.getElementById("EstaEnOferta").checked;
         const genero = document.getElementById("Genero")?.value || "Sin genero";
-        const imagenInput = document.getElementById("imagen");        
+        const imagenInput = document.getElementById("imagen");  
+
+        console.log(descripcionInput);
 
         try {
             const formData = new FormData();
 
             formData.append("Marca", marcaInput);
             formData.append("Modelo", modeloInput);
+            formData.append("Descripcion", descripcionInput);
             formData.append("Precio", precioInput);
             formData.append("Oferta", estaEnOferta);
             formData.append("MasVendida", esMasVendida);

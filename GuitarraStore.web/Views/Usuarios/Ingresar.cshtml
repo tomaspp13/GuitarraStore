@@ -1,26 +1,30 @@
 ﻿@{
     ViewData["Title"] = "Iniciar sesion";
 }
+<div class="d-flex justify-content-center align-items-center" style="height: 70vh;">
 
-<form id="ingresar_usuario">
-    <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
-        <input type="email" class="form-control bg-dark text-white" id="email" placeholder="Ingrese email" required>
-    </div>
+    <form id="ingresar_usuario" class="p-4 rounded shadow bg-dark text-white" style="width: 90%; max-width: 400px;">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control bg-dark text-white" id="email" placeholder="Ingrese email" required>
+        </div>
 
-    <div class="mb-3">
-        <label for="contraseña" class="form-label">Contraseña</label>
-        <input type="password" class="form-control bg-dark text-white" id="contraseña" placeholder="Ingrese contraseña" required>
-    </div>
+        <div class="mb-3">
+            <label for="contraseña" class="form-label">Contraseña</label>
+            <input type="password" class="form-control bg-dark text-white" id="contraseña" placeholder="Ingrese contraseña" required>
+        </div>
 
-    <button type="submit" class="btn btn-primary">Aceptar</button>
+        <button type="submit" class="btn btn-primary">Aceptar</button>
 
-    <p class="mt-3">
-        ¿No tiene cuenta?
-        <a asp-controller="Usuarios" asp-action="Registrar" class="text-decoration-none text-primary">
-            Ingrese aquí
-        </a>
-    </p>
-</form>
+        <p class="mt-3">
+            ¿No tiene cuenta?
+            <a asp-controller="Usuarios" asp-action="Registrar" class="text-decoration-none text-primary">
+                Ingrese aquí
+            </a>
+        </p>
+    </form>
+
+</div>
+
 
 @section Scripts{ <script type="module" src="/js/UsuarioMain.js"></script>}

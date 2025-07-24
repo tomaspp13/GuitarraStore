@@ -8,6 +8,7 @@ namespace GuitarraStore.Modelos
         public int Id { get; set; }
         public string ?Marca { get; set; }
         public string ?Modelo { get; set; }  
+        public string ? Descripcion { get; set; }
         public float Precio { get; set; }
         public string ?UrlImagen { get; set;}
         public string? IdImagen { get; set; }

@@ -52,14 +52,18 @@ namespace GuitarraStore.web.Controllers
                 }
 
                 var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-        };
+                {
+                    new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
+                    new Claim(ClaimTypes.Role, usuario.TipoUsuario)
+                };
 
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(identity);
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                var rol = User.FindFirst(ClaimTypes.Role)?.Value;
+                Console.WriteLine("ROL: " + rol);
 
                 return Ok(usuario.TipoUsuario);
             }
