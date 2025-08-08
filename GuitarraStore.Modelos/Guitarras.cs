@@ -8,6 +8,7 @@ namespace GuitarraStore.Modelos
         public int Id { get; set; }
         public string ?Marca { get; set; }
         public string ?Modelo { get; set; }  
+        public byte? Stock { get; set; }
         public string ? Descripcion { get; set; }
         public float Precio { get; set; }
         public string ?UrlImagen { get; set;}
@@ -16,6 +17,8 @@ namespace GuitarraStore.Modelos
         public  bool EsMasVendida { get; set; }
         public bool EstaEnOferta { get; set; }
         public string? Genero { get; set; }
+
+        public List<GuitarraFactura> GuitarrasFactura { get; set; } = new();
 
     }
 }

@@ -14,11 +14,18 @@ namespace GuitarraStore.web.Controllers
         public async Task<IActionResult> CerrarSesion()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Inicio", "Home"); // o a donde quieras llevarlo después
+            return RedirectToAction("Inicio", "Home");
         }
         public IActionResult Registrar()
         {
             return View();
+        }
+
+        public IActionResult Usuario()
+        {
+
+            return View();
+
         }
 
     }

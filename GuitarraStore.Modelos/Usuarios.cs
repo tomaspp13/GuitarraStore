@@ -13,5 +13,6 @@ namespace GuitarraStore.Modelos
         public string? Email { get; set; }
         public string? Password { get; set; }
         public string? TipoUsuario { get; set; }
+        public List<Factura> Facturas { get; set; } = new();
     }
 }

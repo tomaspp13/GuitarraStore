@@ -6,6 +6,7 @@
         public string? Marca { get; set; }
         public string? Modelo { get; set; }
         public string? Descripcion { get;set; }
+        public byte Stock { get; set; }
         public float Precio { get; set; }
         public bool Oferta {  get; set; }
         public bool MasVendida {  get; set; }

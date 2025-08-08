@@ -1,10 +1,14 @@
 ﻿
 import { registrarUsuario, ingresarUsuario } from "./Form.js"
+import { MostrarGuitarrasUsuario } from "./ui.js"
 
 document.addEventListener("DOMContentLoaded", async () => {
 
     const formulario_ingreso = document.getElementById("ingresar_usuario");
     const formulario_registro = document.getElementById("registrar_usuario");
+    const correo = document.getElementById("correo");
+    const saludo = document.getElementById("saludo");
+    const contenedorGuitarras = document.getElementById("contenedor_guitarras_compradas");
 
     if (formulario_ingreso) {
 
@@ -36,5 +40,26 @@ document.addEventListener("DOMContentLoaded", async () => {
         })
 
     }
+
+    if (saludo) {
+
+        const userName = document.body.dataset.username;
+        saludo.innerHTML = `Hola ${userName}`;
+
+    }
+
+    if (correo) {
+ 
+        const userEmail = document.body.dataset.useremail;
+        correo.innerHTML = `${userEmail}`;
+
+    }
+
+    if (contenedorGuitarras) {
+
+        MostrarGuitarrasUsuario();
+    }
+
+
 
 });

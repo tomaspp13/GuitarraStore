@@ -1,4 +1,5 @@
-﻿import { obtenerGuitarras, eliminarGuitarras, agregarAlCarrito, GuitarrasMasVendidas, GuitarrasEnOferta, ObtenerNuevosIngresos, guitarrasPorGenero } from "./GuitarraServicios.js";
+﻿import { obtenerGuitarras, eliminarGuitarras, agregarAlCarrito, GuitarrasMasVendidas, GuitarrasEnOferta, ObtenerNuevosIngresos, guitarrasPorGenero, obtenerGuitarrasPorFactura } from "./GuitarraServicios.js";
+import { obtenerFacturasDeUsuario } from "./UsuarioServicios.js"
 
 export async function MostrarGuitarras(guitarras, contenedor, dolar) {
 
@@ -16,42 +17,57 @@ export async function MostrarGuitarras(guitarras, contenedor, dolar) {
     fila.className = "row";
 
     guitarras.forEach(guitarra => {
-
         const col = document.createElement("div");
-        col.className = "col-md-4 mb-4"; 
+        col.className = "col-md-4 mb-4";
 
         const card = document.createElement("div");
-        card.className = "card shadow-sm h-100 bg-dark text-white"; 
+        card.className = "card shadow-sm h-100 bg-dark text-white position-relative";
 
         const imagen = guitarra.urlImagen || "/images/placeholder.png";
 
         const precioDolar = (guitarra.precio / dolar).toFixed(2);
         const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
 
+        const sinStock = guitarra.stock === 0;
+
         card.innerHTML = `
-            <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; object-fit: cover;">
+            <div class="position-relative">
+                <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; object-fit: cover;">
+                ${sinStock ? `
+                    <div class="position-absolute top-50 start-50 translate-middle text-center bg-danger bg-opacity-75 text-white px-3 py-2 rounded">
+                        SIN STOCK
+                    </div>
+                ` : ""}
+            </div>
             <div class="card-body">
                 <h5 class="card-title">${guitarra.marca} ${guitarra.modelo}</h5>
                 <p class="card-text"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
                 <p class="card-text"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
                 <p class="card-text"><strong>USD:</strong> U$${precioDolar}</p>
                 <p class="card-text text-success fw-bold">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>
-                <button class="btn btn-primary btn-agregar-carrito">Agregar al carrito</button>
+                <button class="btn btn-primary btn-agregar-carrito" ${sinStock ? "disabled" : ""}>
+                    Agregar al carrito
+                </button>
             </div>
         `;
-       
+
         card.style.cursor = "pointer";
 
         const btnAgregar = card.querySelector(".btn-agregar-carrito");
 
-        btnAgregar.addEventListener("click", function (e) {
+        if (!sinStock) {
+            btnAgregar.addEventListener("click", function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                agregarAlCarrito(guitarra);
+            });
+        } else {
+            btnAgregar.style.cursor = "not-allowed";
+        }
 
-            e.preventDefault();
-            e.stopPropagation();
-
-            agregarAlCarrito(guitarra);
-
-        })
+        card.addEventListener("click", function () {
+            window.location.href = `/Home/Detalles/${guitarra.id}`;
+        });
 
         card.addEventListener('mouseenter', () => {
             card.classList.add('card-hover');
@@ -61,14 +77,7 @@ export async function MostrarGuitarras(guitarras, contenedor, dolar) {
             card.classList.remove('card-hover');
         });
 
-        card.addEventListener("click", function () {
-            
-            window.location.href = `/Home/Detalles/${guitarra.id}`;
-
-        })
-
         col.appendChild(card);
-
         fila.appendChild(col);
     });
 
@@ -159,14 +168,23 @@ function modificarCantidad(id, cambio) {
 
     const index = carrito.findIndex(g => g.id === id);
     if (index !== -1) {
-        carrito[index].cantidad += cambio;
 
-        if (carrito[index].cantidad <= 0) {
+        const guitarra = carrito[index];
+
+        if (cambio === 1 && guitarra.cantidad >= guitarra.stock) {
+            alert("No podés agregar más unidades, stock máximo alcanzado.");
+            return;
+        }
+
+        guitarra.cantidad += cambio;
+
+        if (guitarra.cantidad <= 0) {
             carrito.splice(index, 1);
         }
 
         localStorage.setItem("carrito", JSON.stringify(carrito));
-        mostrarCarrito();
+        mostrarCarrito(); 
+        
     }
 }
 function eliminarGuitarra(id) {
@@ -271,7 +289,7 @@ export async function MostrarGuitarrasInicio(contenedor,dolar) {
 async function contenedor_Guitarras_Jazz(dolar) {
     const guitarras = await guitarrasPorGenero("Jazz");
 
-    if (!Array.isArray(guitarras) || guitarras.length === 0) {
+    if (!Array.isArray(guitarras) || guitarras.length === 0 || !(guitarras.some(guitarra => guitarra.stock > 0))) {
         return null;
     }
 
@@ -328,32 +346,43 @@ async function contenedor_Guitarras_Jazz(dolar) {
     scrollContainer.style.whiteSpace = "nowrap";
 
     guitarras.forEach(guitarra => {
-        const card = document.createElement("div");
-        card.className = "card shadow-sm h-100 bg-dark text-white";
-        card.style.minWidth = "300px";
-        card.style.display = "inline-block";
 
-        const imagen = guitarra.urlImagen || "/images/placeholder.png";
-        const precioDolar = (guitarra.precio / dolar).toFixed(2);
-        const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+        if (guitarra.stock > 0) {
 
-        card.innerHTML = `
-            <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; width: 100%; object-fit: cover;">
-            <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
-                <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">${guitarra.marca} ${guitarra.modelo}</h5>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>USD:</strong> U$${precioDolar}</p>
-                <p class="card-text text-success fw-bold" style="margin-bottom: 0.15rem;">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
-            </div>
-        `;
-        card.style.cursor = "pointer";
+            const card = document.createElement("div");
+            card.className = "card shadow-sm h-100 bg-dark text-white";
+            card.style.minWidth = "300px";
+            card.style.display = "inline-block";
 
-        card.addEventListener("click", () => {
-            window.location.href = `/Home/Detalles/${guitarra.id}`;
-        });
+            const imagen = guitarra.urlImagen
+                ? guitarra.urlImagen.replace("/upload/", "/upload/w_400,q_auto,f_auto/")
+                : "/images/placeholder.png";
+            const precioDolar = (guitarra.precio / dolar).toFixed(2);
+            const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
 
-        scrollContainer.appendChild(card);
+            card.innerHTML = `
+                <img src="${imagen}" loading="lazy" class="card-img-top" alt="Imagen de guitarra"
+                     style="height: 400px; width: 100%; object-fit: cover;">
+                <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
+                    <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">
+                        ${guitarra.marca} ${guitarra.modelo}
+                    </h5>
+                    <p class="card-text mb-1"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
+                    <p class="card-text mb-1"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
+                    <p class="card-text mb-1"><strong>USD:</strong> U$${precioDolar}</p>
+                    <p class="card-text text-success fw-bold mb-1">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
+                </div>
+            `;
+            card.style.cursor = "pointer";
+
+            card.addEventListener("click", () => {
+                window.location.href = `/Home/Detalles/${guitarra.id}`;
+            });
+
+            scrollContainer.appendChild(card);
+
+        }
+    
     });
 
     columnaGuitarras.appendChild(scrollContainer);
@@ -410,7 +439,7 @@ async function contenedor_Guitarras_Jazz(dolar) {
 async function contenedor_Guitarras_Pop(dolar) {
     const guitarras = await guitarrasPorGenero("Pop");
 
-    if (!Array.isArray(guitarras) || guitarras.length === 0) {
+    if (!Array.isArray(guitarras) || guitarras.length === 0 || !(guitarras.some(guitarra => guitarra.stock > 0))) {
         return null;
     }
 
@@ -467,32 +496,44 @@ async function contenedor_Guitarras_Pop(dolar) {
     scrollContainer.style.whiteSpace = "nowrap";
 
     guitarras.forEach(guitarra => {
-        const card = document.createElement("div");
-        card.className = "card shadow-sm h-100 bg-dark text-white";
-        card.style.minWidth = "300px";
-        card.style.display = "inline-block";
 
-        const imagen = guitarra.urlImagen || "/images/placeholder.png";
-        const precioDolar = (guitarra.precio / dolar).toFixed(2);
-        const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+        if (guitarra.stock > 0) {
 
-        card.innerHTML = `
-            <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; width: 100%; object-fit: cover;">
-            <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
-                <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">${guitarra.marca} ${guitarra.modelo}</h5>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>USD:</strong> U$${precioDolar}</p>
-                <p class="card-text text-success fw-bold" style="margin-bottom: 0.15rem;">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
-            </div>
-        `;
-        card.style.cursor = "pointer";
+            const card = document.createElement("div");
+            card.className = "card shadow-sm h-100 bg-dark text-white";
+            card.style.minWidth = "300px";
+            card.style.display = "inline-block";
 
-        card.addEventListener("click", () => {
-            window.location.href = `/Home/Detalles/${guitarra.id}`;
-        });
+            const imagen = guitarra.urlImagen
+                ? guitarra.urlImagen.replace("/upload/", "/upload/w_400,q_auto,f_auto/")
+                : "/images/placeholder.png";
 
-        scrollContainer.appendChild(card);
+            const precioDolar = (guitarra.precio / dolar).toFixed(2);
+            const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+
+            card.innerHTML = `
+                <img src="${imagen}" loading="lazy" class="card-img-top" alt="Imagen de guitarra"
+                     style="height: 400px; width: 100%; object-fit: cover;">
+                <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
+                    <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">
+                        ${guitarra.marca} ${guitarra.modelo}
+                    </h5>
+                    <p class="card-text mb-1"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
+                    <p class="card-text mb-1"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
+                    <p class="card-text mb-1"><strong>USD:</strong> U$${precioDolar}</p>
+                    <p class="card-text text-success fw-bold mb-1">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
+                </div>
+            `;
+            card.style.cursor = "pointer";
+
+            card.addEventListener("click", () => {
+                window.location.href = `/Home/Detalles/${guitarra.id}`;
+            });
+
+            scrollContainer.appendChild(card);
+
+        }
+ 
     });
 
     columnaGuitarras.appendChild(scrollContainer);
@@ -549,7 +590,7 @@ async function contenedor_Guitarras_Pop(dolar) {
 async function contenedor_Guitarras_Rock(dolar) {
     const guitarras = await guitarrasPorGenero("Rock");
 
-    if (!Array.isArray(guitarras) || guitarras.length === 0) {
+    if (!Array.isArray(guitarras) || guitarras.length === 0 || !(guitarras.some(guitarra => guitarra.stock > 0))) {
         return null;
     }
 
@@ -607,32 +648,44 @@ async function contenedor_Guitarras_Rock(dolar) {
     scrollContainer.style.whiteSpace = "nowrap";
 
     guitarras.forEach(guitarra => {
-        const card = document.createElement("div");
-        card.className = "card shadow-sm h-100 bg-dark text-white";
-        card.style.minWidth = "300px";
-        card.style.display = "inline-block";
 
-        const imagen = guitarra.urlImagen || "/images/placeholder.png";
-        const precioDolar = (guitarra.precio / dolar).toFixed(2);
-        const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+        if (guitarra.stock > 0) {
 
-        card.innerHTML = `
-            <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; width: 100%; object-fit: cover;">
-            <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
-                <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">${guitarra.marca} ${guitarra.modelo}</h5>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>USD:</strong> U$${precioDolar}</p>
-                <p class="card-text text-success fw-bold" style="margin-bottom: 0.15rem;">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
-            </div>
-        `;
-        card.style.cursor = "pointer";
+            const card = document.createElement("div");
+            card.className = "card shadow-sm h-100 bg-dark text-white";
+            card.style.minWidth = "300px";
+            card.style.display = "inline-block";
 
-        card.addEventListener("click", () => {
-            window.location.href = `/Home/Detalles/${guitarra.id}`;
-        });
+            const imagen = guitarra.urlImagen
+                ? guitarra.urlImagen.replace("/upload/", "/upload/w_400,q_auto,f_auto/")
+                : "/images/placeholder.png";
 
-        scrollContainer.appendChild(card);
+            const precioDolar = (guitarra.precio / dolar).toFixed(2);
+            const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+
+            card.innerHTML = `
+                <img src="${imagen}" loading="lazy" class="card-img-top" alt="Imagen de guitarra"
+                     style="height: 400px; width: 100%; object-fit: cover;">
+                <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
+                    <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">
+                        ${guitarra.marca} ${guitarra.modelo}
+                    </h5>
+                    <p class="card-text mb-1"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
+                    <p class="card-text mb-1"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
+                    <p class="card-text mb-1"><strong>USD:</strong> U$${precioDolar}</p>
+                    <p class="card-text text-success fw-bold mb-1">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
+                </div>
+            `;
+            card.style.cursor = "pointer";
+
+            card.addEventListener("click", () => {
+                window.location.href = `/Home/Detalles/${guitarra.id}`;
+            });
+
+            scrollContainer.appendChild(card);
+
+        }
+ 
     });
 
     columnaGuitarras.appendChild(scrollContainer);
@@ -689,7 +742,7 @@ async function contenedor_Guitarras_Rock(dolar) {
 async function contenedor_Guitarras_Metal(dolar) {
     const guitarras = await guitarrasPorGenero("Metal");
 
-    if (!Array.isArray(guitarras) || guitarras.length === 0) {
+    if (!Array.isArray(guitarras) || guitarras.length === 0 || !(guitarras.some(guitarra => guitarra.stock > 0))) {
         return null;
     }
 
@@ -746,32 +799,43 @@ async function contenedor_Guitarras_Metal(dolar) {
     scrollContainer.style.whiteSpace = "nowrap";
 
     guitarras.forEach(guitarra => {
-        const card = document.createElement("div");
-        card.className = "card shadow-sm h-100 bg-dark text-white";
-        card.style.minWidth = "300px";
-        card.style.display = "inline-block";
 
-        const imagen = guitarra.urlImagen || "/images/placeholder.png";
-        const precioDolar = (guitarra.precio / dolar).toFixed(2);
-        const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+        if (guitarra.stock > 0) {
 
-        card.innerHTML = `
-            <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; width: 100%; object-fit: cover;">
-            <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
-                <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">${guitarra.marca} ${guitarra.modelo}</h5>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>USD:</strong> U$${precioDolar}</p>
-                <p class="card-text text-success fw-bold" style="margin-bottom: 0.15rem;">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
-            </div>
-        `;
-        card.style.cursor = "pointer";
+            const card = document.createElement("div");
+            card.className = "card shadow-sm h-100 bg-dark text-white";
+            card.style.minWidth = "300px";
+            card.style.display = "inline-block";
 
-        card.addEventListener("click", () => {
-            window.location.href = `/Home/Detalles/${guitarra.id}`;
-        });
+            const imagen = guitarra.urlImagen
+                ? guitarra.urlImagen.replace("/upload/", "/upload/w_400,q_auto,f_auto/")
+                : "/images/placeholder.png";
+            const precioDolar = (guitarra.precio / dolar).toFixed(2);
+            const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
 
-        scrollContainer.appendChild(card);
+            card.innerHTML = `
+                <img src="${imagen}" loading="lazy" class="card-img-top" alt="Imagen de guitarra"
+                     style="height: 400px; width: 100%; object-fit: cover;">
+                <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
+                    <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">
+                        ${guitarra.marca} ${guitarra.modelo}
+                    </h5>
+                    <p class="card-text mb-1"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
+                    <p class="card-text mb-1"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
+                    <p class="card-text mb-1"><strong>USD:</strong> U$${precioDolar}</p>
+                    <p class="card-text text-success fw-bold mb-1">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
+                </div>
+            `;
+            card.style.cursor = "pointer";
+
+            card.addEventListener("click", () => {
+                window.location.href = `/Home/Detalles/${guitarra.id}`;
+            });
+
+            scrollContainer.appendChild(card);
+
+        }
+
     });
 
     columnaGuitarras.appendChild(scrollContainer);
@@ -829,7 +893,7 @@ async function contenedor_Guitarras_Nuevas(dolar) {
 
     const guitarras = await ObtenerNuevosIngresos();
 
-    if (!Array.isArray(guitarras) || guitarras.length === 0) {
+    if (!Array.isArray(guitarras) || guitarras.length === 0 || !(guitarras.some(guitarra => guitarra.stock > 0))) {
         return null;
     }
 
@@ -880,32 +944,44 @@ async function contenedor_Guitarras_Nuevas(dolar) {
     scrollContainer.style.whiteSpace = "nowrap";
 
     guitarras.forEach(guitarra => {
-        const card = document.createElement("div");
-        card.className = "card shadow-sm h-100 bg-dark text-white";
-        card.style.minWidth = "300px";
-        card.style.display = "inline-block";
 
-        const imagen = guitarra.urlImagen || "/images/placeholder.png";
-        const precioDolar = (guitarra.precio / dolar).toFixed(2);
-        const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+        if (guitarra.stock > 0) {
 
-        card.innerHTML = `
-            <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; width: 100%; object-fit: cover;">
-            <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
-                <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">${guitarra.marca} ${guitarra.modelo}</h5>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>USD:</strong> U$${precioDolar}</p>
-                <p class="card-text text-success fw-bold" style="margin-bottom: 0.15rem;">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
-            </div>
-        `;
-        card.style.cursor = "pointer";
+            const card = document.createElement("div");
+            card.className = "card shadow-sm h-100 bg-dark text-white";
+            card.style.minWidth = "300px";
+            card.style.display = "inline-block";
 
-        card.addEventListener("click", () => {
-            window.location.href = `/Home/Detalles/${guitarra.id}`;
-        });
+            const imagen = guitarra.urlImagen
+                ? guitarra.urlImagen.replace("/upload/", "/upload/w_400,q_auto,f_auto/")
+                : "/images/placeholder.png";
 
-        scrollContainer.appendChild(card);
+            const precioDolar = (guitarra.precio / dolar).toFixed(2);
+            const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+
+            card.innerHTML = `
+                <img src="${imagen}" loading="lazy" class="card-img-top" alt="Imagen de guitarra"
+                     style="height: 400px; width: 100%; object-fit: cover;">
+                <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
+                    <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">
+                        ${guitarra.marca} ${guitarra.modelo}
+                    </h5>
+                    <p class="card-text mb-1"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
+                    <p class="card-text mb-1"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
+                    <p class="card-text mb-1"><strong>USD:</strong> U$${precioDolar}</p>
+                    <p class="card-text text-success fw-bold mb-1">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
+                </div>
+            `;
+            card.style.cursor = "pointer";
+
+            card.addEventListener("click", () => {
+                window.location.href = `/Home/Detalles/${guitarra.id}`;
+            });
+
+            scrollContainer.appendChild(card);
+
+        }
+
     });
 
     columnaGuitarras.appendChild(scrollContainer);
@@ -963,7 +1039,7 @@ async function contenedor_Guitarras_En_Ofertas(dolar) {
 
     const guitarras = await GuitarrasEnOferta();
 
-    if (!Array.isArray(guitarras) || guitarras.length === 0) {
+    if (!Array.isArray(guitarras) || guitarras.length === 0 || !(guitarras.some(guitarra => guitarra.stock > 0))) {
         return null;
     }
 
@@ -1014,32 +1090,43 @@ async function contenedor_Guitarras_En_Ofertas(dolar) {
     scrollContainer.style.whiteSpace = "nowrap";
 
     guitarras.forEach(guitarra => {
-        const card = document.createElement("div");
-        card.className = "card shadow-sm h-100 bg-dark text-white";
-        card.style.minWidth = "300px";
-        card.style.display = "inline-block";
 
-        const imagen = guitarra.urlImagen || "/images/placeholder.png";
-        const precioDolar = (guitarra.precio / dolar).toFixed(2);
-        const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+        if (guitarra.stock > 0) {
 
-        card.innerHTML = `
-            <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; width: 100%; object-fit: cover;">
-            <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
-                <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">${guitarra.marca} ${guitarra.modelo}</h5>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>USD:</strong> U$${precioDolar}</p>
-                <p class="card-text text-success fw-bold" style="margin-bottom: 0.15rem;">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
-            </div>
-        `;
-        card.style.cursor = "pointer";
+            const card = document.createElement("div");
+            card.className = "card shadow-sm h-100 bg-dark text-white";
+            card.style.minWidth = "300px";
+            card.style.display = "inline-block";
 
-        card.addEventListener("click", () => {
-            window.location.href = `/Home/Detalles/${guitarra.id}`;
-        });
+            const imagen = guitarra.urlImagen
+                ? guitarra.urlImagen.replace("/upload/", "/upload/w_400,q_auto,f_auto/")
+                : "/images/placeholder.png";
+            const precioDolar = (guitarra.precio / dolar).toFixed(2);
+            const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
 
-        scrollContainer.appendChild(card);
+            card.innerHTML = `
+                <img src="${imagen}" loading="lazy" class="card-img-top" alt="Imagen de guitarra"
+                     style="height: 400px; width: 100%; object-fit: cover;">
+                <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
+                    <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">
+                        ${guitarra.marca} ${guitarra.modelo}
+                    </h5>
+                    <p class="card-text mb-1"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
+                    <p class="card-text mb-1"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
+                    <p class="card-text mb-1"><strong>USD:</strong> U$${precioDolar}</p>
+                    <p class="card-text text-success fw-bold mb-1">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
+                </div>
+            `;
+            card.style.cursor = "pointer";
+
+            card.addEventListener("click", () => {
+                window.location.href = `/Home/Detalles/${guitarra.id}`;
+            });
+
+            scrollContainer.appendChild(card);
+
+        }
+
     });
 
     columnaGuitarras.appendChild(scrollContainer);
@@ -1097,7 +1184,7 @@ async function contenedor_Guitarras_Mas_Vendidas(dolar) {
 
     const guitarras = await GuitarrasMasVendidas();
 
-    if (!Array.isArray(guitarras) || guitarras.length === 0) {
+    if (!Array.isArray(guitarras) || guitarras.length === 0 || !(guitarras.some(guitarra => guitarra.stock > 0))) {
         return null;
     }
 
@@ -1148,32 +1235,44 @@ async function contenedor_Guitarras_Mas_Vendidas(dolar) {
     scrollContainer.style.whiteSpace = "nowrap";
 
     guitarras.forEach(guitarra => {
-        const card = document.createElement("div");
-        card.className = "card shadow-sm h-100 bg-dark text-white";
-        card.style.minWidth = "300px";
-        card.style.display = "inline-block";
 
-        const imagen = guitarra.urlImagen || "/images/placeholder.png";
-        const precioDolar = (guitarra.precio / dolar).toFixed(2);
-        const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+        if (guitarra.stock > 0) {
 
-        card.innerHTML = `
-            <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; width: 100%; object-fit: cover;">
-            <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
-                <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">${guitarra.marca} ${guitarra.modelo}</h5>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
-                <p class="card-text" style="margin-bottom: 0.15rem;"><strong>USD:</strong> U$${precioDolar}</p>
-                <p class="card-text text-success fw-bold" style="margin-bottom: 0.15rem;">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
-            </div>
-        `;
-        card.style.cursor = "pointer"; 
+            const card = document.createElement("div");
+            card.className = "card shadow-sm h-100 bg-dark text-white";
+            card.style.minWidth = "300px";
+            card.style.display = "inline-block";
 
-        card.addEventListener("click", () => {
-            window.location.href = `/Home/Detalles/${guitarra.id}`;
-        });
+            const imagen = guitarra.urlImagen
+                ? guitarra.urlImagen.replace("/upload/", "/upload/w_400,q_auto,f_auto/")
+                : "/images/placeholder.png";
+            const precioDolar = (guitarra.precio / dolar).toFixed(2);
+            const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
 
-        scrollContainer.appendChild(card);
+            card.innerHTML = `
+                <img src="${imagen}" loading="lazy" class="card-img-top" alt="Imagen de guitarra"
+                     style="height: 400px; width: 100%; object-fit: cover;">
+                <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
+                    <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">
+                        ${guitarra.marca} ${guitarra.modelo}
+                    </h5>
+                    <p class="card-text mb-1"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
+                    <p class="card-text mb-1"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
+                    <p class="card-text mb-1"><strong>USD:</strong> U$${precioDolar}</p>
+                    <p class="card-text text-success fw-bold mb-1">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
+                </div>
+            `;
+
+            card.style.cursor = "pointer";
+
+            card.addEventListener("click", () => {
+                window.location.href = `/Home/Detalles/${guitarra.id}`;
+            });
+
+            scrollContainer.appendChild(card);
+
+        }
+
     });
 
     columnaGuitarras.appendChild(scrollContainer);
@@ -1291,3 +1390,58 @@ export async function MostrarGuitarrasCrud(listado) {
         alert("Error al cargar las guitarras: " + error.message);
     }
 }
+export async function MostrarGuitarrasUsuario() {
+    const contenedor_guitarras = document.getElementById("contenedor_guitarras_compradas");
+    contenedor_guitarras.innerHTML = "";
+
+    const id = document.body.dataset.userid;
+    const facturas = await obtenerFacturasDeUsuario(id);
+
+    if (!facturas || facturas.length === 0) {
+        contenedor_guitarras.innerHTML = `
+            <div class="alert alert-dark text-light bg-secondary">No se encontraron facturas para este usuario.</div>`;
+        return;
+    }
+
+    facturas.forEach(async (factura) => {
+
+        const guitarras = await obtenerGuitarrasPorFactura(factura.id, id);
+
+        const tarjetaFactura = document.createElement("div");
+        tarjetaFactura.className = "card bg-dark text-light mb-4 shadow border-0 rounded-3";
+
+        const fechaOriginal = new Date(factura.fecha);
+        const fechaFormateada = fechaOriginal.toLocaleDateString("es-AR");
+
+        const contenedorFactura = document.createElement("div");
+        contenedorFactura.className = "card-header bg-secondary text-white fw-bold fs-5 border-bottom border-light";
+        contenedorFactura.innerHTML = `<div class="d-flex justify-content-between"><span>Factura Nº ${factura.id}</span><span>Fecha de Compra: ${fechaFormateada}</span></div>`;
+
+
+        tarjetaFactura.appendChild(contenedorFactura);
+
+        const bodyFactura = document.createElement("div");
+        bodyFactura.className = "card-body d-flex flex-wrap gap-4";
+
+        guitarras.forEach(guitarra => {
+            const tarjetaGuitarra = document.createElement("div");
+            tarjetaGuitarra.className = "card bg-secondary text-white shadow-sm border-0 rounded";
+            tarjetaGuitarra.style.width = "200px";
+
+            const tarjetaBody = document.createElement("div");
+            tarjetaBody.className = "card-body";
+
+            tarjetaBody.innerHTML = `
+                <h6 class="card-title fw-bold">${guitarra.marca} ${guitarra.modelo}</h6>
+                <p class="card-text"><strong>Precio:</strong> $${guitarra.precio}</p>
+            `;
+
+            tarjetaGuitarra.appendChild(tarjetaBody);
+            bodyFactura.appendChild(tarjetaGuitarra);
+        });
+
+        tarjetaFactura.appendChild(bodyFactura);
+        contenedor_guitarras.appendChild(tarjetaFactura);
+    });
+}
+

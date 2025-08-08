@@ -1,8 +1,8 @@
 ﻿
-import { obtenerGuitarras, obtenerGuitarrasPorId, obtenerValorDolar, obtenerGuitarrasPorMarca, cargarMarcas } from "./GuitarraServicios.js";
+import { obtenerGuitarras, obtenerGuitarrasPorId, obtenerValorDolar, obtenerGuitarrasPorMarca, cargarMarcas, generarCompra, mostrarToast } from "./GuitarraServicios.js";
 import { MostrarGuitarras, MostrarGuitarrasCrud, mostrarGuitarraDetalles, mostrarCarrito, MostrarGuitarrasInicio } from "./ui.js";
 import { validarFormulario } from "./Form.js"; 
-obtenerGuitarrasPorMarca
+
 document.addEventListener("DOMContentLoaded", async () => {
 
     const contenedor_principal = document.getElementById("contenedorGuitarras");
@@ -16,6 +16,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     const contenedor_marcas = document.getElementById("selectMarca");
     const btn_buscar = document.getElementById("botonBuscar");
     const contenedor_inicio = document.getElementById("contenedor_inicio");
+    const btn_comprar = document.getElementById("btnCompra");
+
 
     let dolar = 1;
 
@@ -239,6 +241,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             console.error("Error al cargar los detalles de la guitarra:", error);
             
         }
+    }
+    if (btn_comprar) {
+        btn_comprar.addEventListener("click", generarCompra);
     }
 
 });

@@ -1,5 +1,5 @@
 ﻿
-import { crearGuitarras, obtenerGuitarras, editarGuitarras, obtenerGuitarrasPorId } from "./GuitarraServicios.js";
+import { obtenerGuitarras, obtenerGuitarrasPorId,crearGuitarras, editarGuitarras } from "./GuitarraServicios.js";
 import { MostrarGuitarras } from "./ui.js"
 
 export async function validarFormulario(contenedor) {
@@ -20,6 +20,7 @@ export async function validarFormulario(contenedor) {
 
             document.getElementById("marca").value = guitarra.marca;
             document.getElementById("modelo").value = guitarra.modelo;
+            document.getElementById("stock").value = guitarra.stock;
             document.getElementById("descripcion").value = guitarra.descripcion;
             document.getElementById("precio").value = guitarra.precio;
             const fechaFormateada = guitarra.fechaIngreso.split("T")[0];
@@ -48,12 +49,11 @@ export async function validarFormulario(contenedor) {
         const modeloInput = document.getElementById("modelo").value;
         const descripcionInput = document.getElementById("descripcion").value;
         const precioInput = parseFloat(document.getElementById("precio").value);
+        const stockInput = parseInt(document.getElementById("stock").value);
         const esMasVendida = document.getElementById("MasVendido").checked;
         const estaEnOferta = document.getElementById("EstaEnOferta").checked;
         const genero = document.getElementById("Genero")?.value || "Sin genero";
         const imagenInput = document.getElementById("imagen");  
-
-        console.log(descripcionInput);
 
         try {
             const formData = new FormData();
@@ -61,6 +61,7 @@ export async function validarFormulario(contenedor) {
             formData.append("Marca", marcaInput);
             formData.append("Modelo", modeloInput);
             formData.append("Descripcion", descripcionInput);
+            formData.append("Stock", stockInput);
             formData.append("Precio", precioInput);
             formData.append("Oferta", estaEnOferta);
             formData.append("MasVendida", esMasVendida);
@@ -69,30 +70,42 @@ export async function validarFormulario(contenedor) {
             if (imagenInput.files.length > 0) {
                 formData.append("ImagenArchivo", imagenInput.files[0]);
             }
-            
+
+
             if (siEditar && id) {
                 formData.append("Id", id);
                 const fechaIngreso = document.getElementById("FechaIngreso").value;
                 formData.append("FechaIngreso", fechaIngreso);
+
                 await editarGuitarras(formData);
-                window.location.href = "/Home/GuitarrasCrud";
+
+                localStorage.setItem("toastMensaje", "Guitarra editada correctamente");
+                localStorage.setItem("toastTipo", "success");
             } else {
                 await crearGuitarras(formData);
-                formulario.reset();                
-                window.location.href = "/Home/GuitarrasCrud";
+
+                localStorage.setItem("toastMensaje", "Guitarra creada correctamente");
+                localStorage.setItem("toastTipo", "success");
 
                 if (contenedor) {
                     const mostrar = await obtenerGuitarras();
                     await MostrarGuitarras(mostrar, contenedor);
                 }
             }
+
+            formulario.reset();
+            window.location.href = "/Home/GuitarrasCrud"; 
+
         } catch (error) {
-            alert("Error al guardar la guitarra: " + error.message);
+
+            localStorage.setItem("toastMensaje", "Error del servidor " + error.message);
+            localStorage.setItem("toastTipo", "danger");
+            window.location.href = "/Home/GuitarrasCrud";
         }
     });
 
 }
-export async function registrarUsuario(usuario, contraseña,nombre) {
+export async function registrarUsuario(usuario, contraseña, nombre) {
 
     const user = {
 
@@ -113,14 +126,20 @@ export async function registrarUsuario(usuario, contraseña,nombre) {
         if (!respuesta.ok) {
 
             const errorText = await respuesta.text();
-            throw new Error("Error al registrar usuario. Respuesta: " + respuesta.status + " - " + errorText);
+            enviarErrorAlServidor("Error en la api de Registrar Usuario. Respuesta: " + respuesta.status + " - " + errorText);
+            mostrarToast("Error al registrar usuario", "danger");
+            return;
+            
         }
 
-        window.location.href = "/Home/Inicio";
-        
+        window.location.href = "/Usuarios/Ingresar";
+
     }
     catch (error) {
-        alert("Error al registrar usuario: " + error.message);
+        enviarErrorAlServidor("Error al Registrar Usuario. Respuesta: " + error.message);
+        mostrarToast("Error de servidor", "danger");
+
+        
     }
 }
 export async function ingresarUsuario(email, contraseña) {
@@ -141,7 +160,9 @@ export async function ingresarUsuario(email, contraseña) {
 
         if (!respuesta.ok) {
             const errorText = await respuesta.text();
-            throw new Error("Error al ingresar usuario. Respuesta: " + respuesta.status + " - " + errorText);
+            enviarErrorAlServidor("Error en la Api ingresar usuario. Respuesta: " + respuesta.status + " - " + errorText);
+            mostrarToast("Error al ingresar usuario", "danger");
+            return;
         }
 
         const usuario = await respuesta.text();
@@ -158,6 +179,7 @@ export async function ingresarUsuario(email, contraseña) {
 
     }
     catch (error) {
-        alert("Error al ingresar usuario: " + error.message);
+        enviarErrorAlServidor("Error al ingresar usuario: " + error.message);
+        mostrarToast("Error servidor", "danger");
     }
 }

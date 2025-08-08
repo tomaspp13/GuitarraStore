@@ -37,6 +37,7 @@ namespace GuitarraStore.web.Controllers
         [HttpPost("DevolverUsuario")]
         public async Task<IActionResult> Devolver_usuario([FromBody] Usuarios usuario_enviado)
         {
+
             try
             {
                 var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == usuario_enviado.Email);
@@ -54,7 +55,10 @@ namespace GuitarraStore.web.Controllers
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()),
-                    new Claim(ClaimTypes.Role, usuario.TipoUsuario)
+                    new Claim(ClaimTypes.Name,usuario.Nombre),
+                    new Claim(ClaimTypes.Role, usuario.TipoUsuario),
+                    new Claim(ClaimTypes.Email,usuario.Email)
+                    
                 };
 
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -62,8 +66,12 @@ namespace GuitarraStore.web.Controllers
 
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-                var rol = User.FindFirst(ClaimTypes.Role)?.Value;
-                Console.WriteLine("ROL: " + rol);
+                if (string.IsNullOrEmpty(usuario.TipoUsuario))
+                {
+                    return StatusCode(500, "El usuario no tiene un rol asignado.");
+                }
+
+                var rol = User.FindFirst(ClaimTypes.Role)?.Value;    
 
                 return Ok(usuario.TipoUsuario);
             }
@@ -72,8 +80,6 @@ namespace GuitarraStore.web.Controllers
                 return StatusCode(500, "Error interno: " + ex.Message);
             }
         }
-
-
 
         [HttpPost("RegistrarUsuario")]
         public async Task<IActionResult> Registrar_usuario([FromBody] Usuarios usuario_enviado)
@@ -84,6 +90,14 @@ namespace GuitarraStore.web.Controllers
             }
 
             string hash = BCrypt.Net.BCrypt.HashPassword(usuario_enviado.Password);
+
+            var usuarioExiste = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == usuario_enviado.Email);
+
+            if (usuarioExiste != null)
+            {
+                return Conflict("El correo electrónico ya está registrado.");
+            }
+
             var usuario = new Usuarios
             {   
                 Nombre = usuario_enviado.Nombre,
@@ -96,6 +110,23 @@ namespace GuitarraStore.web.Controllers
             await _context.SaveChangesAsync();
             return Ok();
         }
+
+        [HttpGet("ObtenerFacturas/{id}")]
+
+        public async Task<IActionResult> ObtenerFacturas(string id)
+        {
+
+            var facturas = await _context.Factura.Where(f=> f.UsuarioId == int.Parse(id)).ToListAsync();
+
+            if (facturas == null)
+            {
+                return BadRequest("Usuario no encontrado");
+            }
+
+            return Ok(facturas);
+
+        }
+        
     }
 
 }

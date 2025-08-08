@@ -4,6 +4,7 @@ using GuitarraStore.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GuitarraStore.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250729160623_ClaseIntermedia")]
+    partial class ClaseIntermedia
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,9 +95,6 @@ namespace GuitarraStore.Data.Migrations
 
                     b.Property<float>("Precio")
                         .HasColumnType("real");
-
-                    b.Property<byte?>("Stock")
-                        .HasColumnType("tinyint");
 
                     b.Property<string>("UrlImagen")
                         .HasColumnType("nvarchar(max)");

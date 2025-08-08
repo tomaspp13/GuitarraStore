@@ -7,6 +7,7 @@
 .card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 .input {
     background-color: #212529; 
     color: #fff; 

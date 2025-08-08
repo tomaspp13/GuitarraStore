@@ -4,6 +4,7 @@ using GuitarraStore.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GuitarraStore.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250729040818_agregadoDeFactura")]
+    partial class agregadoDeFactura
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,29 +36,19 @@ namespace GuitarraStore.Data.Migrations
                     b.Property<DateTime>("Fecha")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("GuitarraId")
+                        .HasColumnType("int");
+
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GuitarraId");
+
                     b.HasIndex("UsuarioId");
 
                     b.ToTable("Factura");
-                });
-
-            modelBuilder.Entity("GuitarraStore.Modelos.GuitarraFactura", b =>
-                {
-                    b.Property<int>("FacturaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GuitarraId")
-                        .HasColumnType("int");
-
-                    b.HasKey("FacturaId", "GuitarraId");
-
-                    b.HasIndex("GuitarraId");
-
-                    b.ToTable("GuitarraFactura");
                 });
 
             modelBuilder.Entity("GuitarraStore.Modelos.Guitarras", b =>
@@ -93,9 +86,6 @@ namespace GuitarraStore.Data.Migrations
                     b.Property<float>("Precio")
                         .HasColumnType("real");
 
-                    b.Property<byte?>("Stock")
-                        .HasColumnType("tinyint");
-
                     b.Property<string>("UrlImagen")
                         .HasColumnType("nvarchar(max)");
 
@@ -131,42 +121,21 @@ namespace GuitarraStore.Data.Migrations
 
             modelBuilder.Entity("GuitarraStore.Modelos.Factura", b =>
                 {
+                    b.HasOne("GuitarraStore.Modelos.Guitarras", "Guitarra")
+                        .WithMany()
+                        .HasForeignKey("GuitarraId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("GuitarraStore.Modelos.Usuarios", "Usuario")
                         .WithMany("Facturas")
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Usuario");
-                });
-
-            modelBuilder.Entity("GuitarraStore.Modelos.GuitarraFactura", b =>
-                {
-                    b.HasOne("GuitarraStore.Modelos.Factura", "Factura")
-                        .WithMany("GuitarrasFactura")
-                        .HasForeignKey("FacturaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GuitarraStore.Modelos.Guitarras", "Guitarra")
-                        .WithMany("GuitarrasFactura")
-                        .HasForeignKey("GuitarraId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Factura");
-
                     b.Navigation("Guitarra");
-                });
 
-            modelBuilder.Entity("GuitarraStore.Modelos.Factura", b =>
-                {
-                    b.Navigation("GuitarrasFactura");
-                });
-
-            modelBuilder.Entity("GuitarraStore.Modelos.Guitarras", b =>
-                {
-                    b.Navigation("GuitarrasFactura");
+                    b.Navigation("Usuario");
                 });
 
             modelBuilder.Entity("GuitarraStore.Modelos.Usuarios", b =>

@@ -1,8 +1,10 @@
 ﻿using GuitarraStore.Data.Context;
 using GuitarraStore.Data.Migrations;
 using GuitarraStore.Modelos;
+using GuitarraStore.web.DTO;
 using GuitarraStore.web.ViewModels;
 using GuitarraStore.Web.Services;
+using GuitarraStore.web.Loggers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -16,10 +18,26 @@ namespace GuitarraStore.web.Controllers
     {
         private readonly AppDbContext _context;
         private readonly CloudinaryService _cloudinaryService;
-        public GuitarraController(AppDbContext context, CloudinaryService cloudinaryService)
+        private readonly ILogger<GuitarraController> _logger;
+
+        public GuitarraController(AppDbContext context, CloudinaryService cloudinaryService, ILogger<GuitarraController> logger)
         {
             _context = context;
             _cloudinaryService = cloudinaryService;
+            _logger = logger;
+        }
+        [HttpPost("LogError")]
+        public IActionResult LogError([FromBody] LogRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Error))
+            {
+                _logger.LogWarning("El mensaje de error es requerido.");
+            }
+
+            _logger.LogError("Error capturado en el frontend: {Error} - Fecha: {Fecha}",
+                request.Error, request.Fecha);
+
+            return Ok();
         }
 
         [HttpGet("Get")]
@@ -41,8 +59,23 @@ namespace GuitarraStore.web.Controllers
 
             return Ok(guitarra);
         }
-        [HttpGet("Genero/{genero}")]
 
+        [HttpGet("ObtenerGuitarrasFactura/{facturaId}/{idUsuario}")]
+
+        public async Task<IActionResult> ObtenerGuitarrasFactura(int facturaId, string idUsuario)
+        {
+
+            var guitarras = await _context.GuitarraFactura.Where(f => f.FacturaId == facturaId && f.Factura.UsuarioId == int.Parse(idUsuario)).Select(g => g.Guitarra).ToListAsync();
+
+            if (guitarras == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(guitarras);
+        }
+
+        [HttpGet("Genero/{genero}")]
         public async Task<IActionResult> GuitarrasPorGenero(string genero)
         {
 
@@ -104,10 +137,13 @@ namespace GuitarraStore.web.Controllers
 
             if (obtenido == null)
             {
-                return NotFound();
+                _logger.LogWarning("Intento de agregar guitarra no encontrada al carrito. ID: {Id}", id);
+                return NotFound(new { mensaje = "La guitarra no fue encontrada." });
             }
 
-            return Ok();
+            _logger.LogInformation("Guitarra con ID {Id} agregada al carrito correctamente.", id);
+            return Ok(new { mensaje = "Guitarra agregada al carrito correctamente." });
+
         }
 
         [HttpGet("ObtenerMarcas")]
@@ -185,46 +221,117 @@ namespace GuitarraStore.web.Controllers
             return Ok(result);
         }
 
+        [HttpPost("Compra")]
+
+        public async Task<IActionResult> CompraGuitarras([FromBody] ComprasDTO compra)
+        {
+            if (compra == null || compra.GuitarrasCompradas == null || !compra.GuitarrasCompradas.Any())
+                return BadRequest("Datos de compra inválidos.");
+
+            using var transaccion = await _context.Database.BeginTransactionAsync();
+
+            try
+            {
+
+                var factura = new Factura
+                {
+
+                    UsuarioId = compra.IdUsuario,
+                    Fecha = DateTime.Now
+
+                };
+
+                _context.Factura.Add(factura);
+               await _context.SaveChangesAsync();
+
+                foreach(var guitarra in compra.GuitarrasCompradas)
+                {
+
+                    var guitarraBd = await _context.Guitarras.FirstAsync(g => g.Id == guitarra.IdGuitarra);
+
+                    if (guitarraBd != null) { guitarraBd.Stock -= guitarra.StokGuitarra;
+
+                        _context.Guitarras.Update(guitarraBd);
+
+                        var guitarraFactura = new GuitarraFactura
+                        {
+                            FacturaId = factura.Id,
+                            GuitarraId = guitarra.IdGuitarra
+
+                        };
+
+                        _context.GuitarraFactura.Add(guitarraFactura);
+                        
+                    }
+   
+                }
+
+                await _context.SaveChangesAsync();
+                await transaccion.CommitAsync();
+                return Ok();
+
+            }
+            catch (Exception ex) {
+
+                await transaccion.RollbackAsync();
+
+                _logger.LogError(ex, "Error al realizar la compra del usuario con ID {Id}", compra.IdUsuario);
+
+                return StatusCode(500, new { mensaje = "Ocurrió un error al realizar la compra. Intente más tarde." });
+
+            }
+
+        }
 
         [HttpPut("Put")]
         public async Task<IActionResult> Update([FromForm] GuitarraViewModel guitarraVm)
         {
-            var guitarra = await _context.Guitarras.FirstOrDefaultAsync(g => g.Id == guitarraVm.Id);
-
-            Console.WriteLine(guitarraVm.Descripcion);
-
-            if (guitarra == null)
+            try
             {
-                return NotFound();
-            }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogWarning("Datos inválidos al intentar actualizar guitarra con ID {Id}.", guitarraVm.Id);
+                    return BadRequest(new { mensaje = "Datos inválidos enviados." });
+                }
 
-            if (!ModelState.IsValid)
+                var guitarra = await _context.Guitarras.FirstOrDefaultAsync(g => g.Id == guitarraVm.Id);
+
+                if (guitarra == null)
+                {
+                    _logger.LogWarning("Guitarra con ID {Id} no encontrada para actualización.", guitarraVm.Id);
+                    return NotFound(new { mensaje = "La guitarra no fue encontrada." });
+                }
+
+                guitarra.Marca = guitarraVm.Marca;
+                guitarra.Modelo = guitarraVm.Modelo;
+                guitarra.Descripcion = guitarraVm.Descripcion;
+                guitarra.Stock = guitarraVm.Stock;
+                guitarra.Precio = guitarraVm.Precio;
+                guitarra.EsMasVendida = guitarraVm.MasVendida;
+                guitarra.EstaEnOferta = guitarraVm.Oferta;
+                guitarra.Genero = guitarraVm.Genero;
+                guitarra.FechaIngreso = (DateTime)guitarraVm.FechaIngreso;
+
+                if (guitarraVm.ImagenArchivo != null && guitarraVm.ImagenArchivo.Length > 0)
+                {
+                    await _cloudinaryService.EliminarImagenAsync(guitarra.IdImagen);
+                    var (url, id) = await _cloudinaryService.SubirImagenAsync(guitarraVm.ImagenArchivo);
+
+                    guitarra.UrlImagen = url;
+                    guitarra.IdImagen = id;
+                }
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Guitarra con ID {Id} actualizada correctamente.", guitarraVm.Id);
+                return Ok(new { mensaje = "¡La guitarra se actualizó correctamente!" });
+
+            }
+            catch (Exception ex)
             {
-                return BadRequest(ModelState);
+                _logger.LogError(ex, "Error al actualizar guitarra con ID {Id}.", guitarraVm.Id);
+                return StatusCode(500, new { mensaje = "Ocurrió un error al actualizar la guitarra. Intente más tarde." });
             }
-
-            guitarra.Marca = guitarraVm.Marca;
-            guitarra.Modelo = guitarraVm.Modelo;
-            guitarra.Descripcion = guitarraVm.Descripcion;
-            guitarra.Precio = guitarraVm.Precio;
-            guitarra.EsMasVendida = guitarraVm.MasVendida;
-            guitarra.EstaEnOferta = guitarraVm.Oferta;
-            guitarra.Genero = guitarraVm.Genero;
-            guitarra.FechaIngreso = (DateTime)guitarraVm.FechaIngreso;
-
-            if (guitarraVm.ImagenArchivo != null && guitarraVm.ImagenArchivo.Length > 0)
-            {
-                await _cloudinaryService.EliminarImagenAsync(guitarra.IdImagen);
-
-                var (url, id) = await _cloudinaryService.SubirImagenAsync(guitarraVm.ImagenArchivo);
-
-                guitarra.UrlImagen = url;
-                guitarra.IdImagen = id;
-            }
-
-            await _context.SaveChangesAsync();
-
-            return Ok();
         }
 
 
@@ -255,6 +362,7 @@ namespace GuitarraStore.web.Controllers
                     Marca = guitarraVm.Marca,
                     Modelo = guitarraVm.Modelo,
                     Descripcion = guitarraVm.Descripcion,
+                    Stock = guitarraVm.Stock,
                     Precio = guitarraVm.Precio,
                     UrlImagen = rutaImagen,
                     IdImagen = idimagen,

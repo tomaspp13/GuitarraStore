@@ -1,0 +1,49 @@
+﻿
+
+<div>
+
+    <div class="d-flex justify-content-between align-items-start p-4 text-white rounded shadow-sm">
+
+        <div>
+            <div class="mb-3">
+                <h4 class="fw-bold text-uppercase">Mi Cuenta</h4>
+            </div>
+
+            <div class="mb-2">
+                <p class="fw-semibold text-secondary mb-1">Datos Personales</p>
+            </div>
+
+            <div>
+                <p id="saludo" class="fs-5 fw-medium mb-1"></p>
+                <p id="correo" class="fs-6 text-muted mb-0"></p>
+            </div>
+        </div>
+
+        <div>
+            <form asp-controller="Usuarios" asp-action="CerrarSesion" method="post">
+                <button type="submit" class="btn btn-outline-danger d-flex align-items-center gap-2">
+                    <i class="bi bi-box-arrow-right fs-5"></i>
+                    <span class="fw-semibold">Cerrar Sesión</span>
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+
+    <div>
+
+        <div id="contenedor_guitarras_compradas">
+
+
+
+        </div>
+
+    </div>
+        
+
+</div>
+
+@section Scripts {
+    <script type="module" src="/js/UsuarioMain.js"></script>
+}
