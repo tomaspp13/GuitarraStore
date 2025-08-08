@@ -95,19 +95,20 @@ export function mostrarCarrito() {
     }
 
     let html = `
-        <table class="table table-dark table-sm text-white">
-            <thead>
-                <tr>
-                    <th style="min-width: 80px;">Imagen</th>
-                    <th>Marca</th>
-                    <th>Modelo</th>
-                    <th>Precio</th>
-                    <th>Cantidad</th>
-                    <th>Total</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
+        <div class="table-responsive"> <!-- Clase Bootstrap para scroll horizontal -->
+            <table class="table table-dark table-sm align-middle">
+                <thead>
+                    <tr>
+                        <th style="min-width: 80px;">Imagen</th>
+                        <th>Marca</th>
+                        <th>Modelo</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
     `;
 
     let totalCarrito = 0;
@@ -118,19 +119,19 @@ export function mostrarCarrito() {
 
         html += `
             <tr>
-                <td>
+                <td style="max-width: 100px;">
                     <img src="${guitarra.urlImagen}" 
                          alt="${guitarra.marca}" 
-                         style="width: 100%; max-width: 120px; height: auto; object-fit: cover; border-radius: 5px;" />
+                         class="img-fluid rounded" />
                 </td>
-                <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${guitarra.marca}</td>
-                <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${guitarra.modelo}</td>
+                <td class="text-truncate" style="max-width: 120px;">${guitarra.marca}</td>
+                <td class="text-truncate" style="max-width: 120px;">${guitarra.modelo}</td>
                 <td>$${guitarra.precio}</td>
                 <td>${guitarra.cantidad}</td>
                 <td>$${total}</td>
                 <td>
-                    <button class="btn btn-sm btn-success btn-sumar" data-id="${guitarra.id}">+</button>
-                    <button class="btn btn-sm btn-warning btn-restar" data-id="${guitarra.id}">-</button>
+                    <button class="btn btn-sm btn-success btn-sumar mb-1" data-id="${guitarra.id}">+</button>
+                    <button class="btn btn-sm btn-warning btn-restar mb-1" data-id="${guitarra.id}">-</button>
                     <button class="btn btn-sm btn-danger btn-eliminar" data-id="${guitarra.id}">Eliminar</button>
                 </td>
             </tr>
@@ -138,8 +139,9 @@ export function mostrarCarrito() {
     });
 
     html += `
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
         <h4>Total del carrito: $${totalCarrito}</h4>
     `;
 
@@ -163,6 +165,7 @@ export function mostrarCarrito() {
         });
     });
 }
+
 function modificarCantidad(id, cambio) {
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
