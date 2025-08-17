@@ -1,5 +1,5 @@
 ﻿
-import { obtenerGuitarras, obtenerGuitarrasPorId, obtenerValorDolar, obtenerGuitarrasPorMarca, cargarMarcas, generarCompra, mostrarToast } from "./GuitarraServicios.js";
+import { obtenerGuitarras, obtenerGuitarrasPorId, obtenerGuitarrasPorMarca, cargarMarcas, generarCompra, obtenerValorDolar } from "./GuitarraServicios.js";
 import { MostrarGuitarras, MostrarGuitarrasCrud, mostrarGuitarraDetalles, mostrarCarrito, MostrarGuitarrasInicio } from "./ui.js";
 import { validarFormulario } from "./Form.js"; 
 
@@ -18,18 +18,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const contenedor_inicio = document.getElementById("contenedor_inicio");
     const btn_comprar = document.getElementById("btnCompra");
 
-
-    let dolar = 1;
-
-    try {
-        dolar = await obtenerValorDolar();
-    } catch (error) {
-        console.error("No se pudo obtener cotización:", error);
-    }
-
     if (contenedor_inicio) {
 
-        await MostrarGuitarrasInicio(contenedor_inicio, dolar);
+        await MostrarGuitarrasInicio(contenedor_inicio);
 
     }
     if (contenedor_marcas)
@@ -60,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                 obtenerGuitarrasPorMarca(busquedas, marca, filtro, preMin, preMax)
                     .then(guitarra_filtrada => {
-                        MostrarGuitarras(guitarra_filtrada, contenedor_principal, dolar);
+                        MostrarGuitarras(guitarra_filtrada, contenedor_principal);
                     })
                     .catch(error => {
                         console.error("Error al buscar las guitarras:", error);
@@ -100,7 +91,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             try {
                 const guitarras = await obtenerGuitarrasPorMarca(busqueda,marca, filtro, preMin, preMax);
-                await MostrarGuitarras(guitarras, contenedor_principal, dolar);
+                await MostrarGuitarras(guitarras, contenedor_principal);
             } catch (error) {
                 console.error("Error al cargar las guitarras:", error);
             }
@@ -135,8 +126,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
 
             try {
-                const guitarras = await obtenerGuitarrasPorMarca(busqueda, marca, filtro, preMin, preMax);
-                await MostrarGuitarras(guitarras, contenedor_principal, dolar);
+
+                const [guitarra_filtradas, dolar] = await Promise.all([
+                    obtenerGuitarrasPorMarca(busqueda, marca, filtro, preMin, preMax),
+                    obtenerValorDolar()
+                ]);
+
+                await MostrarGuitarras(guitarra_filtradas, contenedor_principal,dolar);
             } catch (error) {
                 console.error("Error al cargar las guitarras:", error);
             }
@@ -171,8 +167,12 @@ document.addEventListener("DOMContentLoaded", async () => {
                 return;
             }
 
-            const guitarras_filtradas = await obtenerGuitarrasPorMarca(busqueda, marca, tipoFiltro, preMin, preMax);
-            await MostrarGuitarras(guitarras_filtradas, contenedor_principal, dolar);
+            const [guitarra_filtradas, dolar] = await Promise.all([
+                obtenerGuitarrasPorMarca(busqueda, marca, filtro, preMin, preMax),
+                obtenerValorDolar()
+            ]);
+
+            await MostrarGuitarras(guitarra_filtradas, contenedor_principal,dolar);
 
         });
     }
@@ -188,8 +188,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     if (botonCrear) { botonCrear.addEventListener("click", function () { window.location.href = "/Home/Crear" }); }
     if (contenedor_principal && !window.location.search.includes("busqueda=")) {
-        const guitarra = await obtenerGuitarras();
-        await MostrarGuitarras(guitarra, contenedor_principal, dolar);
+
+        const [guitarra, dolar] = await Promise.all([
+            obtenerGuitarras(),
+            obtenerValorDolar()
+        ]);
+
+        await MostrarGuitarras(guitarra, contenedor_principal,dolar);
     }
     if (contenedor_principal && window.location.pathname.includes("/Home/Guitarras")) {
         const urlParams = new URLSearchParams(window.location.search);
@@ -204,7 +209,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             const preMax = 99999999;
 
             try {
-                const guitarra_filtrada = await obtenerGuitarrasPorMarca(busqueda, marca, filtro, preMin, preMax);
+                const [guitarra_filtrada, dolar] = await Promise.all([
+                    obtenerGuitarrasPorMarca(busqueda, marca, filtro, preMin, preMax),
+                    obtenerValorDolar()
+                ]);
                 await MostrarGuitarras(guitarra_filtrada, contenedor_principal, dolar);
             } catch (error) {
                 console.error("Error al buscar las guitarras por URL:", error);

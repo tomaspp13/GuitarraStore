@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Text.Json;
 
 namespace GuitarraStore.web.Controllers
 {
@@ -19,6 +21,8 @@ namespace GuitarraStore.web.Controllers
         private readonly AppDbContext _context;
         private readonly CloudinaryService _cloudinaryService;
         private readonly ILogger<GuitarraController> _logger;
+        private static double? _valorDolarCache = null;
+        private static DateTime _cacheTime = DateTime.MinValue;
 
         public GuitarraController(AppDbContext context, CloudinaryService cloudinaryService, ILogger<GuitarraController> logger)
         {
@@ -75,59 +79,35 @@ namespace GuitarraStore.web.Controllers
             return Ok(guitarras);
         }
 
-        [HttpGet("Genero/{genero}")]
-        public async Task<IActionResult> GuitarrasPorGenero(string genero)
+        [HttpGet("GuitarrasCategorias")]
+        public async Task<IActionResult> MostrarCategoriasGuitarras()
         {
 
-            var guitarras = await _context.Guitarras.Where(g => g.Genero == genero).ToListAsync();
+            var masVendido = await _context.Guitarras.Where(g => g.EsMasVendida).ToListAsync();
+            var enOferta = await _context.Guitarras.Where(g => g.EstaEnOferta).ToListAsync();
+            var masNuevo = await _context.Guitarras.OrderByDescending(g => g.FechaIngreso).Take(4).ToArrayAsync();
+            var metal = await _context.Guitarras.Where(g => g.Genero == "Metal").ToListAsync();
+            var rock = await _context.Guitarras.Where(g => g.Genero == "Rock").ToListAsync();
+            var pop = await _context.Guitarras.Where(g => g.Genero == "Pop").ToListAsync();
+            var jazz = await _context.Guitarras.Where(g => g.Genero == "Jazz").ToListAsync();
 
-            if (guitarras == null) { return NotFound(); }
+            var listado = new
+            {
+                Metal = metal,
+                Rock = rock,
+                Pop = pop,
+                Jazz = jazz,
+                EnOfertas = enOferta,
+                Nuevas = masNuevo,
+                MasVendidas = masVendido
+            };
 
-            return Ok(guitarras);
 
-        }
-
-        [HttpGet("GuitarrasEnOfertas")]
-        public async Task<IActionResult> GuitarrasConOfertas()
-        {
-            var guitarra = await _context.Guitarras.Where(g=> g.EstaEnOferta == true).ToListAsync();
-
-            if(guitarra == null) 
-            { 
-                return NotFound(); 
-            }
-
-            return Ok(guitarra);
-        }
-
-        [HttpGet("GuitarrasNuevas")]
-
-        public async Task<IActionResult> GuitarrasNuevas()
-        {
-            var guitara = await _context.Guitarras.OrderByDescending(g=> g.FechaIngreso).Take(4).ToArrayAsync();
-
-            if(guitara == null) 
-            { 
-                return NotFound(); 
-            }
-
-            return Ok(guitara);
-        }
-
-        [HttpGet("GuitarrasMasVendidas")]
-
-        public async Task<IActionResult> GuitarrasMasVendidas()
-        {
-            var guitarra = await _context.Guitarras.Where(g => g.EsMasVendida == true).ToListAsync();
-
-            if(guitarra == null) { return NotFound();}
-
-            return Ok(guitarra);
+            return Ok(listado);
 
         }
 
         [HttpGet("AgregarGuitarraaCarrito")]
-
         public IActionResult AgregarGuitarraaCarrito(int id)
         {
 
@@ -147,7 +127,6 @@ namespace GuitarraStore.web.Controllers
         }
 
         [HttpGet("ObtenerMarcas")]
-
         public async Task<IActionResult> ObtenerMarcas() 
         {
         
@@ -405,6 +384,27 @@ namespace GuitarraStore.web.Controllers
 
            return Ok();
 
+        }
+
+        [HttpGet("ValorDolar")]
+        public async Task<IActionResult> Dolar()
+        {
+           
+           if (_valorDolarCache.HasValue && (DateTime.Now - _cacheTime).TotalMinutes < 10)
+           { 
+                    return Ok(_valorDolarCache.Value);
+           }
+
+           using var httpClient = new HttpClient();
+           var response = await httpClient.GetStringAsync("https://dolarapi.com/v1/dolares/oficial");
+           var json = JsonDocument.Parse(response);
+           var valor = json.RootElement.GetProperty("venta").GetDouble();
+
+           _valorDolarCache = valor;
+           _cacheTime = DateTime.Now;
+
+           return Ok(valor);
+          
         }
 
     }

@@ -46,7 +46,12 @@
         <div class="mb-3">
 
             <label for="Genero" class="form-label">Genero:</label>
-            <input type="text" id="Genero" class="form-control bg-dark text-white">
+            <select id="Genero" class="form-control bg-dark text-white">
+                <option value="rock">Rock</option>
+                <option value="metal">Metal</option>
+                <option value="pop">Pop</option>
+                <option value="jazz">Jazz</option>
+            </select>
 
         </div>
 
@@ -69,5 +74,5 @@
 
     </form>
  
-    <script type="module" src="/js/main.js"></script>
+    <script type="module" src="/js/main.js" asp-append-version="true" defer></script>
 </body>

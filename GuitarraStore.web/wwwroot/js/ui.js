@@ -1,4 +1,8 @@
-﻿import { obtenerGuitarras, eliminarGuitarras, agregarAlCarrito, GuitarrasMasVendidas, GuitarrasEnOferta, ObtenerNuevosIngresos, guitarrasPorGenero, obtenerGuitarrasPorFactura } from "./GuitarraServicios.js";
+﻿import {
+    obtenerGuitarras, eliminarGuitarras, obtenerGuitarrasPorFactura, crearTarjetasGuitarras,
+    crearTarjetasCompletas, obtenerCategoriasGuitarras, optimizarImagenCloudinary, obtenerValorDolar
+} from "./GuitarraServicios.js";
+
 import { obtenerFacturasDeUsuario } from "./UsuarioServicios.js"
 
 export async function MostrarGuitarras(guitarras, contenedor, dolar) {
@@ -13,73 +17,7 @@ export async function MostrarGuitarras(guitarras, contenedor, dolar) {
 
     contenedor.innerHTML = "";
 
-    const fila = document.createElement("div");
-    fila.className = "row";
-
-    guitarras.forEach(guitarra => {
-        const col = document.createElement("div");
-        col.className = "col-md-4 mb-4";
-
-        const card = document.createElement("div");
-        card.className = "card shadow-sm h-100 bg-dark text-white position-relative";
-
-        const imagen = guitarra.urlImagen || "/images/placeholder.png";
-
-        const precioDolar = (guitarra.precio / dolar).toFixed(2);
-        const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
-
-        const sinStock = guitarra.stock === 0;
-
-        card.innerHTML = `
-            <div class="position-relative">
-                <img src="${imagen}" class="card-img-top" alt="Imagen de guitarra" style="height: 400px; object-fit: cover;">
-                ${sinStock ? `
-                    <div class="position-absolute top-50 start-50 translate-middle text-center bg-danger bg-opacity-75 text-white px-3 py-2 rounded">
-                        SIN STOCK
-                    </div>
-                ` : ""}
-            </div>
-            <div class="card-body">
-                <h5 class="card-title">${guitarra.marca} ${guitarra.modelo}</h5>
-                <p class="card-text"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
-                <p class="card-text"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
-                <p class="card-text"><strong>USD:</strong> U$${precioDolar}</p>
-                <p class="card-text text-success fw-bold">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>
-                <button class="btn btn-primary btn-agregar-carrito" ${sinStock ? "disabled" : ""}>
-                    Agregar al carrito
-                </button>
-            </div>
-        `;
-
-        card.style.cursor = "pointer";
-
-        const btnAgregar = card.querySelector(".btn-agregar-carrito");
-
-        if (!sinStock) {
-            btnAgregar.addEventListener("click", function (e) {
-                e.preventDefault();
-                e.stopPropagation();
-                agregarAlCarrito(guitarra);
-            });
-        } else {
-            btnAgregar.style.cursor = "not-allowed";
-        }
-
-        card.addEventListener("click", function () {
-            window.location.href = `/Home/Detalles/${guitarra.id}`;
-        });
-
-        card.addEventListener('mouseenter', () => {
-            card.classList.add('card-hover');
-        });
-
-        card.addEventListener('mouseleave', () => {
-            card.classList.remove('card-hover');
-        });
-
-        col.appendChild(card);
-        fila.appendChild(col);
-    });
+    const fila = await crearTarjetasGuitarras(guitarras, dolar);
 
     contenedor.appendChild(fila);
 }
@@ -95,7 +33,7 @@ export function mostrarCarrito() {
     }
 
     let html = `
-        <div class="table-responsive"> <!-- Clase Bootstrap para scroll horizontal -->
+        <div class="table-responsive"> 
             <table class="table table-dark table-sm align-middle">
                 <thead>
                     <tr>
@@ -122,7 +60,7 @@ export function mostrarCarrito() {
                 <td style="max-width: 100px;">
                     <img src="${guitarra.urlImagen}" 
                          alt="${guitarra.marca}" 
-                         class="img-fluid rounded" />
+                         class="img-fluid rounded" width = "137" height="205"/>
                 </td>
                 <td class="text-truncate" style="max-width: 120px;">${guitarra.marca}</td>
                 <td class="text-truncate" style="max-width: 120px;">${guitarra.modelo}</td>
@@ -165,7 +103,6 @@ export function mostrarCarrito() {
         });
     });
 }
-
 function modificarCantidad(id, cambio) {
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
@@ -186,8 +123,8 @@ function modificarCantidad(id, cambio) {
         }
 
         localStorage.setItem("carrito", JSON.stringify(carrito));
-        mostrarCarrito(); 
-        
+        mostrarCarrito();
+
     }
 }
 function eliminarGuitarra(id) {
@@ -196,7 +133,7 @@ function eliminarGuitarra(id) {
     carrito = carrito.filter(g => g.id !== id);
 
     localStorage.setItem("carrito", JSON.stringify(carrito));
-    mostrarCarrito(); 
+    mostrarCarrito();
 }
 export async function mostrarGuitarraDetalles(guitarra, contenedor) {
 
@@ -218,16 +155,21 @@ export async function mostrarGuitarraDetalles(guitarra, contenedor) {
     `;
 
     div_imagen.innerHTML = `
-        <img src="${imagen}" class="img-fluid rounded shadow" alt="${guitarra.marca}" />
+        <img src="${imagen}"
+     alt="Jet Guitars"
+     class="w-100 h-100 rounded shadow"
+     style="object-fit: cover;"
+     fetchpriority="high"
+     width="800"
+     height="600">
     `;
 
     contenedor.classList.add("container", "my-4");
 
-    div_contenedor.classList.add("row", "align-items-center", "mb-4");
+    div_contenedor.classList.add("row", "align-items-stretch", "mb-4");
 
-    div_imagen.classList.add("col-sm-6", "text-center");
-    div_titulo.classList.add("col-sm-6", "text-center");
-    div_descripcion.classList.add("col-sm-6", "text-center", "w-100");
+    div_imagen.classList.add("col-sm-6", "p-0");
+
     div_contenedor_general.classList.add("col-sm-6", "d-flex", "flex-column", "justify-content-center", "align-items-center", "text-center");
 
     div_titulo.style.fontFamily = "'Poppins', sans-serif";
@@ -241,18 +183,54 @@ export async function mostrarGuitarraDetalles(guitarra, contenedor) {
 
     contenedor.appendChild(div_contenedor);
 }
-export async function MostrarGuitarrasInicio(contenedor,dolar) {
+export async function MostrarGuitarrasInicio(contenedor) {
 
     contenedor.innerHTML = "";
 
-    const div_mas_vendido = await contenedor_Guitarras_Mas_Vendidas(dolar);
-    const div_ofertas = await contenedor_Guitarras_En_Ofertas(dolar);
-    const div_nuevos_ingresos = await contenedor_Guitarras_Nuevas(dolar);
-    const div_genero_metal = await contenedor_Guitarras_Metal(dolar);
-    const div_genero_rock = await contenedor_Guitarras_Rock(dolar);
-    const div_genero_pop = await contenedor_Guitarras_Pop(dolar);
-    const div_genero_jazz = await contenedor_Guitarras_Jazz(dolar);
-    
+    const [guitarrasCategorias, dolar] = await Promise.all([
+        obtenerCategoriasGuitarras(),
+        obtenerValorDolar()
+    ]);
+
+    const metal = guitarrasCategorias.metal;
+    const rock = guitarrasCategorias.rock;
+    const pop = guitarrasCategorias.pop;
+    const jazz = guitarrasCategorias.jazz;
+    const masVendidas = guitarrasCategorias.masVendidas;
+    const enOferta = guitarrasCategorias.enOfertas;
+    const masNuevo = guitarrasCategorias.nuevas;
+
+    const primerGuitarra = metal[0] || rock[0] || pop[0] || jazz[0] || masVendidas[0] || enOferta[0] || masNuevo[0];
+
+    if (primerGuitarra) {
+        const { src } = optimizarImagenCloudinary(primerGuitarra.urlImagen, 300, 400);
+        const preload = document.createElement("link");
+        preload.rel = "preload";
+        preload.as = "image";
+        preload.href = src;
+        preload.fetchPriority = "high";
+        document.head.appendChild(preload);
+    }
+
+
+    const [
+        div_mas_vendido,
+        div_ofertas,
+        div_nuevos_ingresos,
+        div_genero_metal,
+        div_genero_rock,
+        div_genero_pop,
+        div_genero_jazz
+    ] = await Promise.all([
+        contenedor_Guitarras_Mas_Vendidas(masVendidas, dolar),
+        contenedor_Guitarras_En_Ofertas(enOferta, dolar),
+        contenedor_Guitarras_Nuevas(masNuevo, dolar),
+        contenedor_Guitarras_Metal(metal, dolar),
+        contenedor_Guitarras_Rock(rock, dolar),
+        contenedor_Guitarras_Pop(pop, dolar),
+        contenedor_Guitarras_Jazz(jazz, dolar)
+    ]);
+
     if (div_mas_vendido) {
         div_mas_vendido.classList.add("mb-3");
         contenedor.appendChild(div_mas_vendido);
@@ -289,1044 +267,78 @@ export async function MostrarGuitarrasInicio(contenedor,dolar) {
     }
 
 }
-async function contenedor_Guitarras_Jazz(dolar) {
-    const guitarras = await guitarrasPorGenero("Jazz");
+async function contenedor_Guitarras_Jazz(guitarrasJazz,dolar) {
 
-    if (!Array.isArray(guitarras) || guitarras.length === 0 || !(guitarras.some(guitarra => guitarra.stock > 0))) {
+    if (!Array.isArray(guitarrasJazz) || guitarrasJazz.length === 0 || !(guitarrasJazz.some(guitarra => guitarra.stock > 0))) {
         return null;
     }
 
-    const filaPrincipal = document.createElement("div");
-    filaPrincipal.className = "row bg-black text-white";
+    const urlGuitarraJazz = "https://res.cloudinary.com/dgqkeshqh/video/upload/v1754675329/guitarrasJazz_pzu9gg.mp4";
 
-    const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-3 mb-3 d-flex align-items-center justify-content-center position-relative";
-    columnaTitulo.style.zIndex = "10";
-    columnaTitulo.style.flex = "0 0 25%";
-    columnaTitulo.style.maxWidth = "25%";
-    columnaTitulo.style.padding = "1rem";
-    columnaTitulo.style.color = "white";
-    columnaTitulo.style.fontWeight = "bold";
-    columnaTitulo.style.textShadow = "2px 2px 4px rgba(0,0,0,0.7)";
+    return await crearTarjetasCompletas(guitarrasJazz, urlGuitarraJazz,"Jazz","video",dolar);
+}
+async function contenedor_Guitarras_Pop(guitarrasPop,dolar) {
 
-    columnaTitulo.style.position = "relative";
+    if (!Array.isArray(guitarrasPop) || guitarrasPop.length === 0 || !(guitarrasPop.some(guitarra => guitarra.stock > 0))) {
+        return null;
+    }
+    const urlGuitarraPop = "https://res.cloudinary.com/dgqkeshqh/video/upload/v1754674666/guitarrasPop_knptq8.mp4";
 
-    const fondoGif = document.createElement("div");
-    fondoGif.style.backgroundImage = "url('https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdnplNmcyZGFlN2F2YWo0YTRpZHFrdW02b3g1cDVoaTg0Y3ljdnhmNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/loSbOhhEjg0ROfM1Mr/giphy.gif')";
-    fondoGif.style.backgroundSize = "cover";
-    fondoGif.style.backgroundPosition = "center";
-    fondoGif.style.backgroundRepeat = "no-repeat";
+    return await crearTarjetasCompletas(guitarrasPop, urlGuitarraPop,"Pop","video",dolar);
+}
+async function contenedor_Guitarras_Rock(guitarrasRock,dolar) {
 
-    fondoGif.style.position = "absolute";
-    fondoGif.style.top = "0";
-    fondoGif.style.left = "0";
-    fondoGif.style.width = "100%";
-    fondoGif.style.height = "100%";
-    fondoGif.style.zIndex = "1";
+    if (!Array.isArray(guitarrasRock) || guitarrasRock.length === 0 || !(guitarrasRock.some(guitarra => guitarra.stock > 0))) {
+        return null;
+    }
 
-    fondoGif.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
+    const urlGuitarraRock = "https://res.cloudinary.com/dgqkeshqh/video/upload/v1754675331/guitarrasRock_q2wvy4.mp4";
 
-    fondoGif.style.backgroundBlendMode = "darken";
+    return await crearTarjetasCompletas(guitarrasRock, urlGuitarraRock,"Rock","video",dolar);
+}
+async function contenedor_Guitarras_Metal(guitarrasMetal,dolar) {
 
-    const tituloDiv = document.createElement("div");
-    tituloDiv.style.position = "relative";
-    tituloDiv.style.zIndex = "2";
-    tituloDiv.innerHTML = `<h3 class="text-center m-0">Jazz</h3>`;
+    if (!Array.isArray(guitarrasMetal) || guitarrasMetal.length === 0 || !(guitarrasMetal.some(guitarra => guitarra.stock > 0))) {
+        return null;
+    }
 
-    columnaTitulo.appendChild(fondoGif);
-    columnaTitulo.appendChild(tituloDiv);
+    const urlGuitarraMetal = "https://res.cloudinary.com/dgqkeshqh/video/upload/v1754675330/guitarrasMetal_skseed.mp4";
 
-    const columnaGuitarras = document.createElement("div");
-    columnaGuitarras.className = "col-9 position-relative";
+    return await crearTarjetasCompletas(guitarrasMetal, urlGuitarraMetal,"Metal","video",dolar);
 
-    const scrollContainer = document.createElement("div");
-    scrollContainer.className = "scroll-container";
-    scrollContainer.style.display = "flex";
-    scrollContainer.style.overflowX = "auto";
-    scrollContainer.style.gap = "1rem";
-    scrollContainer.style.paddingBottom = "0.5rem";
-    scrollContainer.style.scrollBehavior = "smooth";
-    scrollContainer.style.whiteSpace = "nowrap";
+}
+async function contenedor_Guitarras_Nuevas(guitarrasMasNuevas,dolar) {
 
-    guitarras.forEach(guitarra => {
+    if (!Array.isArray(guitarrasMasNuevas) || guitarrasMasNuevas.length === 0 || !(guitarrasMasNuevas.some(guitarra => guitarra.stock > 0))) {
+        return null;
+    }
 
-        if (guitarra.stock > 0) {
+    const urlGuitarrasNuevas = "https://images.unsplash.com/photo-1615716175369-dbcda46573c9?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
-            const card = document.createElement("div");
-            card.className = "card shadow-sm h-100 bg-dark text-white";
-            card.style.minWidth = "300px";
-            card.style.display = "inline-block";
+    return await crearTarjetasCompletas(guitarrasMasNuevas, urlGuitarrasNuevas,"Nuevos Ingresos","imagen",dolar);
 
-            const imagen = guitarra.urlImagen
-                ? guitarra.urlImagen.replace("/upload/", "/upload/w_400,q_auto,f_auto/")
-                : "/images/placeholder.png";
-            const precioDolar = (guitarra.precio / dolar).toFixed(2);
-            const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
+}
+async function contenedor_Guitarras_En_Ofertas(guitarrasEnOferta,dolar) {
 
-            card.innerHTML = `
-                <img src="${imagen}" loading="lazy" class="card-img-top" alt="Imagen de guitarra"
-                     style="height: 400px; width: 100%; object-fit: cover;">
-                <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
-                    <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">
-                        ${guitarra.marca} ${guitarra.modelo}
-                    </h5>
-                    <p class="card-text mb-1"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
-                    <p class="card-text mb-1"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
-                    <p class="card-text mb-1"><strong>USD:</strong> U$${precioDolar}</p>
-                    <p class="card-text text-success fw-bold mb-1">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
-                </div>
-            `;
-            card.style.cursor = "pointer";
+    if (!Array.isArray(guitarrasEnOferta) || guitarrasEnOferta.length === 0 || !(guitarrasEnOferta.some(guitarra => guitarra.stock > 0))) {
+        return null;
+    }
 
-            card.addEventListener("click", () => {
-                window.location.href = `/Home/Detalles/${guitarra.id}`;
-            });
+    const urlEnOferta = "https://images.unsplash.com/photo-1589264110781-1ebfa05f901e?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
-            scrollContainer.appendChild(card);
+    return await crearTarjetasCompletas(guitarrasEnOferta, urlEnOferta,"Ofertas","imagen",dolar);
 
-        }
+}
+async function contenedor_Guitarras_Mas_Vendidas(guitarrasMasVendidas,dolar) {
+
+    if (!Array.isArray(guitarrasMasVendidas) || guitarrasMasVendidas.length === 0 || !(guitarrasMasVendidas.some(guitarra => guitarra.stock > 0))) {
+        return null;
+    }
+
+    const urlMasVendidas = "https://images.unsplash.com/photo-1569982175971-d92b01cf8694?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGZvbmRvJTIwZGVncmFkYWRvfGVufDB8fDB8fHww";
+
+    return await crearTarjetasCompletas(guitarrasMasVendidas, urlMasVendidas,"Mas vendido","imagen",dolar);
     
-    });
-
-    columnaGuitarras.appendChild(scrollContainer);
-
-    const flechaIzq = document.createElement("button");
-    flechaIzq.innerHTML = "&#8249;";
-    flechaIzq.style.position = "absolute";
-    flechaIzq.style.top = "50%";
-    flechaIzq.style.left = "0";
-    flechaIzq.style.transform = "translateY(-50%)";
-    flechaIzq.style.zIndex = "20";
-    flechaIzq.style.background = "rgba(255,255,255,0.8)";
-    flechaIzq.style.border = "none";
-    flechaIzq.style.fontSize = "2rem";
-    flechaIzq.style.cursor = "pointer";
-    flechaIzq.style.padding = "0 0.5rem";
-    flechaIzq.style.borderRadius = "0 5px 5px 0";
-    flechaIzq.style.userSelect = "none";
-
-    const flechaDer = document.createElement("button");
-    flechaDer.innerHTML = "&#8250;";
-    flechaDer.style.position = "absolute";
-    flechaDer.style.top = "50%";
-    flechaDer.style.right = "0";
-    flechaDer.style.transform = "translateY(-50%)";
-    flechaDer.style.zIndex = "20";
-    flechaDer.style.background = "rgba(255,255,255,0.8)";
-    flechaDer.style.border = "none";
-    flechaDer.style.fontSize = "2rem";
-    flechaDer.style.cursor = "pointer";
-    flechaDer.style.padding = "0 0.5rem";
-    flechaDer.style.borderRadius = "5px 0 0 5px";
-    flechaDer.style.userSelect = "none";
-
-    const scrollAmount = 300;
-
-    flechaIzq.addEventListener("click", () => {
-        scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    });
-
-    flechaDer.addEventListener("click", () => {
-        scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    });
-
-    columnaGuitarras.appendChild(flechaIzq);
-    columnaGuitarras.appendChild(flechaDer);
-
-    filaPrincipal.appendChild(columnaTitulo);
-    filaPrincipal.appendChild(columnaGuitarras);
-
-    return filaPrincipal;
-
-}
-async function contenedor_Guitarras_Pop(dolar) {
-    const guitarras = await guitarrasPorGenero("Pop");
-
-    if (!Array.isArray(guitarras) || guitarras.length === 0 || !(guitarras.some(guitarra => guitarra.stock > 0))) {
-        return null;
-    }
-
-    const filaPrincipal = document.createElement("div");
-    filaPrincipal.className = "row bg-black text-white";
-
-    const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-3 mb-3 d-flex align-items-center justify-content-center position-relative";
-    columnaTitulo.style.zIndex = "10";
-    columnaTitulo.style.flex = "0 0 25%";
-    columnaTitulo.style.maxWidth = "25%";
-    columnaTitulo.style.padding = "1rem";
-    columnaTitulo.style.color = "white";
-    columnaTitulo.style.fontWeight = "bold";
-    columnaTitulo.style.textShadow = "2px 2px 4px rgba(0,0,0,0.7)";
-
-    columnaTitulo.style.position = "relative";
-
-    const fondoGif = document.createElement("div");
-    fondoGif.style.backgroundImage = "url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExcDJnMHkwemZraWswYmNjcTMzaXRvbW00NHpydDJnZTJ5MHV6aGpmMyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/zMyimpINxc6c6Joi99/giphy.gif')";
-    fondoGif.style.backgroundSize = "cover";
-    fondoGif.style.backgroundPosition = "center";
-    fondoGif.style.backgroundRepeat = "no-repeat";
-
-    fondoGif.style.position = "absolute";
-    fondoGif.style.top = "0";
-    fondoGif.style.left = "0";
-    fondoGif.style.width = "100%";
-    fondoGif.style.height = "100%";
-    fondoGif.style.zIndex = "1";
-
-    fondoGif.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-
-    fondoGif.style.backgroundBlendMode = "darken";
-
-    const tituloDiv = document.createElement("div");
-    tituloDiv.style.position = "relative";
-    tituloDiv.style.zIndex = "2";
-    tituloDiv.innerHTML = `<h3 class="text-center m-0">Pop</h3>`;
-
-    columnaTitulo.appendChild(fondoGif);
-    columnaTitulo.appendChild(tituloDiv);
-
-    const columnaGuitarras = document.createElement("div");
-    columnaGuitarras.className = "col-9 position-relative";
-
-    const scrollContainer = document.createElement("div");
-    scrollContainer.className = "scroll-container";
-    scrollContainer.style.display = "flex";
-    scrollContainer.style.overflowX = "auto";
-    scrollContainer.style.gap = "1rem";
-    scrollContainer.style.paddingBottom = "0.5rem";
-    scrollContainer.style.scrollBehavior = "smooth";
-    scrollContainer.style.whiteSpace = "nowrap";
-
-    guitarras.forEach(guitarra => {
-
-        if (guitarra.stock > 0) {
-
-            const card = document.createElement("div");
-            card.className = "card shadow-sm h-100 bg-dark text-white";
-            card.style.minWidth = "300px";
-            card.style.display = "inline-block";
-
-            const imagen = guitarra.urlImagen
-                ? guitarra.urlImagen.replace("/upload/", "/upload/w_400,q_auto,f_auto/")
-                : "/images/placeholder.png";
-
-            const precioDolar = (guitarra.precio / dolar).toFixed(2);
-            const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
-
-            card.innerHTML = `
-                <img src="${imagen}" loading="lazy" class="card-img-top" alt="Imagen de guitarra"
-                     style="height: 400px; width: 100%; object-fit: cover;">
-                <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
-                    <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">
-                        ${guitarra.marca} ${guitarra.modelo}
-                    </h5>
-                    <p class="card-text mb-1"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
-                    <p class="card-text mb-1"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
-                    <p class="card-text mb-1"><strong>USD:</strong> U$${precioDolar}</p>
-                    <p class="card-text text-success fw-bold mb-1">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
-                </div>
-            `;
-            card.style.cursor = "pointer";
-
-            card.addEventListener("click", () => {
-                window.location.href = `/Home/Detalles/${guitarra.id}`;
-            });
-
-            scrollContainer.appendChild(card);
-
-        }
- 
-    });
-
-    columnaGuitarras.appendChild(scrollContainer);
-
-    const flechaIzq = document.createElement("button");
-    flechaIzq.innerHTML = "&#8249;";
-    flechaIzq.style.position = "absolute";
-    flechaIzq.style.top = "50%";
-    flechaIzq.style.left = "0";
-    flechaIzq.style.transform = "translateY(-50%)";
-    flechaIzq.style.zIndex = "20";
-    flechaIzq.style.background = "rgba(255,255,255,0.8)";
-    flechaIzq.style.border = "none";
-    flechaIzq.style.fontSize = "2rem";
-    flechaIzq.style.cursor = "pointer";
-    flechaIzq.style.padding = "0 0.5rem";
-    flechaIzq.style.borderRadius = "0 5px 5px 0";
-    flechaIzq.style.userSelect = "none";
-
-    const flechaDer = document.createElement("button");
-    flechaDer.innerHTML = "&#8250;";
-    flechaDer.style.position = "absolute";
-    flechaDer.style.top = "50%";
-    flechaDer.style.right = "0";
-    flechaDer.style.transform = "translateY(-50%)";
-    flechaDer.style.zIndex = "20";
-    flechaDer.style.background = "rgba(255,255,255,0.8)";
-    flechaDer.style.border = "none";
-    flechaDer.style.fontSize = "2rem";
-    flechaDer.style.cursor = "pointer";
-    flechaDer.style.padding = "0 0.5rem";
-    flechaDer.style.borderRadius = "5px 0 0 5px";
-    flechaDer.style.userSelect = "none";
-
-    const scrollAmount = 300;
-
-    flechaIzq.addEventListener("click", () => {
-        scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    });
-
-    flechaDer.addEventListener("click", () => {
-        scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    });
-
-    columnaGuitarras.appendChild(flechaIzq);
-    columnaGuitarras.appendChild(flechaDer);
-
-    filaPrincipal.appendChild(columnaTitulo);
-    filaPrincipal.appendChild(columnaGuitarras);
-
-    return filaPrincipal;
-
-}
-async function contenedor_Guitarras_Rock(dolar) {
-    const guitarras = await guitarrasPorGenero("Rock");
-
-    if (!Array.isArray(guitarras) || guitarras.length === 0 || !(guitarras.some(guitarra => guitarra.stock > 0))) {
-        return null;
-    }
-
-    const filaPrincipal = document.createElement("div");
-    filaPrincipal.className = "row bg-black text-white";
- 
-    const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-3 mb-3 d-flex align-items-center justify-content-center position-relative";
-    columnaTitulo.style.zIndex = "10";
-    columnaTitulo.style.flex = "0 0 25%";
-    columnaTitulo.style.maxWidth = "25%";
-    columnaTitulo.style.padding = "1rem";
-    columnaTitulo.style.color = "white";
-    columnaTitulo.style.fontWeight = "bold";
-    columnaTitulo.style.textShadow = "2px 2px 4px rgba(0,0,0,0.7)";
-
-    columnaTitulo.style.position = "relative";
-
-    const fondoGif = document.createElement("div");
-    fondoGif.style.backgroundImage = "url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaDVzeWc2azR5b3NoNDF0NmZ6bWYzdzAyb3lrZXVpOHp2azBjcGdncyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/1dMQmQ0fexFtQeNxNj/giphy.gif')";
-    fondoGif.style.backgroundSize = "cover";
-    fondoGif.style.backgroundPosition = "center";
-    fondoGif.style.backgroundRepeat = "no-repeat";
-
-    fondoGif.style.position = "absolute";
-    fondoGif.style.top = "0";
-    fondoGif.style.left = "0";
-    fondoGif.style.width = "100%";
-    fondoGif.style.height = "100%";
-    fondoGif.style.zIndex = "1";
-
-    fondoGif.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-
-    fondoGif.style.backgroundBlendMode = "darken";
-
-    const tituloDiv = document.createElement("div");
-    tituloDiv.style.position = "relative";
-    tituloDiv.style.zIndex = "2";
-    tituloDiv.innerHTML = `<h3 class="text-center m-0">Rock</h3>`;
-
-    columnaTitulo.appendChild(fondoGif);
-    columnaTitulo.appendChild(tituloDiv);
-
-    const columnaGuitarras = document.createElement("div");
-    columnaGuitarras.className = "col-9 position-relative";
-
-
-    const scrollContainer = document.createElement("div");
-    scrollContainer.className = "scroll-container";
-    scrollContainer.style.display = "flex";
-    scrollContainer.style.overflowX = "auto";
-    scrollContainer.style.gap = "1rem";
-    scrollContainer.style.paddingBottom = "0.5rem";
-    scrollContainer.style.scrollBehavior = "smooth";
-    scrollContainer.style.whiteSpace = "nowrap";
-
-    guitarras.forEach(guitarra => {
-
-        if (guitarra.stock > 0) {
-
-            const card = document.createElement("div");
-            card.className = "card shadow-sm h-100 bg-dark text-white";
-            card.style.minWidth = "300px";
-            card.style.display = "inline-block";
-
-            const imagen = guitarra.urlImagen
-                ? guitarra.urlImagen.replace("/upload/", "/upload/w_400,q_auto,f_auto/")
-                : "/images/placeholder.png";
-
-            const precioDolar = (guitarra.precio / dolar).toFixed(2);
-            const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
-
-            card.innerHTML = `
-                <img src="${imagen}" loading="lazy" class="card-img-top" alt="Imagen de guitarra"
-                     style="height: 400px; width: 100%; object-fit: cover;">
-                <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
-                    <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">
-                        ${guitarra.marca} ${guitarra.modelo}
-                    </h5>
-                    <p class="card-text mb-1"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
-                    <p class="card-text mb-1"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
-                    <p class="card-text mb-1"><strong>USD:</strong> U$${precioDolar}</p>
-                    <p class="card-text text-success fw-bold mb-1">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
-                </div>
-            `;
-            card.style.cursor = "pointer";
-
-            card.addEventListener("click", () => {
-                window.location.href = `/Home/Detalles/${guitarra.id}`;
-            });
-
-            scrollContainer.appendChild(card);
-
-        }
- 
-    });
-
-    columnaGuitarras.appendChild(scrollContainer);
-
-    const flechaIzq = document.createElement("button");
-    flechaIzq.innerHTML = "&#8249;";
-    flechaIzq.style.position = "absolute";
-    flechaIzq.style.top = "50%";
-    flechaIzq.style.left = "0";
-    flechaIzq.style.transform = "translateY(-50%)";
-    flechaIzq.style.zIndex = "20";
-    flechaIzq.style.background = "rgba(255,255,255,0.8)";
-    flechaIzq.style.border = "none";
-    flechaIzq.style.fontSize = "2rem";
-    flechaIzq.style.cursor = "pointer";
-    flechaIzq.style.padding = "0 0.5rem";
-    flechaIzq.style.borderRadius = "0 5px 5px 0";
-    flechaIzq.style.userSelect = "none";
-
-    const flechaDer = document.createElement("button");
-    flechaDer.innerHTML = "&#8250;";
-    flechaDer.style.position = "absolute";
-    flechaDer.style.top = "50%";
-    flechaDer.style.right = "0";
-    flechaDer.style.transform = "translateY(-50%)";
-    flechaDer.style.zIndex = "20";
-    flechaDer.style.background = "rgba(255,255,255,0.8)";
-    flechaDer.style.border = "none";
-    flechaDer.style.fontSize = "2rem";
-    flechaDer.style.cursor = "pointer";
-    flechaDer.style.padding = "0 0.5rem";
-    flechaDer.style.borderRadius = "5px 0 0 5px";
-    flechaDer.style.userSelect = "none";
-
-    const scrollAmount = 300;
-
-    flechaIzq.addEventListener("click", () => {
-        scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    });
-
-    flechaDer.addEventListener("click", () => {
-        scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    });
-
-    columnaGuitarras.appendChild(flechaIzq);
-    columnaGuitarras.appendChild(flechaDer);
-
-    filaPrincipal.appendChild(columnaTitulo);
-    filaPrincipal.appendChild(columnaGuitarras);
-
-    return filaPrincipal;
-
-}
-async function contenedor_Guitarras_Metal(dolar) {
-    const guitarras = await guitarrasPorGenero("Metal");
-
-    if (!Array.isArray(guitarras) || guitarras.length === 0 || !(guitarras.some(guitarra => guitarra.stock > 0))) {
-        return null;
-    }
-
-    const filaPrincipal = document.createElement("div");
-    filaPrincipal.className = "row bg-black text-white";
-
-    const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-3 mb-3 d-flex align-items-center justify-content-center position-relative";
-    columnaTitulo.style.zIndex = "10";
-    columnaTitulo.style.flex = "0 0 25%";
-    columnaTitulo.style.maxWidth = "25%";
-    columnaTitulo.style.padding = "1rem";
-    columnaTitulo.style.color = "white";
-    columnaTitulo.style.fontWeight = "bold";
-    columnaTitulo.style.textShadow = "2px 2px 4px rgba(0,0,0,0.7)";
-
-    columnaTitulo.style.position = "relative";
-
-    const fondoGif = document.createElement("div");
-    fondoGif.style.backgroundImage = "url('https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExMWF0M2s4czF4Y253MjBqNnB2b29zcjBvYWdhZ3M5aHZ0MDRndWtmNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/M3w8IfaVAo2iY/giphy.gif')";
-    fondoGif.style.backgroundSize = "cover";
-    fondoGif.style.backgroundPosition = "center";
-    fondoGif.style.backgroundRepeat = "no-repeat";
-
-    fondoGif.style.position = "absolute";
-    fondoGif.style.top = "0";
-    fondoGif.style.left = "0";
-    fondoGif.style.width = "100%";
-    fondoGif.style.height = "100%";
-    fondoGif.style.zIndex = "1";
-
-    fondoGif.style.backgroundColor = "rgba(0, 0, 0, 0.5)";
-
-    fondoGif.style.backgroundBlendMode = "darken";
-
-    const tituloDiv = document.createElement("div");
-    tituloDiv.style.position = "relative";
-    tituloDiv.style.zIndex = "2";
-    tituloDiv.innerHTML = `<h3 class="text-center m-0">Metal</h3>`;
-
-    columnaTitulo.appendChild(fondoGif);
-    columnaTitulo.appendChild(tituloDiv);
-
-    const columnaGuitarras = document.createElement("div");
-    columnaGuitarras.className = "col-9 position-relative";
-
-    const scrollContainer = document.createElement("div");
-    scrollContainer.className = "scroll-container";
-    scrollContainer.style.display = "flex";
-    scrollContainer.style.overflowX = "auto";
-    scrollContainer.style.gap = "1rem";
-    scrollContainer.style.paddingBottom = "0.5rem";
-    scrollContainer.style.scrollBehavior = "smooth";
-    scrollContainer.style.whiteSpace = "nowrap";
-
-    guitarras.forEach(guitarra => {
-
-        if (guitarra.stock > 0) {
-
-            const card = document.createElement("div");
-            card.className = "card shadow-sm h-100 bg-dark text-white";
-            card.style.minWidth = "300px";
-            card.style.display = "inline-block";
-
-            const imagen = guitarra.urlImagen
-                ? guitarra.urlImagen.replace("/upload/", "/upload/w_400,q_auto,f_auto/")
-                : "/images/placeholder.png";
-            const precioDolar = (guitarra.precio / dolar).toFixed(2);
-            const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
-
-            card.innerHTML = `
-                <img src="${imagen}" loading="lazy" class="card-img-top" alt="Imagen de guitarra"
-                     style="height: 400px; width: 100%; object-fit: cover;">
-                <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
-                    <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">
-                        ${guitarra.marca} ${guitarra.modelo}
-                    </h5>
-                    <p class="card-text mb-1"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
-                    <p class="card-text mb-1"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
-                    <p class="card-text mb-1"><strong>USD:</strong> U$${precioDolar}</p>
-                    <p class="card-text text-success fw-bold mb-1">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
-                </div>
-            `;
-            card.style.cursor = "pointer";
-
-            card.addEventListener("click", () => {
-                window.location.href = `/Home/Detalles/${guitarra.id}`;
-            });
-
-            scrollContainer.appendChild(card);
-
-        }
-
-    });
-
-    columnaGuitarras.appendChild(scrollContainer);
-
-    const flechaIzq = document.createElement("button");
-    flechaIzq.innerHTML = "&#8249;";
-    flechaIzq.style.position = "absolute";
-    flechaIzq.style.top = "50%";
-    flechaIzq.style.left = "0";
-    flechaIzq.style.transform = "translateY(-50%)";
-    flechaIzq.style.zIndex = "20";
-    flechaIzq.style.background = "rgba(255,255,255,0.8)";
-    flechaIzq.style.border = "none";
-    flechaIzq.style.fontSize = "2rem";
-    flechaIzq.style.cursor = "pointer";
-    flechaIzq.style.padding = "0 0.5rem";
-    flechaIzq.style.borderRadius = "0 5px 5px 0";
-    flechaIzq.style.userSelect = "none";
-
-    const flechaDer = document.createElement("button");
-    flechaDer.innerHTML = "&#8250;";
-    flechaDer.style.position = "absolute";
-    flechaDer.style.top = "50%";
-    flechaDer.style.right = "0";
-    flechaDer.style.transform = "translateY(-50%)";
-    flechaDer.style.zIndex = "20";
-    flechaDer.style.background = "rgba(255,255,255,0.8)";
-    flechaDer.style.border = "none";
-    flechaDer.style.fontSize = "2rem";
-    flechaDer.style.cursor = "pointer";
-    flechaDer.style.padding = "0 0.5rem";
-    flechaDer.style.borderRadius = "5px 0 0 5px";
-    flechaDer.style.userSelect = "none";
-
-    const scrollAmount = 300;
-
-    flechaIzq.addEventListener("click", () => {
-        scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    });
-
-    flechaDer.addEventListener("click", () => {
-        scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    });
-
-    columnaGuitarras.appendChild(flechaIzq);
-    columnaGuitarras.appendChild(flechaDer);
-
-    filaPrincipal.appendChild(columnaTitulo);
-    filaPrincipal.appendChild(columnaGuitarras);
-
-    return filaPrincipal;
-
-}
-async function contenedor_Guitarras_Nuevas(dolar) {
-
-    const guitarras = await ObtenerNuevosIngresos();
-
-    if (!Array.isArray(guitarras) || guitarras.length === 0 || !(guitarras.some(guitarra => guitarra.stock > 0))) {
-        return null;
-    }
-
-    const filaPrincipal = document.createElement("div");
-    filaPrincipal.className = "row bg-black text-white";
-
-    const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-3 mb-3 d-flex align-items-center justify-content-center position-relative";
-    columnaTitulo.style.zIndex = "10";
-    columnaTitulo.style.flex = "0 0 25%";
-    columnaTitulo.style.maxWidth = "25%";
-    columnaTitulo.style.padding = "1rem";
-    columnaTitulo.style.position = "relative";
-    columnaTitulo.style.overflow = "hidden";
-
-    const fondo = document.createElement("div");
-    fondo.style.position = "absolute";
-    fondo.style.top = "0";
-    fondo.style.left = "0";
-    fondo.style.width = "100%";
-    fondo.style.height = "100%";
-    fondo.style.backgroundImage = "url('https://images.unsplash.com/photo-1615716175369-dbcda46573c9?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')";
-    fondo.style.backgroundSize = "cover";
-    fondo.style.backgroundPosition = "center";
-    fondo.style.backgroundRepeat = "no-repeat";
-    fondo.style.backgroundColor = "rgba(0,0,0,0.5)";
-    fondo.style.backgroundBlendMode = "darken";
-    fondo.style.zIndex = "1";
-
-    const texto = document.createElement("div");
-    texto.style.position = "relative";
-    texto.style.zIndex = "2";
-    texto.innerHTML = `<h3 class="text-center text-white m-0">Nuevos Ingresos</h3>`;
-
-    columnaTitulo.appendChild(fondo);
-    columnaTitulo.appendChild(texto);
-
-    const columnaGuitarras = document.createElement("div");
-    columnaGuitarras.className = "col-9 position-relative";
-
-    const scrollContainer = document.createElement("div");
-    scrollContainer.className = "scroll-container";
-    scrollContainer.style.display = "flex";
-    scrollContainer.style.overflowX = "auto";
-    scrollContainer.style.gap = "1rem";
-    scrollContainer.style.paddingBottom = "0.5rem";
-    scrollContainer.style.scrollBehavior = "smooth";
-    scrollContainer.style.whiteSpace = "nowrap";
-
-    guitarras.forEach(guitarra => {
-
-        if (guitarra.stock > 0) {
-
-            const card = document.createElement("div");
-            card.className = "card shadow-sm h-100 bg-dark text-white";
-            card.style.minWidth = "300px";
-            card.style.display = "inline-block";
-
-            const imagen = guitarra.urlImagen
-                ? guitarra.urlImagen.replace("/upload/", "/upload/w_400,q_auto,f_auto/")
-                : "/images/placeholder.png";
-
-            const precioDolar = (guitarra.precio / dolar).toFixed(2);
-            const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
-
-            card.innerHTML = `
-                <img src="${imagen}" loading="lazy" class="card-img-top" alt="Imagen de guitarra"
-                     style="height: 400px; width: 100%; object-fit: cover;">
-                <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
-                    <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">
-                        ${guitarra.marca} ${guitarra.modelo}
-                    </h5>
-                    <p class="card-text mb-1"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
-                    <p class="card-text mb-1"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
-                    <p class="card-text mb-1"><strong>USD:</strong> U$${precioDolar}</p>
-                    <p class="card-text text-success fw-bold mb-1">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
-                </div>
-            `;
-            card.style.cursor = "pointer";
-
-            card.addEventListener("click", () => {
-                window.location.href = `/Home/Detalles/${guitarra.id}`;
-            });
-
-            scrollContainer.appendChild(card);
-
-        }
-
-    });
-
-    columnaGuitarras.appendChild(scrollContainer);
-
-    const flechaIzq = document.createElement("button");
-    flechaIzq.innerHTML = "&#8249;";
-    flechaIzq.style.position = "absolute";
-    flechaIzq.style.top = "50%";
-    flechaIzq.style.left = "0";
-    flechaIzq.style.transform = "translateY(-50%)";
-    flechaIzq.style.zIndex = "20";
-    flechaIzq.style.background = "rgba(255,255,255,0.8)";
-    flechaIzq.style.border = "none";
-    flechaIzq.style.fontSize = "2rem";
-    flechaIzq.style.cursor = "pointer";
-    flechaIzq.style.padding = "0 0.5rem";
-    flechaIzq.style.borderRadius = "0 5px 5px 0";
-    flechaIzq.style.userSelect = "none";
-
-    const flechaDer = document.createElement("button");
-    flechaDer.innerHTML = "&#8250;";
-    flechaDer.style.position = "absolute";
-    flechaDer.style.top = "50%";
-    flechaDer.style.right = "0";
-    flechaDer.style.transform = "translateY(-50%)";
-    flechaDer.style.zIndex = "20";
-    flechaDer.style.background = "rgba(255,255,255,0.8)";
-    flechaDer.style.border = "none";
-    flechaDer.style.fontSize = "2rem";
-    flechaDer.style.cursor = "pointer";
-    flechaDer.style.padding = "0 0.5rem";
-    flechaDer.style.borderRadius = "5px 0 0 5px";
-    flechaDer.style.userSelect = "none";
-
-    const scrollAmount = 300;
-
-    flechaIzq.addEventListener("click", () => {
-        scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    });
-
-    flechaDer.addEventListener("click", () => {
-        scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    });
-
-    columnaGuitarras.appendChild(flechaIzq);
-    columnaGuitarras.appendChild(flechaDer);
-
-    filaPrincipal.appendChild(columnaTitulo);
-    filaPrincipal.appendChild(columnaGuitarras);
-
-    return filaPrincipal;
-
-}
-async function contenedor_Guitarras_En_Ofertas(dolar) {
-
-    const guitarras = await GuitarrasEnOferta();
-
-    if (!Array.isArray(guitarras) || guitarras.length === 0 || !(guitarras.some(guitarra => guitarra.stock > 0))) {
-        return null;
-    }
-
-    const filaPrincipal = document.createElement("div");
-    filaPrincipal.className = "row bg-black text-white";
-
-    const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-3 mb-3 d-flex align-items-center justify-content-center position-relative";
-    columnaTitulo.style.zIndex = "10";
-    columnaTitulo.style.flex = "0 0 25%";
-    columnaTitulo.style.maxWidth = "25%";
-    columnaTitulo.style.padding = "1rem";
-    columnaTitulo.style.position = "relative";
-    columnaTitulo.style.overflow = "hidden";
-
-    const fondo = document.createElement("div");
-    fondo.style.position = "absolute";
-    fondo.style.top = "0";
-    fondo.style.left = "0";
-    fondo.style.width = "100%";
-    fondo.style.height = "100%";
-    fondo.style.backgroundImage = "url('https://images.unsplash.com/photo-1589264110781-1ebfa05f901e?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')";
-    fondo.style.backgroundSize = "cover";
-    fondo.style.backgroundPosition = "center";
-    fondo.style.backgroundRepeat = "no-repeat";
-    fondo.style.backgroundColor = "rgba(0,0,0,0.5)";
-    fondo.style.backgroundBlendMode = "darken";
-    fondo.style.zIndex = "1";
-
-    const texto = document.createElement("div");
-    texto.style.position = "relative";
-    texto.style.zIndex = "2";
-    texto.innerHTML = `<h3 class="text-center text-white m-0">En Oferta</h3>`;
-
-    columnaTitulo.appendChild(fondo);
-    columnaTitulo.appendChild(texto);
-
-    const columnaGuitarras = document.createElement("div");
-    columnaGuitarras.className = "col-9 position-relative";
-
-    const scrollContainer = document.createElement("div");
-    scrollContainer.className = "scroll-container";
-    scrollContainer.style.display = "flex";
-    scrollContainer.style.overflowX = "auto";
-    scrollContainer.style.gap = "1rem";
-    scrollContainer.style.paddingBottom = "0.5rem";
-    scrollContainer.style.scrollBehavior = "smooth";
-    scrollContainer.style.whiteSpace = "nowrap";
-
-    guitarras.forEach(guitarra => {
-
-        if (guitarra.stock > 0) {
-
-            const card = document.createElement("div");
-            card.className = "card shadow-sm h-100 bg-dark text-white";
-            card.style.minWidth = "300px";
-            card.style.display = "inline-block";
-
-            const imagen = guitarra.urlImagen
-                ? guitarra.urlImagen.replace("/upload/", "/upload/w_400,q_auto,f_auto/")
-                : "/images/placeholder.png";
-            const precioDolar = (guitarra.precio / dolar).toFixed(2);
-            const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
-
-            card.innerHTML = `
-                <img src="${imagen}" loading="lazy" class="card-img-top" alt="Imagen de guitarra"
-                     style="height: 400px; width: 100%; object-fit: cover;">
-                <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
-                    <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">
-                        ${guitarra.marca} ${guitarra.modelo}
-                    </h5>
-                    <p class="card-text mb-1"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
-                    <p class="card-text mb-1"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
-                    <p class="card-text mb-1"><strong>USD:</strong> U$${precioDolar}</p>
-                    <p class="card-text text-success fw-bold mb-1">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
-                </div>
-            `;
-            card.style.cursor = "pointer";
-
-            card.addEventListener("click", () => {
-                window.location.href = `/Home/Detalles/${guitarra.id}`;
-            });
-
-            scrollContainer.appendChild(card);
-
-        }
-
-    });
-
-    columnaGuitarras.appendChild(scrollContainer);
-
-    const flechaIzq = document.createElement("button");
-    flechaIzq.innerHTML = "&#8249;";
-    flechaIzq.style.position = "absolute";
-    flechaIzq.style.top = "50%";
-    flechaIzq.style.left = "0";
-    flechaIzq.style.transform = "translateY(-50%)";
-    flechaIzq.style.zIndex = "20";
-    flechaIzq.style.background = "rgba(255,255,255,0.8)";
-    flechaIzq.style.border = "none";
-    flechaIzq.style.fontSize = "2rem";
-    flechaIzq.style.cursor = "pointer";
-    flechaIzq.style.padding = "0 0.5rem";
-    flechaIzq.style.borderRadius = "0 5px 5px 0";
-    flechaIzq.style.userSelect = "none";
-
-    const flechaDer = document.createElement("button");
-    flechaDer.innerHTML = "&#8250;";
-    flechaDer.style.position = "absolute";
-    flechaDer.style.top = "50%";
-    flechaDer.style.right = "0";
-    flechaDer.style.transform = "translateY(-50%)";
-    flechaDer.style.zIndex = "20";
-    flechaDer.style.background = "rgba(255,255,255,0.8)";
-    flechaDer.style.border = "none";
-    flechaDer.style.fontSize = "2rem";
-    flechaDer.style.cursor = "pointer";
-    flechaDer.style.padding = "0 0.5rem";
-    flechaDer.style.borderRadius = "5px 0 0 5px";
-    flechaDer.style.userSelect = "none";
-
-    const scrollAmount = 300;
-
-    flechaIzq.addEventListener("click", () => {
-        scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    });
-
-    flechaDer.addEventListener("click", () => {
-        scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    });
-
-    columnaGuitarras.appendChild(flechaIzq);
-    columnaGuitarras.appendChild(flechaDer);
-
-    filaPrincipal.appendChild(columnaTitulo);
-    filaPrincipal.appendChild(columnaGuitarras);
-
-    return filaPrincipal;
-
-}
-async function contenedor_Guitarras_Mas_Vendidas(dolar) {
-
-    const guitarras = await GuitarrasMasVendidas();
-
-    if (!Array.isArray(guitarras) || guitarras.length === 0 || !(guitarras.some(guitarra => guitarra.stock > 0))) {
-        return null;
-    }
-
-    const filaPrincipal = document.createElement("div");
-    filaPrincipal.className = "row bg-black text-white";
-
-    const columnaTitulo = document.createElement("div");
-    columnaTitulo.className = "col-3 mb-3 d-flex align-items-center justify-content-center position-relative";
-    columnaTitulo.style.zIndex = "10";
-    columnaTitulo.style.flex = "0 0 25%";
-    columnaTitulo.style.maxWidth = "25%";
-    columnaTitulo.style.padding = "1rem";
-    columnaTitulo.style.position = "relative";
-    columnaTitulo.style.overflow = "hidden"; 
-
-    const fondo = document.createElement("div");
-    fondo.style.position = "absolute";
-    fondo.style.top = "0";
-    fondo.style.left = "0";
-    fondo.style.width = "100%";
-    fondo.style.height = "100%";
-    fondo.style.backgroundImage = "url('https://images.unsplash.com/photo-1569982175971-d92b01cf8694?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGZvbmRvJTIwZGVncmFkYWRvfGVufDB8fDB8fHww')";
-    fondo.style.backgroundSize = "cover";
-    fondo.style.backgroundPosition = "center";
-    fondo.style.backgroundRepeat = "no-repeat";
-    fondo.style.backgroundColor = "rgba(0,0,0,0.5)";
-    fondo.style.backgroundBlendMode = "darken";
-    fondo.style.zIndex = "1";
-
-    const texto = document.createElement("div");
-    texto.style.position = "relative";
-    texto.style.zIndex = "2";
-    texto.innerHTML = `<h3 class="text-center text-white m-0">Más Vendidas</h3>`;
-
-    columnaTitulo.appendChild(fondo);
-    columnaTitulo.appendChild(texto);
-
-    const columnaGuitarras = document.createElement("div");
-    columnaGuitarras.className = "col-9 position-relative";
-
-    const scrollContainer = document.createElement("div");
-    scrollContainer.className = "scroll-container";
-    scrollContainer.style.display = "flex";
-    scrollContainer.style.overflowX = "auto";
-    scrollContainer.style.gap = "1rem";
-    scrollContainer.style.paddingBottom = "0.5rem";
-    scrollContainer.style.scrollBehavior = "smooth";
-    scrollContainer.style.whiteSpace = "nowrap";
-
-    guitarras.forEach(guitarra => {
-
-        if (guitarra.stock > 0) {
-
-            const card = document.createElement("div");
-            card.className = "card shadow-sm h-100 bg-dark text-white";
-            card.style.minWidth = "300px";
-            card.style.display = "inline-block";
-
-            const imagen = guitarra.urlImagen
-                ? guitarra.urlImagen.replace("/upload/", "/upload/w_400,q_auto,f_auto/")
-                : "/images/placeholder.png";
-            const precioDolar = (guitarra.precio / dolar).toFixed(2);
-            const precioCash = (guitarra.precio - guitarra.precio * 0.25).toFixed(2);
-
-            card.innerHTML = `
-                <img src="${imagen}" loading="lazy" class="card-img-top" alt="Imagen de guitarra"
-                     style="height: 400px; width: 100%; object-fit: cover;">
-                <div class="card-body" style="padding: 0.5rem; font-size: 0.7rem;">
-                    <h5 class="card-title" style="font-size: 0.8rem; margin-bottom: 0.3rem;">
-                        ${guitarra.marca} ${guitarra.modelo}
-                    </h5>
-                    <p class="card-text mb-1"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
-                    <p class="card-text mb-1"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
-                    <p class="card-text mb-1"><strong>USD:</strong> U$${precioDolar}</p>
-                    <p class="card-text text-success fw-bold mb-1">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>  
-                </div>
-            `;
-
-            card.style.cursor = "pointer";
-
-            card.addEventListener("click", () => {
-                window.location.href = `/Home/Detalles/${guitarra.id}`;
-            });
-
-            scrollContainer.appendChild(card);
-
-        }
-
-    });
-
-    columnaGuitarras.appendChild(scrollContainer);
-
-    const flechaIzq = document.createElement("button");
-    flechaIzq.innerHTML = "&#8249;";
-    flechaIzq.style.position = "absolute";
-    flechaIzq.style.top = "50%";
-    flechaIzq.style.left = "0";
-    flechaIzq.style.transform = "translateY(-50%)";
-    flechaIzq.style.zIndex = "20";
-    flechaIzq.style.background = "rgba(255,255,255,0.8)";
-    flechaIzq.style.border = "none";
-    flechaIzq.style.fontSize = "2rem";
-    flechaIzq.style.cursor = "pointer";
-    flechaIzq.style.padding = "0 0.5rem";
-    flechaIzq.style.borderRadius = "0 5px 5px 0";
-    flechaIzq.style.userSelect = "none";
-
-    const flechaDer = document.createElement("button");
-    flechaDer.innerHTML = "&#8250;";
-    flechaDer.style.position = "absolute";
-    flechaDer.style.top = "50%";
-    flechaDer.style.right = "0";
-    flechaDer.style.transform = "translateY(-50%)";
-    flechaDer.style.zIndex = "20";
-    flechaDer.style.background = "rgba(255,255,255,0.8)";
-    flechaDer.style.border = "none";
-    flechaDer.style.fontSize = "2rem";
-    flechaDer.style.cursor = "pointer";
-    flechaDer.style.padding = "0 0.5rem";
-    flechaDer.style.borderRadius = "5px 0 0 5px";
-    flechaDer.style.userSelect = "none";
-
-    const scrollAmount = 300;
-
-    flechaIzq.addEventListener("click", () => {
-        scrollContainer.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-    });
-
-    flechaDer.addEventListener("click", () => {
-        scrollContainer.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-    });
-
-    columnaGuitarras.appendChild(flechaIzq);
-    columnaGuitarras.appendChild(flechaDer);
-
-    filaPrincipal.appendChild(columnaTitulo);
-    filaPrincipal.appendChild(columnaGuitarras);
-
-    return filaPrincipal;
 }
 export async function MostrarGuitarrasCrud(listado) {
     try {

@@ -8,12 +8,12 @@
     <form id="formulario" enctype="multipart/form-data">
         <div class="mb-3">
             <label class="form-label" for="marca">Marca :</label>
-            <input class="form-control" id="marca" required />
+            <input class="form-control bg-dark text-white" id="marca" required />
         </div>
 
         <div class="mb-3">
             <label class="form-label">Modelo:</label>
-            <input class="form-control" id="modelo" required />
+            <input class="form-control bg-dark text-white" id="modelo" required />
         </div>
 
         <div class="mb-3">
@@ -25,7 +25,7 @@
 
         <div class="mb-3">
             <label class="form-label">Precio:</label>
-            <input class="form-control" id="precio" required />
+            <input class="form-control bg-dark text-white" id="precio" required />
         </div>
 
         <div class="mb-3">
@@ -36,40 +36,47 @@
         </div>
 
         <div class="mb-3">
+
             <label for="Genero" class="form-label">Genero:</label>
-            <input type="text" id="Genero" class="form-control">
+            <select id="Genero" class="form-control bg-dark text-white">
+                <option value="rock">Rock</option>
+                <option value="metal">Metal</option>
+                <option value="pop">Pop</option>
+                <option value="jazz">Jazz</option>
+            </select>
+
         </div>
 
         <div class="form-check mb-3">
             <input type="checkbox" id="MasVendido" class="form-check-input">
-            <label for="MasVendido" class="form-check-label">Es más vendido</label>
+            <label for="MasVendido" class="form-check-label bg-dark text-white">Es más vendido</label>
         </div>
 
         <div class="form-check mb-3">
             <input type="checkbox" id="EstaEnOferta" class="form-check-input">
-            <label for="EstaEnOferta" class="form-check-label">En oferta</label>
+            <label for="EstaEnOferta" class="form-check-label bg-dark text-white">En oferta</label>
         </div>
 
         <div class="mb-3">
             <label for="FechaIngreso" class="form-label">Fecha de ingreso</label>
-            <input type="date" id="FechaIngreso" class="form-control" required>
+            <input type="date" id="FechaIngreso" class="form-control bg-dark text-white" required>
         </div>
 
         <div class="mb-3">
-            <img id="previewImagen" src="" alt="Imagen actual" style="max-height: 200px;" />
+            <img id="previewImagen" class="bg-dark text-white" alt="Imagen actual" style="max-height: 200px;" />
         </div>
 
         <div class="mb-3">
             <label class="form-label" for="imagen">Imagen:</label>
-            <input class="form-control" type="file" id="imagen" name="ImagenArchivo" accept="image/*" />
+            <input class="form-control bg-dark text-white" type="file" id="imagen" name="ImagenArchivo" accept="image/*" />
         </div>
 
         <div class="mb-3">
-            <button id="botoneditar">Guardar</button>
+            <button id="botoneditar" class="bg-dark text-white">Guardar</button>
         </div>
 
     </form>
 
-   <script type="module" src="/js/main.js"></script>
+    <script type="module" src="/js/main.js" asp-append-version="true" defer></script>
 
 </body>

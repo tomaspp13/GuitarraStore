@@ -1,29 +1,65 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    
     <title>@ViewData["Title"] - GuitarraStore.web</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/GuitarraStore.web.styles.css" asp-append-version="true" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"> 
-    <link rel="icon" type="image/png" href="https://res.cloudinary.com/dgqkeshqh/image/upload/v1753230892/iconoweb_rqm3op.png" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&family=Montserrat&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://res.cloudinary.com">
-    <link rel="dns-prefetch" href="https://res.cloudinary.com">
 
+    <link rel="preload"
+          href="https://res.cloudinary.com/dgqkeshqh/image/upload/w_1600,h_364,c_fill,q_auto,f_webp/v1755027631/Guitarra_Store_s6ej4a.webp"
+          as="image">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin />
+
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/fonts/bootstrap-icons.woff2" as="font" type="font/woff2" crossorigin>
+
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat&family=Poppins&display=swap"
+          as="style" onload="this.rel='stylesheet'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&family=Poppins&display=swap" rel="stylesheet">
+    </noscript>
+
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          as="style" onload="this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    </noscript>
+
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+          as="style" onload="this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    </noscript>
+
+    <link rel="preload" href="/css/site.css" as="style" onload="this.rel='stylesheet'" asp-append-version="true">
+    <noscript>
+        <link rel="stylesheet" href="/css/site.css" asp-append-version="true">
+    </noscript>
+
+    <link rel="stylesheet" href="~/GuitarraStore.web.styles.css" asp-append-version="true" media="print" onload="this.media='all'">
+
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/dgqkeshqh/image/upload/v1753230892/iconoweb_rqm3op.png" />
 
     <style>
         html, body {
             background-color: #000;
-            
+        }
+
+        footer.footer {
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     </style>
-
-
 </head>
-<body class="bg-black text-white " data-usuario="@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value"
+
+<body class="text-white" data-usuario="@User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value"
       data-useremail="@User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value"
       data-username="@User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value"
       data-userid="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value">
@@ -31,20 +67,17 @@
         <nav class="navbar bg-dark navbar-dark fixed-top">
             <div class="container-fluid justify-content-between align-items-center">
 
-                <button id="abrirMenu" class="btn btn-outline-light me-2" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar">
+                <button id="abrirMenu" class="btn btn-outline-light me-2" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-label="Abrir menú de navegación">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-               
+
                 <div class="d-flex align-items-center ms-auto" style="gap: 1rem;">
-
-                    <a class="text-white text-decoration-none" id="ingresoUsuario">
-                        <i class="bi bi-person fs-4"></i>
-                    </a>
-
-                    <a href="/Home/carrito" class="text-white text-decoration-none" title="Carrito">
-                        <i class="bi bi-cart fs-4"></i>
-                    </a>
-
+                  <a class="text-white text-decoration-none" id="ingresoUsuario" aria-label="Ingresar al área de usuario" href="/Home/GuitarrasCrud">
+                    <i class="bi bi-person fs-4"></i>
+                  </a>
+                  <a href="/Home/carrito" class="text-white text-decoration-none" title="Carrito">
+                    <i class="bi bi-cart fs-4"></i>
+                  </a>
                 </div>
 
                 <div class="offcanvas offcanvas-start bg-black text-white" tabindex="-1" id="offcanvasNavbar" style="max-width: 280px;">
@@ -74,61 +107,61 @@
         </nav>
     </header>
 
-    <div class="container">
+    <div class="container" style="min-height: 800px;">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="footer text-muted bg-dark text-white">
+<footer class="footer text-muted bg-dark text-white py-3">
         <div class="container">
             &copy; 2025 - GuitarraStore.web
         </div>
-    </footer>
-
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-
-        const navbar = document.querySelector('.navbar.fixed-top');
-        const mainContent = document.querySelector('main');
-
-        if (navbar && mainContent) {
-            const navHeight = navbar.offsetHeight;
-            mainContent.style.marginTop = `${navHeight}px`;
-        }
-
-        const offcanvasElement = document.getElementById('offcanvasNavbar');
-        const abrirmenu = document.getElementById('abrirMenu');
-
-        if (offcanvasElement && abrirmenu) {
-            const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
-            abrirmenu.addEventListener('click', () => {
-                offcanvas.show();
-            });
-        }
-
-        const usuarioRol = document.body.dataset.usuario;
-
-        const ingresoUsuario = document.getElementById("ingresoUsuario");
-
-        if (ingresoUsuario) {
-        switch (usuarioRol) {
-            case "Cliente":
-                ingresoUsuario.href = "/Usuarios/Usuario";
-                break;
-            case "Administrador":
-                ingresoUsuario.href = "/Home/GuitarrasCrud";
-                break;
-            default:
-                ingresoUsuario.href = "/Usuarios/Ingresar";
-                break;
-        }}
+</footer>
 
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+
+    <script defer>
+        document.addEventListener('DOMContentLoaded', function () {
+            const navbar = document.querySelector('.navbar.fixed-top');
+            const mainContent = document.querySelector('main');
+
+            if (navbar && mainContent) {
+                const navHeight = navbar.offsetHeight;
+                mainContent.style.marginTop = `${navHeight}px`;
+            }
+
+            const offcanvasElement = document.getElementById('offcanvasNavbar');
+            const abrirmenu = document.getElementById('abrirMenu');
+
+            if (offcanvasElement && abrirmenu) {
+                const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+                abrirmenu.addEventListener('click', () => {
+                    offcanvas.show();
+                });
+            }
+
+            const usuarioRol = document.body.dataset.usuario;
+            const ingresoUsuario = document.getElementById("ingresoUsuario");
+
+            if (ingresoUsuario) {
+                switch (usuarioRol) {
+                    case "Cliente":
+                        ingresoUsuario.href = "/Usuarios/Usuario";
+                        break;
+                    case "Administrador":
+                        ingresoUsuario.href = "/Home/GuitarrasCrud";
+                        break;
+                    default:
+                        ingresoUsuario.href = "/Usuarios/Ingresar";
+                        break;
+                }
+            }
+        });
     </script>
-    
-    @await RenderSectionAsync("Scripts", required: false)
 
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
+
