@@ -37,6 +37,9 @@
     font-display: swap;
     src: url('https://fonts.gstatic.com/s/montserrat/v26/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw0aXpsog.woff2') format('woff2');
 }
+.textos-blancos {
+    color: rgba(255, 255, 255, 1) !important;
+}
 
 footer.footer {
     height: 50px;
@@ -163,6 +166,7 @@ nav.navbar {
     width: 300px;
     display: inline-block;
     cursor: pointer;
+    flex: 0 0 auto;
 }
 
 @media (max-width: 400px) {
@@ -237,9 +241,6 @@ nav.navbar {
 
 .input::placeholder {
         color: #ced4da; 
-}
-body, html {
-    overflow-x: hidden;
 }
 
 .navbar {

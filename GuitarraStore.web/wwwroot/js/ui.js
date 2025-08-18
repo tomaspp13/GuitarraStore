@@ -200,7 +200,7 @@ export async function MostrarGuitarrasInicio(contenedor) {
     const enOferta = guitarrasCategorias.enOfertas;
     const masNuevo = guitarrasCategorias.nuevas;
 
-    const primerGuitarra = metal[0] || rock[0] || pop[0] || jazz[0] || masVendidas[0] || enOferta[0] || masNuevo[0];
+    const primerGuitarra = masVendidas[0] || enOferta[0] ||masNuevo[0] ||  metal[0] || rock[0] || pop[0] || jazz[0] ;
 
     if (primerGuitarra) {
         const { src } = optimizarImagenCloudinary(primerGuitarra.urlImagen, 300, 400);

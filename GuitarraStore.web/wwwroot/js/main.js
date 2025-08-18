@@ -5,7 +5,7 @@ import { validarFormulario } from "./Form.js";
 
 document.addEventListener("DOMContentLoaded", async () => {
 
-    let dolar = obtenerValorDolar();
+    let dolar = await obtenerValorDolar();
 
     const contenedor_principal = document.getElementById("contenedorGuitarras");
     const contenedorDetalles = document.getElementById("contenedorDetalles");
