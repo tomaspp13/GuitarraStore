@@ -212,7 +212,6 @@ export async function MostrarGuitarrasInicio(contenedor) {
         document.head.appendChild(preload);
     }
 
-
     const [
         div_mas_vendido,
         div_ofertas,

@@ -141,7 +141,6 @@ export async function crearTarjetasCompletas(guitarras, urlCloudinary, titulo, t
 
     const columnaTitulo = document.createElement("div");
     columnaTitulo.className = "col-3 d-flex align-items-center justify-content-center columna-titulo";
-    columnaTitulo.style.minHeight = "400px"; 
 
     if (tipoFondo == "imagen") {
 
@@ -153,7 +152,6 @@ export async function crearTarjetasCompletas(guitarras, urlCloudinary, titulo, t
         fondoImg.srcset = srcset;
         fondoImg.sizes = sizes;
 
-        
         fondoImg.alt = "Fondo sección";
         fondoImg.width = 400;
         fondoImg.height = 400;
@@ -209,7 +207,7 @@ export async function crearTarjetasCompletas(guitarras, urlCloudinary, titulo, t
 
             const { src, srcset, sizes } = optimizarImagenCloudinary(guitarra.urlImagen, 300, 400);
 
-            let atributosImg = index < 3 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy" fetchpriority="low"';
+            let atributosImg = index < 1 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy" fetchpriority="low"';
             
             card.innerHTML = `
             <img src="${src}" srcset="${srcset}" sizes="${sizes}" ${atributosImg}
@@ -222,10 +220,10 @@ export async function crearTarjetasCompletas(guitarras, urlCloudinary, titulo, t
                 <h3 class="card-title" style="font-size: 1.2rem; margin-bottom: 0.3rem;">
                     ${guitarra.marca} ${guitarra.modelo}
                 </h3>
-                <p class="card-text mb-1"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
-                <p class="card-text mb-1"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
-                <p class="card-text mb-1"><strong>USD:</strong> U$${precioDolar}</p>
-                <p class="card-text text-success fw-bold mb-1">6 x $${Math.round(guitarra.precio / 6)} sin interés</p>
+                <p class="card-text mb-1 textoTarjetas"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
+                <p class="card-text mb-1 textoTarjetas"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
+                <p class="card-text mb-1 textoTarjetas"><strong>USD:</strong> U$${precioDolar}</p>
+                <p class="card-text text-success fw-bold mb-1 textoTarjetas">6 x $${Math.round(guitarra.precio / 6)} sin interés</p>
             </div>
         `;
 
@@ -274,7 +272,7 @@ export function optimizarImagenCloudinary(url, anchoBase = 300, altoBase = 400) 
         };
     }
 
-    const base = url.replace("/upload/", "/upload/f_auto,q_auto/");
+    const base = url.replace("/upload/","/upload/f_auto,q_auto/");
 
     const variantes = [anchoBase * 0.66, anchoBase, anchoBase * 1.33, anchoBase * 2];
 
@@ -375,7 +373,7 @@ export async function obtenerGuitarrasPorId(id) {
 export async function obtenerCategoriasGuitarras() {
 
     try {
-        var respuesta = await fetch("/api/Guitarra/GuitarrasCategorias");
+        const respuesta = await fetch("/api/Guitarra/GuitarrasCategorias");
 
         if (!respuesta.ok) {
             enviarErrorAlServidor("Error en la respuesta de la Api para obtener las categorias de las guitarras " + respuesta.status);
@@ -384,7 +382,7 @@ export async function obtenerCategoriasGuitarras() {
 
         const datos = await respuesta.json();
 
-        return datos;
+        return datos || {};
 
     }
     catch (error) {

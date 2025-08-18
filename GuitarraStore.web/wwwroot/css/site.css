@@ -60,7 +60,6 @@ footer.footer {
     position: relative;
     overflow: hidden;
     padding: 0;
-    min-height: 400px;
 }
 
     .columna-titulo img.fondo-img,
@@ -154,7 +153,7 @@ nav.navbar {
     white-space: nowrap;
     scrollbar-width: none;
     -ms-overflow-style: none; 
-    min-height: 400px;
+    
 }
 
 .scroll-container::-webkit-scrollbar {
@@ -165,9 +164,7 @@ nav.navbar {
     display: inline-block;
     cursor: pointer;
 }
-.card.card-guitarra {
-    min-height: 400px;
-}
+
 @media (max-width: 400px) {
     .card-guitarra {
         min-width: 250px;
@@ -269,14 +266,18 @@ nav {
 
 html {
     position: relative;
-    min-height: 100%;
     font-size: 14px;
+    min-height : 100%;
 }
 
 img{
     border-radius:8px;
 }
-
+.textoTarjetas {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; 
+}
 @media (max-width: 576px) {
     #abrirMenu {
         min-width: 35px;

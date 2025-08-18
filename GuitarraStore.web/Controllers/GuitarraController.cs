@@ -82,30 +82,26 @@ namespace GuitarraStore.web.Controllers
         [HttpGet("GuitarrasCategorias")]
         public async Task<IActionResult> MostrarCategoriasGuitarras()
         {
-
-            var masVendido = await _context.Guitarras.Where(g => g.EsMasVendida).ToListAsync();
-            var enOferta = await _context.Guitarras.Where(g => g.EstaEnOferta).ToListAsync();
-            var masNuevo = await _context.Guitarras.OrderByDescending(g => g.FechaIngreso).Take(4).ToArrayAsync();
-            var metal = await _context.Guitarras.Where(g => g.Genero == "Metal").ToListAsync();
-            var rock = await _context.Guitarras.Where(g => g.Genero == "Rock").ToListAsync();
-            var pop = await _context.Guitarras.Where(g => g.Genero == "Pop").ToListAsync();
-            var jazz = await _context.Guitarras.Where(g => g.Genero == "Jazz").ToListAsync();
+            var guitarras = await _context.Guitarras
+                .Where(g => g.EsMasVendida || g.EstaEnOferta || g.Genero == "metal"
+                            || g.Genero == "rock" || g.Genero == "pop" || g.Genero == "jazz")
+                .OrderByDescending(g => g.FechaIngreso)
+                .ToListAsync();
 
             var listado = new
             {
-                Metal = metal,
-                Rock = rock,
-                Pop = pop,
-                Jazz = jazz,
-                EnOfertas = enOferta,
-                Nuevas = masNuevo,
-                MasVendidas = masVendido
+                Metal = guitarras.Where(g => g.Genero == "metal").Take(4).ToList(),
+                Rock = guitarras.Where(g => g.Genero == "rock").Take(4).ToList(),
+                Pop = guitarras.Where(g => g.Genero == "pop").Take(4).ToList(),
+                Jazz = guitarras.Where(g => g.Genero == "jazz").Take(4).ToList(),
+                EnOfertas = guitarras.Where(g => g.EstaEnOferta).Take(4).ToList(),
+                Nuevas = guitarras.OrderByDescending(g => g.FechaIngreso).Take(4).ToList(),
+                MasVendidas = guitarras.Where(g => g.EsMasVendida).Take(4).ToList()
             };
 
-
             return Ok(listado);
-
         }
+
 
         [HttpGet("AgregarGuitarraaCarrito")]
         public IActionResult AgregarGuitarraaCarrito(int id)
