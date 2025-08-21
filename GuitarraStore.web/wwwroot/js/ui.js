@@ -160,8 +160,8 @@ export async function mostrarGuitarraDetalles(guitarra, contenedor) {
      class="w-100 h-100 rounded shadow"
      style="object-fit: cover;"
      fetchpriority="high"
-     width="800"
-     height="600">
+     width="600"
+     height="400">
     `;
 
     contenedor.classList.add("container", "my-4");
