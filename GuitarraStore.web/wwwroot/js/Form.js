@@ -15,7 +15,7 @@ export async function validarFormulario(contenedor) {
         try {
 
             const guitarra = await obtenerGuitarrasPorId(id);
-            
+
             if (!guitarra) throw new Error("Guitarra no encontrada");
 
             document.getElementById("marca").value = guitarra.marca;
@@ -28,6 +28,7 @@ export async function validarFormulario(contenedor) {
             document.getElementById("MasVendido").checked = guitarra.esMasVendida;
             document.getElementById("EstaEnOferta").checked = guitarra.estaEnOferta;
             document.getElementById("Genero").value = guitarra.genero;
+            document.getElementById("urlVideo").value = guitarra.urlVideo;
 
             const imgPreview = document.getElementById("previewImagen");
             if (imgPreview && guitarra.urlImagen) {
@@ -53,7 +54,8 @@ export async function validarFormulario(contenedor) {
         const esMasVendida = document.getElementById("MasVendido").checked;
         const estaEnOferta = document.getElementById("EstaEnOferta").checked;
         const genero = document.getElementById("Genero")?.value || "Sin genero";
-        const imagenInput = document.getElementById("imagen");  
+        const urlVideo = document.getElementById("urlVideo").value;
+        const imagenInput = document.getElementById("imagen");
 
         try {
             const formData = new FormData();
@@ -66,11 +68,11 @@ export async function validarFormulario(contenedor) {
             formData.append("Oferta", estaEnOferta);
             formData.append("MasVendida", esMasVendida);
             formData.append("Genero", genero);
+            formData.append("UrlVideo", urlVideo);
 
             if (imagenInput.files.length > 0) {
                 formData.append("ImagenArchivo", imagenInput.files[0]);
             }
-
 
             if (siEditar && id) {
                 formData.append("Id", id);
@@ -94,7 +96,7 @@ export async function validarFormulario(contenedor) {
             }
 
             formulario.reset();
-            window.location.href = "/Home/GuitarrasCrud"; 
+            window.location.href = "/Home/GuitarrasCrud";
 
         } catch (error) {
 

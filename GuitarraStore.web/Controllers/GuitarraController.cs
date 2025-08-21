@@ -261,6 +261,8 @@ namespace GuitarraStore.web.Controllers
         [HttpPut("Put")]
         public async Task<IActionResult> Update([FromForm] GuitarraViewModel guitarraVm)
         {
+            Console.WriteLine("URL DE VIDEO ES " + guitarraVm.UrlVideo + "/n/nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+
             try
             {
                 if (!ModelState.IsValid)
@@ -286,6 +288,7 @@ namespace GuitarraStore.web.Controllers
                 guitarra.EstaEnOferta = guitarraVm.Oferta;
                 guitarra.Genero = guitarraVm.Genero;
                 guitarra.FechaIngreso = (DateTime)guitarraVm.FechaIngreso;
+                guitarra.UrlVideo = guitarraVm.UrlVideo;
 
                 if (guitarraVm.ImagenArchivo != null && guitarraVm.ImagenArchivo.Length > 0)
                 {
@@ -319,7 +322,7 @@ namespace GuitarraStore.web.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState); 
+                    return BadRequest(ModelState);
                 }
 
                 string? rutaImagen = null;
@@ -344,6 +347,7 @@ namespace GuitarraStore.web.Controllers
                     EsMasVendida = guitarraVm.MasVendida,
                     EstaEnOferta = guitarraVm.Oferta,
                     Genero = guitarraVm.Genero,
+                    UrlVideo = guitarraVm.UrlVideo
                 };
 
                 await _context.Guitarras.AddAsync(nuevaGuitarra);
@@ -355,7 +359,7 @@ namespace GuitarraStore.web.Controllers
             {
                 return BadRequest(new { error = ex.Message });
             }
-            
+
         }
 
         [HttpDelete("Delete/{id}")]

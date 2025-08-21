@@ -246,7 +246,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             }
 
             await obtenerGuitarrasPorId(id).then(guitarra_detalles => {
-                mostrarGuitarraDetalles(guitarra_detalles, contenedorDetalles);
+                mostrarGuitarraDetalles(guitarra_detalles);
             })       
            
         }

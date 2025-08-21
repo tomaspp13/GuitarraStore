@@ -14,5 +14,6 @@
         public DateTime? FechaIngreso { get; set; }
         public IFormFile? ImagenArchivo { get; set; }
         public string? IdImagen { get; set; }
+        public string? UrlVideo { get; set; }
     }
 }

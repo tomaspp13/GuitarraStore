@@ -135,53 +135,36 @@ function eliminarGuitarra(id) {
     localStorage.setItem("carrito", JSON.stringify(carrito));
     mostrarCarrito();
 }
-export async function mostrarGuitarraDetalles(guitarra, contenedor) {
-
-    const div_contenedor_general = document.createElement("div");
-    const div_contenedor = document.createElement("div");
-    const div_titulo = document.createElement("div");
-    const div_descripcion = document.createElement("div");
-    const div_imagen = document.createElement("div");
+export async function mostrarGuitarraDetalles(guitarra) {
 
     const imagen = guitarra.urlImagen || "/images/placeholder.png";
 
-    div_titulo.innerHTML = `
-        <h3>${guitarra.marca} <br>${guitarra.modelo}</h3>
-        <p><strong>Precio:</strong> $${guitarra.precio}</p>
-    `;
+    const descripcion = document.getElementById("descripcionDetalles");
 
-    div_descripcion.innerHTML = `
-        <p>${guitarra.descripcion || "sin descripcion"}</p>
-    `;
+    const precio = document.getElementById("precio");
 
-    div_imagen.innerHTML = `
-        <img src="${imagen}"
-     alt="Jet Guitars"
-     class="w-100 h-100 rounded shadow"
-     style="object-fit: cover;"
-     fetchpriority="high"
-     width="600"
-     height="400">
-    `;
+    const marca = document.getElementById("marca");
 
-    contenedor.classList.add("container", "my-4");
+    const modelo = document.getElementById("modelo");
 
-    div_contenedor.classList.add("row", "align-items-stretch", "mb-4");
+    const imagenGuitarra = document.getElementById("imagenGuitarraDetalle");
 
-    div_imagen.classList.add("col-sm-6", "p-0");
+    const urlVideo = document.getElementById("videoGuitarra");
 
-    div_contenedor_general.classList.add("col-sm-6", "d-flex", "flex-column", "justify-content-center", "align-items-center", "text-center");
+    descripcion.innerText = guitarra.descripcion;
 
-    div_titulo.style.fontFamily = "'Poppins', sans-serif";
-    div_descripcion.style.fontFamily = "'Montserrat', sans-serif";
+    precio.innerText = guitarra.precio;
 
-    div_contenedor_general.appendChild(div_titulo);
-    div_contenedor_general.appendChild(div_descripcion);
+    marca.innerText = guitarra.marca;
 
-    div_contenedor.appendChild(div_imagen);
-    div_contenedor.appendChild(div_contenedor_general);
+    modelo.innerText = guitarra.modelo;
 
-    contenedor.appendChild(div_contenedor);
+    imagenGuitarra.src = imagen;
+
+    imagenGuitarra.alt = guitarra.marca;
+
+    urlVideo.src = guitarra.urlVideo;
+
 }
 export async function MostrarGuitarrasInicio(contenedor) {
 
