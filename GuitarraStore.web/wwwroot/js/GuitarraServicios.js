@@ -458,6 +458,7 @@ function agregarAlCarrito(guitarra) {
     localStorage.setItem("carrito", JSON.stringify(carrito));
 
 }
+
 export async function obtenerValorDolar() {
 
     if (dolarCache !== null && (Date.now() - dolarCacheTime) < 10 * 60 * 1000) {

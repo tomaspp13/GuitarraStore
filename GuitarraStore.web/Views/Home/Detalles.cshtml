@@ -5,8 +5,48 @@
 
 <body>
 
-    <h1>Detalles</h1>
-    <div id="contenedorDetalles"></div>
+    <div id="contenedorDetallesWrapper" style="text-align:center;">
+        <h2>Detalles</h2>
+    </div>
+
+    <div id="contenedorDetalles" class="container my-4">
+        <div class="row">
+
+            <div class="col-sm-6">
+
+                <img id="imagenGuitarraDetalle" src="" alt="" fetchpriority="high" width="600" height="400">
+
+            </div>
+
+            <div class="col-sm-6 d-flex flex-column text-center">
+
+                <div class="contenedorPresentador" style="font-family: Poppins, sans-serif;">
+                    <h3 id="marca"></h3>
+                    <h3 id="modelo"></h3>
+                    <p id="precio"></p>
+                </div>
+
+                <div class="contenedorDescripcion" style="font-family: Montserrat, sans-serif;">
+
+                    <div class="contenidoInterno">
+                        <p id="descripcionDetalles"></p>
+
+                        <iframe id="videoGuitarra"
+                                src=""
+                                title="Video guitarra"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
 
     <div style="margin-top:30px "><a asp-controller="Home" asp-action="GuitarrasCrud" class="btn btn-primary" id="volverAlCrud">Volver a la lista</a></div>
 

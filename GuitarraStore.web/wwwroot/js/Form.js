@@ -57,6 +57,10 @@ export async function validarFormulario(contenedor) {
         const urlVideo = document.getElementById("urlVideo").value;
         const imagenInput = document.getElementById("imagen");
 
+        const videoId = urlVideo.split('/').pop(); 
+        const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+
+
         try {
             const formData = new FormData();
 
@@ -68,7 +72,7 @@ export async function validarFormulario(contenedor) {
             formData.append("Oferta", estaEnOferta);
             formData.append("MasVendida", esMasVendida);
             formData.append("Genero", genero);
-            formData.append("UrlVideo", urlVideo);
+            formData.append("UrlVideo", embedUrl);
 
             if (imagenInput.files.length > 0) {
                 formData.append("ImagenArchivo", imagenInput.files[0]);

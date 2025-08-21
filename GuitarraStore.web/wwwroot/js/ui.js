@@ -34,7 +34,7 @@ export function mostrarCarrito() {
 
     let html = `
         <div class="table-responsive"> 
-            <table class="table table-dark table-sm align-middle">
+            <table class="table table-dark table-sm align-middle text-center">
                 <thead>
                     <tr>
                         <th style="min-width: 80px;">Imagen</th>
@@ -135,6 +135,10 @@ function eliminarGuitarra(id) {
     localStorage.setItem("carrito", JSON.stringify(carrito));
     mostrarCarrito();
 }
+export function vaciarCarrito() {
+    localStorage.setItem("carrito", JSON.stringify([]));
+    mostrarCarrito();
+}
 export async function mostrarGuitarraDetalles(guitarra) {
 
     const imagen = guitarra.urlImagen || "/images/placeholder.png";
@@ -151,20 +155,15 @@ export async function mostrarGuitarraDetalles(guitarra) {
 
     const urlVideo = document.getElementById("videoGuitarra");
 
-    descripcion.innerText = guitarra.descripcion;
-
-    precio.innerText = guitarra.precio;
-
-    marca.innerText = guitarra.marca;
-
-    modelo.innerText = guitarra.modelo;
-
-    imagenGuitarra.src = imagen;
-
-    imagenGuitarra.alt = guitarra.marca;
-
-    urlVideo.src = guitarra.urlVideo;
-
+    if (descripcion) descripcion.innerText = guitarra.descripcion || "Sin descripción";
+    if (precio) precio.innerText = `$${guitarra.precio || "0"}`;
+    if (marca) marca.innerText = guitarra.marca || "Marca desconocida";
+    if (modelo) modelo.innerText = guitarra.modelo || "Modelo desconocido";
+    if (imagenGuitarra) {
+        imagenGuitarra.src = imagen;
+        imagenGuitarra.alt = guitarra.marca || "Guitarra";
+    }
+    if (urlVideo) urlVideo.src = guitarra.urlVideo || "";
 }
 export async function MostrarGuitarrasInicio(contenedor) {
 

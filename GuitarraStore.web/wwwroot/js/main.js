@@ -1,6 +1,6 @@
 ﻿
 import { obtenerGuitarras, obtenerGuitarrasPorId, obtenerGuitarrasPorMarca, cargarMarcas, generarCompra, obtenerValorDolar } from "./GuitarraServicios.js";
-import { MostrarGuitarras, MostrarGuitarrasCrud, mostrarGuitarraDetalles, mostrarCarrito, MostrarGuitarrasInicio } from "./ui.js";
+import { MostrarGuitarras, MostrarGuitarrasCrud, mostrarGuitarraDetalles, mostrarCarrito, vaciarCarrito, MostrarGuitarrasInicio } from "./ui.js";
 import { validarFormulario } from "./Form.js"; 
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -19,6 +19,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const btn_buscar = document.getElementById("botonBuscar");
     const contenedor_inicio = document.getElementById("contenedor_inicio");
     const btn_comprar = document.getElementById("btnCompra");
+    const btnvaciarCarrito = document.getElementById("vaciarCarrito");
 
     if (contenedor_inicio) {
 
@@ -258,6 +259,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (btn_comprar) {
         btn_comprar.addEventListener("click", generarCompra);
     }
+    if (btnvaciarCarrito) {
 
+        btnvaciarCarrito.addEventListener("click", vaciarCarrito);
+    }
 });
 
