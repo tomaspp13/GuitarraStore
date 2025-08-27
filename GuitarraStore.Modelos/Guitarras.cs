@@ -19,6 +19,7 @@ namespace GuitarraStore.Modelos
         public string? Genero { get; set; }
         public string? UrlVideo { get; set; }
         public List<GuitarraFactura> GuitarrasFactura { get; set; } = new();
+        public List<Opiniones> Opiniones { get; set; } = new();
 
     }
 }

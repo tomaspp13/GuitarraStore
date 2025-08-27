@@ -37,8 +37,103 @@
     font-display: swap;
     src: url('https://fonts.gstatic.com/s/montserrat/v26/JTUHjIg1_i6t8kCHKm4532VJOt5-QNFgpCtr6Hw0aXpsog.woff2') format('woff2');
 }
-.textos-blancos {
-    color: rgba(255, 255, 255, 1) !important;
+
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.rating input {
+    display: none; 
+}
+
+.rating label {
+     font-size: 2rem;
+     color: #ccc;
+     cursor: pointer;
+     transition: color 0.2s;
+}
+
+
+.rating label:hover,
+.rating label:hover ~ label {
+    color: gold;
+}
+
+
+.rating input:checked ~ label {
+    color: gold;
+}
+
+
+h2 {
+    color: white;
+}
+h3 {
+    color: white;
+}
+    .contenedorOpinion {
+        height: 100px;
+        padding: 10px;
+        box-sizing: border-box;
+        background-color: #2a2a2a;
+    }
+#contenedorOpinion {
+    background-color: #2a2a2a;
+    color: #ffffff;
+}
+
+#contenedorCom {
+    color: #000000;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    background: #f9f9f9;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.contenedorComentarios {
+    display: flex;
+    gap: 25px;
+    border-radius: 8px;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+#contenedorCom,
+#contenedorOpinion {
+    flex: 1;
+    padding: 10px;
+    border-radius: 6px;
+    box-sizing: border-box;
+    width : auto;
+}
+
+@media (min-width: 768px) {
+    .contenedorComentarios {
+        height: 300px;
+        margin: auto;
+    }
+}
+
+@media (max-width: 576px) {
+    .contenedorComentarios {
+        flex-direction: column;
+        width: 100%;
+        height: auto;
+        font-size: 0.9rem;
+    }
+
+    #contenedorCom {
+        min-height: 350px;
+    }
+
+    #contenedorCom,
+    #contenedorOpinion {
+        flex: none;
+        width: 100%;
+    }
 }
 
 footer.footer {
@@ -85,6 +180,8 @@ footer.footer {
         font-size: 1.5rem;
         font-weight: bold;
     }
+
+
 
 .contenedorPresentador {
     background-color: #2a2a2a;

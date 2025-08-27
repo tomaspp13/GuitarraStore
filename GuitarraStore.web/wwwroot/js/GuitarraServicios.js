@@ -295,7 +295,57 @@ export function optimizarImagenCloudinary(url, anchoBase = 300, altoBase = 400) 
 
     return { src, srcset, sizes };
 }
+export async function crearComentario(idUsuario, calificacion, comentario, idGuitarra,nombreUsuario) {
+    try {
+        const respuesta = await fetch(`/api/guitarra/CrearComentario`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                idGuitarra: Number(idGuitarra),
+                comentario: comentario,
+                calificacion: Number(calificacion),
+                usuarioId: Number(idUsuario),
+                nombreUsuario: nombreUsuario
+            })
+        });
 
+        if (!respuesta.ok) {
+            const errorText = await respuesta.text();
+            enviarErrorAlServidor("Error de la Api al crearComentario. Respuesta: " + respuesta.status + " - " + errorText);
+        }else {
+            console.log("Comentario creado con éxito ✅");
+        }
+    }
+    catch (error) {
+        enviarErrorAlServidor("Error al Crear Comentario:", error);
+    }
+}
+export async function obtenerComentarioDeGuitarra(idGuitarra) {
+    try {
+        const respuesta = await fetch(`/api/guitarra/ObtenerComentarios/${idGuitarra}`);
+
+        const data = await respuesta.json();
+
+        if (!respuesta.ok) {
+            enviarErrorAlServidor(
+                "Error de Api de obtenerComentarioDeGuitarra. Respuesta: " +
+                respuesta.status + " - " + JSON.stringify(data)
+            );
+
+            console.log("!respuesta.ok")
+
+            return [];
+        }
+
+        return data;
+
+    } catch (error) {
+        enviarErrorAlServidor("Error al obtener Comentario De Guitarra:", error);
+        return [];
+    }
+}
 export async function obtenerGuitarrasPorMarca(busqueda, marca, tipoFiltro, precioMin, precioMax) {
 
     const params = new URLSearchParams();

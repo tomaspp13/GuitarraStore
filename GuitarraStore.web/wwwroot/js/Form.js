@@ -1,5 +1,5 @@
 ﻿
-import { obtenerGuitarras, obtenerGuitarrasPorId,crearGuitarras, editarGuitarras } from "./GuitarraServicios.js";
+import { obtenerGuitarras, obtenerGuitarrasPorId, crearGuitarras, editarGuitarras, crearComentario } from "./GuitarraServicios.js";
 import { MostrarGuitarras } from "./ui.js"
 
 export async function validarFormulario(contenedor) {
@@ -111,6 +111,17 @@ export async function validarFormulario(contenedor) {
     });
 
 }
+export async function validarComentarios(guitarraId) {
+
+    const usuarioId = document.body.getAttribute("data-userid");
+    const nombreUsuario = document.body.getAttribute("data-username");
+
+    const comentario = document.getElementById("comentario").value;
+    const calificacion = document.querySelector('input[name="calificacion"]:checked')?.value;
+
+    await crearComentario(usuarioId, calificacion, comentario, guitarraId,nombreUsuario);
+}
+
 export async function registrarUsuario(usuario, contraseña, nombre) {
 
     const user = {

@@ -10,7 +10,7 @@ namespace GuitarraStore.Data.Context
         }
         public DbSet<Guitarras> Guitarras { get; set; }
         public DbSet<Usuarios> Usuarios { get; set; }
-
+        public DbSet<Opiniones> Opiniones { get; set; }
         public DbSet<Factura> Factura { get; set; }
 
         public DbSet<GuitarraFactura> GuitarraFactura { get;set; }
@@ -31,6 +31,11 @@ namespace GuitarraStore.Data.Context
                 .HasOne(gf => gf.Guitarra)
                 .WithMany(g => g.GuitarrasFactura)
                 .HasForeignKey(gf => gf.GuitarraId);
+
+            modelBuilder.Entity<Opiniones>()
+                .HasOne(o => o.Guitarra)
+                .WithMany(g => g.Opiniones)
+                .HasForeignKey(o => o.GuitarraId);
         }
 
     }

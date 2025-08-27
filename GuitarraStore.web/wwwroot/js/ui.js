@@ -1,6 +1,6 @@
 ﻿import {
     obtenerGuitarras, eliminarGuitarras, obtenerGuitarrasPorFactura, crearTarjetasGuitarras,
-    crearTarjetasCompletas, obtenerCategoriasGuitarras, optimizarImagenCloudinary, obtenerValorDolar
+    crearTarjetasCompletas, obtenerCategoriasGuitarras, optimizarImagenCloudinary, obtenerValorDolar, obtenerComentarioDeGuitarra
 } from "./GuitarraServicios.js";
 
 import { obtenerFacturasDeUsuario } from "./UsuarioServicios.js"
@@ -23,21 +23,24 @@ export async function MostrarGuitarras(guitarras, contenedor, dolar) {
 }
 export function mostrarCarrito() {
     const contenedor = document.getElementById("carritoContainer");
-    contenedor.classList.add("bg-black", "text-white", "p-3");
+    contenedor.classList.add("bg-dark", "text-white", "p-3", "rounded");
 
     let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
 
     if (carrito.length === 0) {
-        contenedor.innerHTML = "<p>El carrito está vacío.</p>";
+        contenedor.innerHTML = `
+            <div class="alert alert-warning text-center" role="alert">
+                🛒 Tu carrito está vacío.
+            </div>`;
         return;
     }
 
     let html = `
         <div class="table-responsive"> 
-            <table class="table table-dark table-sm align-middle text-center">
-                <thead>
+            <table class="table table-dark table-striped table-hover align-middle text-center shadow rounded">
+                <thead class="table-light text-dark">
                     <tr>
-                        <th style="min-width: 80px;">Imagen</th>
+                        <th style="min-width: 90px;">Imagen</th>
                         <th>Marca</th>
                         <th>Modelo</th>
                         <th>Precio</th>
@@ -57,20 +60,31 @@ export function mostrarCarrito() {
 
         html += `
             <tr>
-                <td style="max-width: 100px;">
+                <td>
                     <img src="${guitarra.urlImagen}" 
                          alt="${guitarra.marca}" 
-                         class="img-fluid rounded" width = "137" height="205"/>
+                         class="img-thumbnail shadow-sm rounded"
+                         style="width: 90px; height: 120px; object-fit: cover;"/>
                 </td>
-                <td class="text-truncate" style="max-width: 120px;">${guitarra.marca}</td>
-                <td class="text-truncate" style="max-width: 120px;">${guitarra.modelo}</td>
-                <td>$${guitarra.precio}</td>
-                <td>${guitarra.cantidad}</td>
-                <td>$${total}</td>
+                <td class="fw-bold">${guitarra.marca}</td>
+                <td>${guitarra.modelo}</td>
+                <td>$${guitarra.precio.toLocaleString()}</td>
                 <td>
-                    <button class="btn btn-sm btn-success btn-sumar mb-1" data-id="${guitarra.id}">+</button>
-                    <button class="btn btn-sm btn-warning btn-restar mb-1" data-id="${guitarra.id}">-</button>
-                    <button class="btn btn-sm btn-danger btn-eliminar" data-id="${guitarra.id}">Eliminar</button>
+                    <span class="badge bg-info fs-6">${guitarra.cantidad}</span>
+                </td>
+                <td class="fw-bold">$${total.toLocaleString()}</td>
+                <td>
+                    <div class="d-flex justify-content-center gap-1 flex-wrap">
+                        <button class="btn btn-sm btn-success btn-sumar" data-id="${guitarra.id}" title="Agregar">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                        <button class="btn btn-sm btn-warning btn-restar" data-id="${guitarra.id}" title="Reducir">
+                            <i class="bi bi-dash-lg"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger btn-eliminar" data-id="${guitarra.id}" title="Eliminar">
+                            <i class="bi bi-trash3-fill"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         `;
@@ -80,7 +94,11 @@ export function mostrarCarrito() {
                 </tbody>
             </table>
         </div>
-        <h4>Total del carrito: $${totalCarrito}</h4>
+        <div class="d-flex justify-content-end mt-3">
+            <h4 class="bg-light text-dark px-3 py-2 rounded shadow">
+                Total del carrito: <span class="fw-bold">$${totalCarrito.toLocaleString()}</span>
+            </h4>
+        </div>
     `;
 
     contenedor.innerHTML = html;
@@ -157,6 +175,10 @@ export async function mostrarGuitarraDetalles(guitarra) {
 
     if (descripcion) descripcion.innerText = guitarra.descripcion || "Sin descripción";
     if (precio) precio.innerText = `$${guitarra.precio || "0"}`;
+    document.getElementById("3cuotas").innerText = `$3 x ${(guitarra.precio / 3).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById("6cuotas").innerText = `$6 x ${(guitarra.precio / 6).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById("12cuotas").innerText = `$12 x ${(guitarra.precio / 12).toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
     if (marca) marca.innerText = guitarra.marca || "Marca desconocida";
     if (modelo) modelo.innerText = guitarra.modelo || "Modelo desconocido";
     if (imagenGuitarra) {
@@ -440,4 +462,32 @@ export async function MostrarGuitarrasUsuario() {
         contenedor_guitarras.appendChild(tarjetaFactura);
     });
 }
+export async function MostrarComentariosDeGuitarra(contenedor, id) {
+
+    const comentarios = await obtenerComentarioDeGuitarra(id);
+    contenedor.innerHTML = "";
+
+    console.log(comentarios);
+
+    comentarios.forEach(opinion => {
+        const nombreUsuario = opinion.nombreUsuario || "Desconocido";
+
+        const fechaObj = new Date(opinion.fecha);
+        const fecha = `${fechaObj.getDate()}/${fechaObj.getMonth() + 1}/${fechaObj.getFullYear()}`;
+
+        const calificacion = opinion.calificacion || 0;
+        const estrellas = "★".repeat(calificacion) + "☆".repeat(5 - calificacion);
+
+        const comentarioTexto = opinion.comentario || "";
+
+        const div = document.createElement("div");
+        div.innerHTML = `<p><strong>${nombreUsuario}</strong> - ${fecha}</p><p>Calificación : ${estrellas}</p>
+        <p>${comentarioTexto}</p>`;
+
+        contenedor.appendChild(div);
+
+    });
+
+}
+
 

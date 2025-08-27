@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Text.Json;
+using Microsoft.CodeAnalysis.Options;
 
 namespace GuitarraStore.web.Controllers
 {
@@ -65,7 +66,6 @@ namespace GuitarraStore.web.Controllers
         }
 
         [HttpGet("ObtenerGuitarrasFactura/{facturaId}/{idUsuario}")]
-
         public async Task<IActionResult> ObtenerGuitarrasFactura(int facturaId, string idUsuario)
         {
 
@@ -101,7 +101,6 @@ namespace GuitarraStore.web.Controllers
 
             return Ok(listado);
         }
-
 
         [HttpGet("AgregarGuitarraaCarrito")]
         public IActionResult AgregarGuitarraaCarrito(int id)
@@ -197,7 +196,6 @@ namespace GuitarraStore.web.Controllers
         }
 
         [HttpPost("Compra")]
-
         public async Task<IActionResult> CompraGuitarras([FromBody] ComprasDTO compra)
         {
             if (compra == null || compra.GuitarrasCompradas == null || !compra.GuitarrasCompradas.Any())
@@ -261,7 +259,6 @@ namespace GuitarraStore.web.Controllers
         [HttpPut("Put")]
         public async Task<IActionResult> Update([FromForm] GuitarraViewModel guitarraVm)
         {
-            Console.WriteLine("URL DE VIDEO ES " + guitarraVm.UrlVideo + "/n/nAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 
             try
             {
@@ -322,7 +319,9 @@ namespace GuitarraStore.web.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(ModelState);
+                    _logger.LogWarning("Datos inválidos al intentar crear guitarra.");
+                    return BadRequest(new { mensaje = "Datos inválidos enviados." });
+                    
                 }
 
                 string? rutaImagen = null;
@@ -357,13 +356,13 @@ namespace GuitarraStore.web.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogWarning("Error al intentar crear guitarra."); 
                 return BadRequest(new { error = ex.Message });
             }
 
         }
 
         [HttpDelete("Delete/{id}")]
-
         public async Task<IActionResult> EliminarGuitarra(int id) 
         {
 
@@ -405,6 +404,55 @@ namespace GuitarraStore.web.Controllers
 
            return Ok(valor);
           
+        }
+
+        [HttpPost("CrearComentario")]
+        public async Task<IActionResult> AgregarOpinion([FromBody] OpinionDTO opinionDto)
+        {
+            try
+            {
+
+                if (opinionDto == null)
+                {
+                    _logger.LogWarning("Datos inválidos al intentar Agregar Opinion.");
+                    return BadRequest(new { mensaje = "Datos inválidos enviados." });
+                }
+
+
+                var opinion = new Opiniones
+                {
+                    Comentario = opinionDto.Comentario,
+                    Calificacion = opinionDto.Calificacion,
+                    Fecha = DateTime.Now,
+                    UsuarioId = opinionDto.UsuarioId,
+                    GuitarraId = opinionDto.IdGuitarra,
+                    Guitarra = null!,
+                    Usuario = null!,
+                    NombreUsuario = opinionDto.NombreUsuario
+                };
+
+                _context.Opiniones.Add(opinion);
+                await _context.SaveChangesAsync();
+
+                return NoContent();
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning("Error al intentar Agregar Opinion.");
+                return BadRequest(ex);
+                
+            }
+ 
+        }
+
+        [HttpGet("ObtenerComentarios/{idGuitarra}")]
+        public async Task<IActionResult> ObtenerComentarios(int idGuitarra)
+        {
+            var opiniones = await _context.Opiniones.Where(o => o.GuitarraId == idGuitarra)
+            .OrderByDescending(o => o.Fecha).Take(5).ToListAsync();
+
+            return Ok(opiniones);
         }
 
     }

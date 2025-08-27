@@ -4,6 +4,7 @@ using GuitarraStore.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GuitarraStore.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250823232847_sacarOpinion")]
+    partial class sacarOpinion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,41 +110,6 @@ namespace GuitarraStore.Data.Migrations
                     b.ToTable("Guitarras");
                 });
 
-            modelBuilder.Entity("GuitarraStore.Modelos.Opiniones", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("Calificacion")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Comentario")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Fecha")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("GuitarraId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("NombreUsuario")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UsuarioId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GuitarraId");
-
-                    b.HasIndex("UsuarioId");
-
-                    b.ToTable("Opiniones");
-                });
-
             modelBuilder.Entity("GuitarraStore.Modelos.Usuarios", b =>
                 {
                     b.Property<int>("Id")
@@ -197,25 +165,6 @@ namespace GuitarraStore.Data.Migrations
                     b.Navigation("Guitarra");
                 });
 
-            modelBuilder.Entity("GuitarraStore.Modelos.Opiniones", b =>
-                {
-                    b.HasOne("GuitarraStore.Modelos.Guitarras", "Guitarra")
-                        .WithMany("Opiniones")
-                        .HasForeignKey("GuitarraId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GuitarraStore.Modelos.Usuarios", "Usuario")
-                        .WithMany("Opiniones")
-                        .HasForeignKey("UsuarioId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Guitarra");
-
-                    b.Navigation("Usuario");
-                });
-
             modelBuilder.Entity("GuitarraStore.Modelos.Factura", b =>
                 {
                     b.Navigation("GuitarrasFactura");
@@ -224,15 +173,11 @@ namespace GuitarraStore.Data.Migrations
             modelBuilder.Entity("GuitarraStore.Modelos.Guitarras", b =>
                 {
                     b.Navigation("GuitarrasFactura");
-
-                    b.Navigation("Opiniones");
                 });
 
             modelBuilder.Entity("GuitarraStore.Modelos.Usuarios", b =>
                 {
                     b.Navigation("Facturas");
-
-                    b.Navigation("Opiniones");
                 });
 #pragma warning restore 612, 618
         }

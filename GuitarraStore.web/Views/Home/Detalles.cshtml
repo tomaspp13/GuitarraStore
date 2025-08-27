@@ -5,12 +5,14 @@
 
 <body>
 
-    <div id="contenedorDetallesWrapper" style="text-align:center;">
+
+
+    <div style="text-align:center;">
         <h2>Detalles</h2>
     </div>
 
     <div id="contenedorDetalles" class="container my-4">
-        <div class="row">
+        <div class="row mb-4">
 
             <div class="col-sm-6">
 
@@ -24,6 +26,9 @@
                     <h3 id="marca"></h3>
                     <h3 id="modelo"></h3>
                     <p id="precio"></p>
+                    <p id="3cuotas"></p>
+                    <p id="6cuotas"></p>
+                    <p id="12cuotas"></p>
                 </div>
 
                 <div class="contenedorDescripcion" style="font-family: Montserrat, sans-serif;">
@@ -38,14 +43,25 @@
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowfullscreen>
                         </iframe>
+
                     </div>
 
                 </div>
 
-
             </div>
 
         </div>
+
+        <div class="contenedorComentarios">
+
+            <div id="contenedorCom"></div>
+
+            <div id="contenedorOpinion">
+                
+            </div>
+
+        </div>
+
     </div>
 
     <div style="margin-top:30px "><a asp-controller="Home" asp-action="GuitarrasCrud" class="btn btn-primary" id="volverAlCrud">Volver a la lista</a></div>

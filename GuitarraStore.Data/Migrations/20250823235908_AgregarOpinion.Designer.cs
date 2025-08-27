@@ -4,6 +4,7 @@ using GuitarraStore.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GuitarraStore.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250823235908_AgregarOpinion")]
+    partial class AgregarOpinion
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,7 +110,7 @@ namespace GuitarraStore.Data.Migrations
                     b.ToTable("Guitarras");
                 });
 
-            modelBuilder.Entity("GuitarraStore.Modelos.Opiniones", b =>
+            modelBuilder.Entity("GuitarraStore.Modelos.Opinion", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -127,9 +130,6 @@ namespace GuitarraStore.Data.Migrations
                     b.Property<int>("GuitarraId")
                         .HasColumnType("int");
 
-                    b.Property<string>("NombreUsuario")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int");
 
@@ -139,7 +139,7 @@ namespace GuitarraStore.Data.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("Opiniones");
+                    b.ToTable("Opinion");
                 });
 
             modelBuilder.Entity("GuitarraStore.Modelos.Usuarios", b =>
@@ -197,7 +197,7 @@ namespace GuitarraStore.Data.Migrations
                     b.Navigation("Guitarra");
                 });
 
-            modelBuilder.Entity("GuitarraStore.Modelos.Opiniones", b =>
+            modelBuilder.Entity("GuitarraStore.Modelos.Opinion", b =>
                 {
                     b.HasOne("GuitarraStore.Modelos.Guitarras", "Guitarra")
                         .WithMany("Opiniones")

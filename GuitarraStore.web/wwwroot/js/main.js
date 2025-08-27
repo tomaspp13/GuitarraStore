@@ -1,7 +1,7 @@
 ﻿
 import { obtenerGuitarras, obtenerGuitarrasPorId, obtenerGuitarrasPorMarca, cargarMarcas, generarCompra, obtenerValorDolar } from "./GuitarraServicios.js";
-import { MostrarGuitarras, MostrarGuitarrasCrud, mostrarGuitarraDetalles, mostrarCarrito, vaciarCarrito, MostrarGuitarrasInicio } from "./ui.js";
-import { validarFormulario } from "./Form.js"; 
+import { MostrarGuitarras, MostrarGuitarrasCrud, mostrarGuitarraDetalles, mostrarCarrito, vaciarCarrito, MostrarGuitarrasInicio, MostrarComentariosDeGuitarra } from "./ui.js";
+import { validarFormulario, validarComentarios } from "./Form.js"; 
 
 document.addEventListener("DOMContentLoaded", async () => {
 
@@ -20,7 +20,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const contenedor_inicio = document.getElementById("contenedor_inicio");
     const btn_comprar = document.getElementById("btnCompra");
     const btnvaciarCarrito = document.getElementById("vaciarCarrito");
-
+    const contenedorOpinion = document.getElementById("contenedorOpinion");
+    const contenedorCom = document.getElementById("contenedorCom");
+    
     if (contenedor_inicio) {
 
         await MostrarGuitarrasInicio(contenedor_inicio);
@@ -263,5 +265,77 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         btnvaciarCarrito.addEventListener("click", vaciarCarrito);
     }
+
+    const userRole = document.body.dataset.usuario;
+
+    if (userRole) {
+        
+        contenedorOpinion.innerHTML = `
+            <form id="formularioOpinion">
+
+                    <div class="mb-3">
+                        <label class="form-label">Calificación</label>
+                        <div class="rating">
+                            <input type="radio" id="estrella5" name="calificacion" value="5" required>
+                            <label for="estrella5">★</label>
+
+                            <input type="radio" id="estrella4" name="calificacion" value="4">
+                            <label for="estrella4">★</label>
+
+                            <input type="radio" id="estrella3" name="calificacion" value="3">
+                            <label for="estrella3">★</label>
+
+                            <input type="radio" id="estrella2" name="calificacion" value="2">
+                            <label for="estrella2">★</label>
+
+                            <input type="radio" id="estrella1" name="calificacion" value="1">
+                            <label for="estrella1">★</label>
+                        </div>
+                    </div>
+
+
+                    <div class="mb-3">
+                        <label for="comentario" class="form-label">Comentario</label>
+                        <textarea id="comentario" class="form-control" rows="3" required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Enviar</button>
+                </form>
+        `;
+    } else {
+        
+        contenedorOpinion.innerHTML = `
+            <div class="alert text-center p-3 rounded" style="background-color: #444; color: #fff;">
+                <strong>Para dejar tu opinión necesitas </strong>
+                <a href="/Usuarios/Ingresar" class="btn btn-sm btn-primary ms-2">Iniciar sesión</a>
+            </div>
+        `;
+    }
+
+    if (window.location.href.includes("Detalles")) {
+
+        console.log("Entrando a detalles");
+
+        const url = window.location.href;
+        const partes = url.split("/");
+        const guitarraId = partes[partes.length - 1];
+
+        const formularioComentario = document.getElementById("formularioOpinion");
+
+        formularioComentario.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            await validarComentarios(guitarraId);
+            formularioComentario.reset();
+            await MostrarComentariosDeGuitarra(contenedorCom, guitarraId);
+        });
+
+        if (contenedorCom) {
+
+            await MostrarComentariosDeGuitarra(contenedorCom, guitarraId);
+
+        }
+
+    }
+    
 });
 
