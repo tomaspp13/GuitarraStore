@@ -21,6 +21,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             await ingresarUsuario(email, contraseña);
 
+            formulario_ingreso.reset();
+
         })
 
     }

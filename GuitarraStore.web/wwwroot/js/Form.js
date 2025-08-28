@@ -1,5 +1,5 @@
 ﻿
-import { obtenerGuitarras, obtenerGuitarrasPorId, crearGuitarras, editarGuitarras, crearComentario } from "./GuitarraServicios.js";
+import { obtenerGuitarras, obtenerGuitarrasPorId, crearGuitarras, editarGuitarras, crearComentario, mostrarToast } from "./GuitarraServicios.js";
 import { MostrarGuitarras } from "./ui.js"
 
 export async function validarFormulario(contenedor) {
@@ -175,23 +175,17 @@ export async function ingresarUsuario(email, contraseña) {
             body: JSON.stringify(user)
         });
 
-        if (!respuesta.ok) {
-            const errorText = await respuesta.text();
-            enviarErrorAlServidor("Error en la Api ingresar usuario. Respuesta: " + respuesta.status + " - " + errorText);
-            mostrarToast("Error al ingresar usuario", "danger");
+        const resultado = await respuesta.json();
+
+        if (!resultado.success) {
+            mostrarToast(resultado.mensaje, "danger");
             return;
         }
 
-        const usuario = await respuesta.text();
-
-        if (usuario == "Administrador") {
+        if (resultado.rol === "Administrador") {
             window.location.href = "/Home/GuitarrasCrud";
-        }
-        else {
-
-            if (usuario == "Cliente") {
-                window.location.href = "/Home/Inicio";
-            }
+        } else if (resultado.rol === "Cliente") {
+            window.location.href = "/Home/Inicio";
         }
 
     }

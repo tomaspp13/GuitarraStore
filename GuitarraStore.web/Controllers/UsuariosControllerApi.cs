@@ -44,12 +44,12 @@ namespace GuitarraStore.web.Controllers
 
                 if (usuario == null)
                 {
-                    return NotFound("Usuario no encontrado");
+                    return Ok(new { success = false, mensaje = "Usuario no encontrado" });
                 }
 
                 if (!BCrypt.Net.BCrypt.Verify(usuario_enviado.Password, usuario.Password))
                 {
-                    return NotFound("Contraseña incorrecta");
+                    return Ok(new { success = false, mensaje = "Contraseña incorrecta" });
                 }
 
                 var claims = new List<Claim>
