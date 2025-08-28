@@ -467,8 +467,6 @@ export async function MostrarComentariosDeGuitarra(contenedor, id) {
     const comentarios = await obtenerComentarioDeGuitarra(id);
     contenedor.innerHTML = "";
 
-    console.log(comentarios);
-
     comentarios.forEach(opinion => {
         const nombreUsuario = opinion.nombreUsuario || "Desconocido";
 

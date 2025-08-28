@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const btnvaciarCarrito = document.getElementById("vaciarCarrito");
     const contenedorOpinion = document.getElementById("contenedorOpinion");
     const contenedorCom = document.getElementById("contenedorCom");
-    
+
     if (contenedor_inicio) {
 
         await MostrarGuitarrasInicio(contenedor_inicio);
@@ -40,9 +40,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (btn_buscar) {
         btn_buscar.addEventListener("click", () => {
 
-            const busquedas = document.getElementById("inputBuscar").value.trim();
+            const busqueda = document.getElementById("inputBuscar").value.trim() || "todas";
 
-            if (window.location.pathname.includes("/Home/Guitarras")) {
+            if (window.location.pathname.endsWith("/Guitarras")) {
+
                 const marca = "todas";
                 document.getElementById("selectMarca").value = "todas";
 
@@ -54,7 +55,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 const preMin = preMinStr !== "" ? parseFloat(preMinStr) : 0;
                 const preMax = preMaxStr !== "" ? parseFloat(preMaxStr) : 99999999;
 
-                obtenerGuitarrasPorMarca(busquedas, marca, filtro, preMin, preMax)
+                obtenerGuitarrasPorMarca(busqueda, marca, filtro, preMin, preMax)
                     .then(guitarra_filtrada => {
                         MostrarGuitarras(guitarra_filtrada, contenedor_principal,dolar);
                     })
@@ -62,9 +63,9 @@ document.addEventListener("DOMContentLoaded", async () => {
                         console.error("Error al buscar las guitarras:", error);
                     });
 
-            } else {
+            } else{
                 
-                window.location.href = `/Home/Guitarras?busqueda=${encodeURIComponent(busquedas)}`;
+                window.location.href = `/Home/Guitarras?busqueda=${encodeURIComponent(busqueda)}`;
             }
         });
     }
@@ -85,12 +86,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             const preMax = preMaxInput !== "" ? parseFloat(preMaxInput) : null;
 
             if ((preMinInput !== "" && isNaN(preMin)) || (preMaxInput !== "" && isNaN(preMax))) {
-                alert("Por favor, ingresa valores numéricos válidos en los precios.");
-                return;
+                mostrarToast("Por favor, ingresa valores numéricos válidos en los precios.","Danger");
+                return;  
             }
 
             if (preMin !== null && preMax !== null && preMin > preMax) {
-                alert("El precio mínimo no puede ser mayor que el precio máximo.");
+                mostrarToast("El precio mínimo no puede ser mayor que el precio máximo.", "Danger");
                 return;
             }
 
@@ -125,12 +126,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             const preMax = preMaxInput !== "" ? parseFloat(preMaxInput) : null;
 
             if ((preMinInput !== "" && isNaN(preMin)) || (preMaxInput !== "" && isNaN(preMax))) {
-                alert("Por favor, ingresa valores numéricos válidos en los precios.");
+                mostrarToast("Por favor, ingresa valores numéricos válidos en los precios.", "Danger");
                 return;
             }
 
             if (preMin !== null && preMax !== null && preMin > preMax) {
-                alert("El precio mínimo no puede ser mayor que el precio máximo.");
+                mostrarToast("El precio mínimo no puede ser mayor que el precio máximo.", "Danger");
                 return;
             }
 
@@ -166,12 +167,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             const preMax = preMaxInput ? parseFloat(preMaxInput) : 999999999;
             
             if ((preMin !== null && isNaN(preMin)) || (preMax !== null && isNaN(preMax))) {
-                alert("Por favor, ingresa valores numéricos válidos en los precios.");
+                mostrarToast("Por favor, ingresa valores numéricos válidos en los precios.", "Danger");
                 return;
             }
            
             if (preMin !== null && preMax !== null && preMin > preMax) {
-                alert("El precio mínimo no puede ser mayor que el precio máximo.");
+                mostrarToast("El precio mínimo no puede ser mayor que el precio máximo.", "Danger");
                 return;
             }
 
@@ -222,7 +223,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 })
                 
             } catch (error) {
-                console.error("Error al buscar las guitarras por URL:", error);
+                mostrarToast("Error al buscar las guitarras :", "Danger");
             }
 
             return; 
@@ -269,8 +270,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     const userRole = document.body.dataset.usuario;
 
     if (userRole) {
-        
-        contenedorOpinion.innerHTML = `
+        if (contenedorOpinion) {
+
+            contenedorOpinion.innerHTML = `
             <form id="formularioOpinion">
 
                     <div class="mb-3">
@@ -296,29 +298,41 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     <div class="mb-3">
                         <label for="comentario" class="form-label">Comentario</label>
-                        <textarea id="comentario" class="form-control" rows="3" required></textarea>
+                        <textarea id="comentario" class="form-control comentario-fijo" required maxlength="350" rows="3" required></textarea>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Enviar</button>
                 </form>
-        `;
-    } else {
+            `;
+
+        }
         
-        contenedorOpinion.innerHTML = `
+    } else {
+
+        if (contenedorOpinion) {
+            contenedorOpinion.innerHTML = `
             <div class="alert text-center p-3 rounded" style="background-color: #444; color: #fff;">
                 <strong>Para dejar tu opinión necesitas </strong>
                 <a href="/Usuarios/Ingresar" class="btn btn-sm btn-primary ms-2">Iniciar sesión</a>
             </div>
         `;
+
+        } 
+
+        
     }
 
     if (window.location.href.includes("Detalles")) {
 
-        console.log("Entrando a detalles");
-
         const url = window.location.href;
         const partes = url.split("/");
         const guitarraId = partes[partes.length - 1];
+
+        if (contenedorCom) {
+
+            await MostrarComentariosDeGuitarra(contenedorCom, guitarraId);
+
+        }
 
         const formularioComentario = document.getElementById("formularioOpinion");
 
@@ -328,12 +342,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             formularioComentario.reset();
             await MostrarComentariosDeGuitarra(contenedorCom, guitarraId);
         });
-
-        if (contenedorCom) {
-
-            await MostrarComentariosDeGuitarra(contenedorCom, guitarraId);
-
-        }
 
     }
     

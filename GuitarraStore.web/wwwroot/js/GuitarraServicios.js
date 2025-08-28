@@ -50,14 +50,40 @@ function enviarErrorAlServidor(mensaje) {
 
     });
 }
+function renderEstrellas(promedio) {
+    let estrellas = "";
+    const totalEstrellas = 5;
+
+    for (let i = 0; i < Math.floor(promedio); i++) {
+        estrellas += "★";
+    }
+
+    if (promedio % 1 >= 0.5) {
+        estrellas += "☆";
+    }
+
+    while (estrellas.length < totalEstrellas) {
+        estrellas += "☆";
+    }
+
+    return estrellas;
+}
 export async function crearTarjetasGuitarras(guitarras,dolar) {
 
     const fila = document.createElement("div");
     fila.className = "row";
 
-    guitarras.forEach((guitarra,index) => {
+    guitarras.forEach((guitarra, index) => {
+        
+        const opiniones = guitarra.opiniones || [];
+        const promedio = opiniones.length > 0
+            ? opiniones.reduce((acc, o) => acc + o.calificacion, 0) / opiniones.length
+            : 0;
+
+        const estrellasHTML = renderEstrellas(promedio);
+
         const col = document.createElement("div");
-        col.className = "col-md-4 mb-4";
+        col.className = "col-md-3 mb-4";
 
         const card = document.createElement("div");
         card.className = "card shadow-sm h-100 bg-dark text-white position-relative";
@@ -78,12 +104,11 @@ export async function crearTarjetasGuitarras(guitarras,dolar) {
             srcset="${srcset}" 
             sizes="${sizes}" 
             class="card-img-top"  
-            width="400" 
-            height="600" 
+            width="300" 
+            height="300" 
             alt="Imagen de guitarra" 
-            style="height: 400px; object-fit: cover;" 
-            ${prioridad}
-        >
+            style="height: 300px; object-fit: cover;" 
+            ${prioridad}>
                 ${sinStock ? `
                     <div class="position-absolute top-50 start-50 translate-middle text-center bg-danger bg-opacity-75 text-white px-3 py-2 rounded">
                         SIN STOCK
@@ -91,14 +116,20 @@ export async function crearTarjetasGuitarras(guitarras,dolar) {
                 ` : ""}
             </div>
             <div class="card-body">
-                <h3 class="card-title">${guitarra.marca} ${guitarra.modelo}</h3>
+                <h3 class="card-title">${guitarra.marca} </h3>
+                <h3 class="card-title">${guitarra.modelo} </h3>
+                <div>
+                
                 <p class="card-text"><strong>Cash o Transferencia:</strong> $${precioCash}</p>
                 <p class="card-text"><strong>Precio Lista:</strong> $${guitarra.precio}</p>
                 <p class="card-text"><strong>USD:</strong> U$${precioDolar}</p>
                 <p class="card-text text-success fw-bold">6 x $${(guitarra.precio / 6).toFixed(2)} sin interés</p>
+                <p class="card-text">${estrellasHTML} (${promedio.toFixed(1)})</p>
                 <button class="btn btn-primary btn-agregar-carrito" ${sinStock ? "disabled" : ""}>
                     Agregar al carrito
                 </button>
+                
+                </div>          
             </div>
         `;
 
@@ -216,7 +247,7 @@ export async function crearTarjetasCompletas(guitarras, urlCloudinary, titulo, t
                     class="card-img-top" 
                     alt="Imagen de guitarra marca ${guitarra.marca} modelo ${guitarra.modelo}">
             
-            <div class="card-body" style="padding: 0.5rem; font-size: 1.1rem;">
+            <div class="card-body-inicio" style="padding: 0.5rem; font-size: 1.1rem;">
                 <h3 class="card-title" style="font-size: 1.2rem; margin-bottom: 0.3rem;">
                     ${guitarra.marca} ${guitarra.modelo}
                 </h3>
@@ -315,11 +346,12 @@ export async function crearComentario(idUsuario, calificacion, comentario, idGui
             const errorText = await respuesta.text();
             enviarErrorAlServidor("Error de la Api al crearComentario. Respuesta: " + respuesta.status + " - " + errorText);
         }else {
-            console.log("Comentario creado con éxito ✅");
+            mostrarToast("Comentario enviado.", "success");
         }
     }
     catch (error) {
         enviarErrorAlServidor("Error al Crear Comentario:", error);
+        mostrarToast("No se ha podido enviar su comentario.", "Danger");
     }
 }
 export async function obtenerComentarioDeGuitarra(idGuitarra) {

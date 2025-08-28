@@ -7,7 +7,6 @@
 
     <div class="container mt-4">
 
-
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="mb-0">Listado de Guitarras</h2>
 
@@ -40,25 +39,24 @@
             </div>
         </div>
     </div>
-
-
-    
+ 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
     <script type="module" src="/js/main.js" asp-append-version="true" defer></script>
 
-    
     <script>
 
         document.addEventListener("DOMContentLoaded", () => {
-                const mensaje = localStorage.getItem("toastMensaje");
-        const tipo = localStorage.getItem("toastTipo") || "success";
 
-          if (mensaje) {
-            mostrarToast(mensaje, tipo);
-            localStorage.removeItem("toastMensaje");
-            localStorage.removeItem("toastTipo");
-          }
+            const mensaje = localStorage.getItem("toastMensaje");
+            const tipo = localStorage.getItem("toastTipo") || "success";
+
+           if (mensaje) {
+              mostrarToast(mensaje, tipo);
+              localStorage.removeItem("toastMensaje");
+              localStorage.removeItem("toastTipo");
+           }
+ 
         });
     </script>
 

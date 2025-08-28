@@ -48,7 +48,7 @@ namespace GuitarraStore.web.Controllers
         [HttpGet("Get")]
         public async Task<IActionResult> GetGuitarras()
         {
-            var guitarras = await _context.Guitarras.ToListAsync();
+            var guitarras = await _context.Guitarras.Include(g => g.Opiniones).ToListAsync();
             return Ok(guitarras);
         }
 
@@ -142,22 +142,18 @@ namespace GuitarraStore.web.Controllers
                 return BadRequest("El precio mínimo no puede ser mayor al precio máximo.");
             }
 
-            var guitarras = _context.Guitarras.AsQueryable();
+            var guitarras = _context.Guitarras.Include(g => g.Opiniones).AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(busqueda))
+            if (!string.IsNullOrWhiteSpace(busqueda) && !string.Equals(busqueda, "todas", StringComparison.OrdinalIgnoreCase))
             {
                 var busquedaMinuscula = busqueda.ToLower();
 
-                if (!busqueda.Equals("", StringComparison.OrdinalIgnoreCase))
-                {
-                    guitarras = guitarras.Where(g =>
-                        g.Marca != null && g.Marca.ToLower().Contains(busquedaMinuscula) ||
-                        g.Modelo != null && g.Modelo.ToLower().Contains(busquedaMinuscula)
-                    );
-                }
-                
+                guitarras = guitarras.Where(g =>
+                    (g.Marca != null && g.Marca.ToLower().Contains(busquedaMinuscula)) ||
+                    (g.Modelo != null && g.Modelo.ToLower().Contains(busquedaMinuscula))
+                );
             }
-            
+
             if (string.Equals(marca, "todas", StringComparison.OrdinalIgnoreCase))
             {
                 guitarras = guitarras.OrderBy(g => g.Id);
